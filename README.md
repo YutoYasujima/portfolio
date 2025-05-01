@@ -1,4 +1,4 @@
-# Portfolio - Machi Vigil(仮)
+# Portfolio - "Machi Vigil"
 ■サービス概要
 
 「自分達の街を自分達で見守ろう！」というコンセプトに基づき、Googleマップを利用して街の安全情報を
@@ -104,3 +104,8 @@
     - Action Cable
   - 画像保存機能
     - gem carrierwave
+
+■ 画面遷移図
+- Figma
+  - モバイル：https://www.figma.com/design/QtKfnrawFad3U3L5oNvE6V/%E5%8D%92%E6%A5%AD%E5%88%B6%E4%BD%9C%EF%BC%88%E3%83%A2%E3%83%90%E3%82%A4%E3%83%AB%E7%89%88%EF%BC%89?node-id=0-1&p=f&t=rzgEBBLbXuXWtOi8-0
+  - PC：https://www.figma.com/design/3lslGnmtzCGlYvTB3TyLqb/%E5%8D%92%E6%A5%AD%E5%88%B6%E4%BD%9C%EF%BC%88PC%E7%89%88%EF%BC%89?node-id=0-1&p=f&t=FjP71GoJEip4K8gT-0
