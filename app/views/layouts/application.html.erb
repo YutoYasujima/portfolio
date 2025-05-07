@@ -9,7 +9,6 @@
 
     <%= yield :head %>
 
-    <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
@@ -18,9 +17,11 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body>
+  <body class="flex flex-col min-h-[100vh] bg-[#E6F0FE]">
+    <%= render "shared/header_before_login"%>
     <main class="container mx-auto mt-28 px-5 flex">
       <%= yield %>
     </main>
+    <%= render "shared/footer"%>
   </body>
 </html>
