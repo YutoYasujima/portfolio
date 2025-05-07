@@ -45,6 +45,9 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # 追加
+  gem "pry-byebug"
 end
 
 group :development do
@@ -58,4 +61,6 @@ group :test do
   gem "selenium-webdriver"
 end
 
+# 追加
+gem "dotenv-rails"
 gem "tailwindcss-rails", "~> 4.2"
