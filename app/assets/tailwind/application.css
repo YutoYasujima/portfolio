@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+.header1 {
+  @apply text-center border-b-2 border-b-[#F5A83D];
+}
