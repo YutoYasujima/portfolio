@@ -109,3 +109,7 @@
 - Figma
   - モバイル：https://www.figma.com/design/QtKfnrawFad3U3L5oNvE6V/%E5%8D%92%E6%A5%AD%E5%88%B6%E4%BD%9C%EF%BC%88%E3%83%A2%E3%83%90%E3%82%A4%E3%83%AB%E7%89%88%EF%BC%89?node-id=0-1&t=sDZ2WVwxkQOtnIZO-1
   - PC：https://www.figma.com/design/3lslGnmtzCGlYvTB3TyLqb/%E5%8D%92%E6%A5%AD%E5%88%B6%E4%BD%9C%EF%BC%88PC%E7%89%88%EF%BC%89?node-id=0-1&t=Vp2lcKZVA32kM1WD-1
+
+  ■ ER図
+- draw.io
+  - https://drive.google.com/file/d/1_7sZqlWi08qtjaD0CZrJScHfY-ItQv2s/view?usp=sharing
