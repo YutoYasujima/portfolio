@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+.header1 {
+  @apply inline-block pb-1 px-[0.5em] border-b-2 border-b-[#F5A83D] min-w-[250px] max-w-[350px] text-3xl;
+}
+
+.about-card {
+  @apply mb-8 mx-auto p-4 w-full max-w-[900px] bg-white shadow-md text-center;
+}
+
+.about-card-content {
+  @apply mx-auto max-w-[380px];
+}
+
+.link {
+  @apply text-[#3586FF] text-2xl;
+}
+
+.text-indent-1em {
+  text-indent: 1em;
+}
