@@ -64,3 +64,4 @@ end
 # 追加
 gem "dotenv-rails"
 gem "tailwindcss-rails", "~> 4.2"
+gem "csv", require: "csv"
