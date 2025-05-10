@@ -10,8 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 0) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_10_053735) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
+  create_table "municipalities", force: :cascade do |t|
+    t.bigint "prefecture_id", null: false
+    t.string "name_kanji", limit: 50, null: false
+    t.string "name_kana", limit: 50, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["prefecture_id", "name_kanji"], name: "index_municipalities_on_prefecture_id_and_name_kanji", unique: true
+    t.index ["prefecture_id"], name: "index_municipalities_on_prefecture_id"
+  end
+
+  create_table "prefectures", force: :cascade do |t|
+    t.string "name_kanji", limit: 50, null: false
+    t.string "name_kana", limit: 50, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name_kana"], name: "index_prefectures_on_name_kana", unique: true
+    t.index ["name_kanji"], name: "index_prefectures_on_name_kanji", unique: true
+  end
+
+  add_foreign_key "municipalities", "prefectures"
 end
