@@ -53,6 +53,7 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+  gem "letter_opener_web", "~> 3.0"
 end
 
 group :test do
@@ -65,3 +66,5 @@ end
 gem "dotenv-rails"
 gem "tailwindcss-rails", "~> 4.2"
 gem "csv", require: "csv"
+gem "devise"
+gem "devise-i18n"
