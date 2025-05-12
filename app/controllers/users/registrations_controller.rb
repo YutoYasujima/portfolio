@@ -92,7 +92,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # If you have extra params to permit, append them to the sanitizer.
   # パラメータのサニタイズ。登録時paramsの中身を制限できる。
   def configure_sign_up_params
-    devise_parameter_sanitizer.permit(:sign_up, keys: [ :email, :password, :password_confirmation, profile_attributes: [ :nickname, :prefecture_id, :municipality_id ] ])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [ :email, :password, :password_confirmation, :agreement, profile_attributes: [ :nickname, :prefecture_id, :municipality_id ] ])
   end
 
   # If you have extra params to permit, append them to the sanitizer.

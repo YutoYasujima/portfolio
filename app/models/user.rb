@@ -5,4 +5,8 @@ class User < ApplicationRecord
 
   has_one :profile, dependent: :destroy
   accepts_nested_attributes_for :profile
+
+  attr_accessor :agreement
+
+  validates :agreement, acceptance: { accept: "1", message: "に同意してください" }
 end
