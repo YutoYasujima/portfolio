@@ -82,7 +82,7 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
-  config.action_mailer.default_url_options = { host: "machi-vigil.onrender.com", protocol: 'https' }
+  config.action_mailer.default_url_options = { host: "machi-vigil.onrender.com", protocol: "https" }
   config.action_mailer.raise_delivery_errors = true
 
   config.action_mailer.delivery_method = :smtp
@@ -91,8 +91,8 @@ Rails.application.configure do
     address: "smtp.gmail.com",
     port: 587,
     domain: "machi-vigil.onrender.com",
-    user_name: ENV['GMAIL_USERNAME'],
-    password: ENV['GMAIL_PASSWORD'],
+    user_name: ENV["GMAIL_USERNAME"],
+    password: ENV["GMAIL_PASSWORD"],
     authentication: "plain",
     enable_starttls_auto: true
   }

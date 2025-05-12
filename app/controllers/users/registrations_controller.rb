@@ -115,7 +115,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # Profileモデルのidentifierカラムのデフォルト値を生成
   def generate_unique_identifier
   # 使用する文字のセットを定義する
-  chars = [('a'..'z'), ('A'..'Z'), ('0'..'9'), ['-', '_']].map(&:to_a).flatten
+  chars = [ ("a".."z"), ("A".."Z"), ("0".."9"), [ "-", "_" ] ].map(&:to_a).flatten
 
   loop do
     # 10文字のランダムな文字列を生成
