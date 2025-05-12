@@ -1,6 +1,6 @@
 <div class="text-center">
   <h2 class="mb-8">
-    <span class="header1"><%= t('.sign_up') %></span>
+    <span class="header1"><%= t(".sign_up") %></span>
     <p>ユーザーを作成します</p>
   </h2>
 
@@ -35,7 +35,7 @@
 =begin
 %>
       <% if @minimum_password_length %>
-      <em><%= t('devise.shared.minimum_password_length', count: @minimum_password_length) %></em>
+      <em><%= t("devise.shared.minimum_password_length", count: @minimum_password_length) %></em>
       <% end %>
 <%
 =end
@@ -46,6 +46,15 @@
     <div class="field">
       <%= f.label :password_confirmation %>
       <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "text-field" %>
+    </div>
+
+    <div class="field flex">
+      <%= f.check_box :agreement, required: true, class: "scale-150" %>
+      <%= f.label :agreement, class: "flex-1 ml-4 text-center" do %>
+        <%= link_to "利用規約","#", target: "_blank", class: "link text-xl" %> /
+        <%= link_to "プライバシーポリシー", "#", target: "_blank", class: "link text-xl" %>
+        <div><span>に同意します</span></div>
+      <% end %>
     </div>
 
     <div class="actions text-center">
