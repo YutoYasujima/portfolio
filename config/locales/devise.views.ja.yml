@@ -33,7 +33,8 @@ ja:
     confirmations:
       confirmed: メールアドレスが確認できました。
       new:
-        resend_confirmation_instructions: アカウント確認メール再送
+        resend_confirmation_instructions: ユーザー登録メール再送
+        resend: 再送
       send_instructions: アカウントの有効化について数分以内にメールでご連絡します。
       send_paranoid_instructions: メールアドレスが登録済みの場合、本人確認用のメールが数分以内に送信されます。
     failure:
@@ -116,7 +117,8 @@ ja:
       new:
         sign_in: ログイン
         sign_up: 新規登録
-        forgot_your_password: パスワードを忘れてしまった場合
+        forgot_your_password: パスワードを忘れましたか？
+        didn_t_receive_confirmation_instructions: ユーザー登録のメールを受け取っていませんか？
       signed_in: ログインしました。
       signed_out: ログアウトしました。
     shared:

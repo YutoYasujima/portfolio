@@ -1,16 +1,20 @@
-<h2><%= t('.resend_confirmation_instructions') %></h2>
+<div class="text-center">
+  <h2 class="mb-8">
+    <span class="header1"><%= t('.resend_confirmation_instructions') %></span>
+    <p>ユーザー登録用のメールを再送します</p>
+  </h2>
 
-<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "users/shared/error_messages", resource: resource %>
+  <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post, class: "form" }) do |f| %>
+    <%= render "users/shared/error_messages", resource: resource %>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
-  </div>
+    <div class="field">
+      <%= f.label :email %><br />
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email), class: "text-field" %>
+    </div>
 
-  <div class="actions">
-    <%= f.submit t('.resend_confirmation_instructions') %>
-  </div>
-<% end %>
+    <div class="actions text-center">
+      <%= f.submit t('.resend'), class: "btn" %>
+    </div>
+  <% end %>
+</div>
 
-<%= render "users/shared/links" %>
