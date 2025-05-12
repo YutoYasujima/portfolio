@@ -1,0 +1,10 @@
+ja:
+  activerecord:
+    models:
+      profile:
+        one: プロフィール
+        other: プロフィール
+    attributes:
+      profile:
+        nickname: ニックネーム
+        identifier: ユーザーID

@@ -1,0 +1,55 @@
+<div class="text-center">
+  <h2 class="mb-8">
+    <span class="header1"><%= t('.sign_up') %></span>
+    <p>ユーザーを作成します</p>
+  </h2>
+
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "form" }) do |f| %>
+    <%= render "users/shared/error_messages", resource: resource %>
+
+    <%# ProfileモデルのデータをUserモデルのデータと同時に送信するする %>
+    <%= f.fields_for :profile do |pf| %>
+      <div class="field">
+        <%= pf.label :nickname, "ニックネーム" %>
+        <%= pf.text_field :nickname, autofocus: true, class: "text-field" %>
+      </div>
+
+      <div data-controller="prefecture-municipality" class="field">
+        <p>マイタウン</p>
+        <div class="mytown-selects">
+          <%= pf.collection_select :prefecture_id, Prefecture.all, :id, :name_kanji, {}, { class: "select-field", data: { action: "change->prefecture-municipality#loadMunicipalities" }} %>
+
+          <%= pf.collection_select :municipality_id, Municipality.where(prefecture_id: 1).order(:name_kana), :id, :name_kanji, {}, { class: "select-field", data: { prefecture_municipality_target: "municipality" }} %>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="field">
+      <%= f.label :email %>
+      <%= f.email_field :email, autocomplete: "email", class: "text-field" %>
+    </div>
+
+    <div class="field">
+      <%= f.label :password %>
+<%
+=begin
+%>
+      <% if @minimum_password_length %>
+      <em><%= t('devise.shared.minimum_password_length', count: @minimum_password_length) %></em>
+      <% end %>
+<%
+=end
+%>
+      <%= f.password_field :password, autocomplete: "new-password", class: "text-field" %>
+    </div>
+
+    <div class="field">
+      <%= f.label :password_confirmation %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "text-field" %>
+    </div>
+
+    <div class="actions text-center">
+      <%= f.submit nil, class: "btn" %>
+    </div>
+  <% end %>
+</div>

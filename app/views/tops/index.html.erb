@@ -28,9 +28,14 @@
           自分たちの"まち"を<br>
           みんなで見守ろう！
         </p>
-        <div class="mt-[5%]"><a href="#" class="link">ログインへ</a></div>
+        <div class="mt-[5%]">
+          <%= link_to "ログインへ", new_user_session_path, class: "link text-2xl" %>
+        </div>
       </div>
     </section>
+
+    <p class="notice"><%= notice %></p>
+    <p class="alert"><%= alert %></p>
 
     <section id="about-app" class="about-card">
       <h2 class="mb-4">

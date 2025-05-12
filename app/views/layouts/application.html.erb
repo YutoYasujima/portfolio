@@ -19,9 +19,14 @@
 
   <body class="flex flex-col min-h-[100vh] bg-[#E6F0FE]">
     <%= render "shared/header_before_login"%>
-    <main class="container mx-auto mt-28 px-5 flex">
+
+    <p class="notice"><%= notice %></p>
+    <p class="alert"><%= alert %></p>
+
+    <main class="container mx-auto p-4 pt-5">
       <%= yield %>
     </main>
+
     <%= render "shared/footer"%>
   </body>
 </html>
