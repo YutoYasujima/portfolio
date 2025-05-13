@@ -18,15 +18,18 @@
   </head>
 
   <body class="flex flex-col min-h-[100vh] bg-[#E6F0FE]">
-    <%= render "shared/header_before_login"%>
+    <%= render "shared/header"%>
 
-    <p class="notice"><%= notice %></p>
-    <p class="alert"><%= alert %></p>
+    <p class=""><%= notice %></p>
+    <p class=""><%= alert %></p>
 
     <main class="container mx-auto p-4 pt-5">
       <%= yield %>
     </main>
 
     <%= render "shared/footer"%>
+    <div class="md:hidden">
+      <%= render "shared/navigation" %>
+    </div>
   </body>
 </html>
