@@ -1,4 +1,9 @@
 @import "tailwindcss";
+@source "../../../public/*.html";
+@source "../../../app/helpers/**/*.rb";
+@source "../../../app/javascript/**/*.js";
+@source "../../../app/views/**/*";
+@plugin "./daisyui.js";
 
 /* 共通見出し */
 .header1 {
@@ -16,7 +21,7 @@
 }
 
 /* ボタン */
-.btn {
+.button {
   padding: 0.25rem 1.25rem;
   min-width: 150px;
   height: 40px;
@@ -79,4 +84,24 @@ input:-webkit-autofill{
 }
 .mytown-selects select:last-of-type {
   margin-left: 1rem;
+}
+
+/* ナビゲーション */
+.nav-icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 3.75rem;
+}
+.nav-text {
+  display: inline-block;
+  height: 1rem;
+  font-size: 13px;
+}
+
+/* ハンバーガーメニュー */
+.menu-list {
+  margin-bottom: 2rem;
+  text-decoration: underline;
 }
