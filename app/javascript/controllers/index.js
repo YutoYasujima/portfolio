@@ -10,5 +10,8 @@ application.register("hamburger-menu", HamburgerMenuController)
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
+import MachiRepoCreateController from "./machi_repo_create_controller"
+application.register("machi-repo-create", MachiRepoCreateController)
+
 import PrefectureMunicipalityController from "./prefecture_municipality_controller"
 application.register("prefecture-municipality", PrefectureMunicipalityController)

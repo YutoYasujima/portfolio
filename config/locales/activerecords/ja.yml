@@ -1,0 +1,41 @@
+ja:
+  activerecord:
+    models:
+      profile:
+        one: プロフィール
+        other: プロフィール
+      machi_repo:
+        one: まちレポ
+        other: まちレポ
+    attributes:
+      profile:
+        nickname: ニックネーム
+        identifier: ユーザーID
+      machi_repo:
+        title: タイトル
+        info_level: 情報レベル
+        category: カテゴリー
+        description: 状況説明
+        hotspot_settings: ホットスポット設定
+        hotspot_area_radius: 範囲指定
+        latitude: 緯度
+        longitude: 経度
+        image: 画像
+        views_count: 視聴数
+  enums:
+    machi_repo:
+      category:
+        crime: 防犯・治安
+        disaster: 災害・気象
+        traffic: 交通・道路環境
+        children: 子ども
+        animal: ペット・動物
+        environment: 生活環境
+        other: その他・気になること
+      info_level:
+        share: 共有
+        warn: 警告
+        emergency: 緊急
+      hotspot_settings:
+        area: エリア指定
+        pinpoint: ピンポイント指定

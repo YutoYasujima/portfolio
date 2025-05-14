@@ -1,0 +1,8 @@
+ja:
+  machi_repos:
+    new:
+      title: まちレポ作成
+      to_login_page: ログインページへ
+    create:
+      success: ユーザー登録が完了しました
+      failure: ユーザー登録に失敗しました

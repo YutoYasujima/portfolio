@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   }
 
   resources :municipalities, only: %i[index]
-  resources :machi_repos, only: %i[index]
+  resources :machi_repos, only: %i[index new create]
 
   root "tops#index"
 
