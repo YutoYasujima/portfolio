@@ -19,7 +19,7 @@
         <div class="mytown-selects">
           <%= pf.collection_select :prefecture_id, Prefecture.all, :id, :name_kanji, {}, { class: "select-field", data: { action: "change->prefecture-municipality#loadMunicipalities" }} %>
 
-          <%= pf.collection_select :municipality_id, Municipality.where(prefecture_id: 1).order(:name_kana), :id, :name_kanji, {}, { class: "select-field", data: { prefecture_municipality_target: "municipality" }} %>
+          <%= pf.collection_select :municipality_id, Municipality.where(prefecture_id: pf.object.prefecture_id || 1).order(:name_kana), :id, :name_kanji, {}, { class: "select-field", data: { prefecture_municipality_target: "municipality" }} %>
         </div>
       </div>
     <% end %>
