@@ -1,0 +1,21 @@
+<div>
+  <h1 class="font-bold text-4xl">Tests#index</h1>
+  <p>Find me in app/views/tests/index.html.erb</p>
+</div>
+<div>
+  <h2>アカウント削除</h2>
+  <%= button_to "Destroy this user", test_path(@user), method: :delete, class: "mt-2 rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+</div>
+<div>
+  <h2>プロフィール</h2>
+  <%= @profile.prefecture_id %>
+  <%= @profile.prefecture.name_kanji %>
+  <%= @profile.municipality_id %>
+  <%= @profile.municipality.name_kanji %>
+</div>
+<div>
+  <h2>ジオコード結果</h2>
+  <p>住所：<%= @address %></p>
+  <p>緯度：<%= @machi_repo.latitude %></p>
+  <p>経度：<%= @machi_repo.longitude %></p>
+</div>

@@ -1,6 +1,5 @@
 class MachiReposController < ApplicationController
   def index
-    @profile = current_user.profile
   end
 
   def new

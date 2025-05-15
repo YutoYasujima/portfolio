@@ -9,6 +9,10 @@ Rails.application.routes.draw do
   resources :municipalities, only: %i[index]
   resources :machi_repos, only: %i[index new create]
 
+
+
+  resources :tests, only: %i[index destroy]
+
   root "tops#index"
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
