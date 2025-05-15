@@ -11,7 +11,7 @@ export default class extends Controller {
   async loadMunicipalities(event) {
     // 都道府県セレクトボックスの選択値
     const prefectureId = event.target.value;
-    const response = await fetch(`/municipalities?prefecture_id=${prefectureId})`);
+    const response = await fetch(`/municipalities?prefecture_id=${prefectureId}`);
     const data = await response.json();
 
     // 市区町村セレクトボックスの作成
