@@ -7,6 +7,9 @@ export default class extends Controller {
     "map",
     "mytown",
     "search",
+    "hotspotAreaRadius",
+    "hotspotAreaRadiusSelect",
+    "hotspotAttention",
     "address",
     "latitude",
     "longitude",
@@ -21,14 +24,12 @@ export default class extends Controller {
   };
 
   connect() {
-    console.log('machi-repo-create connect');
+    // マイタウンの緯度・経度を保持
+    this.mytownCoordinates = { lat: this.latitudeValue, lng: this.longitudeValue };
     loadGoogleMaps(this.apiKeyValue).then(() => this.initMap());
   }
 
   async initMap() {
-    // マイタウンの緯度・経度
-    const mytownCoordinates = { lat: this.latitudeValue, lng: this.longitudeValue };
-
 		// 使用するライブラリのインポート
     const { Map, InfoWindow } = await google.maps.importLibrary("maps");
     const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
@@ -36,7 +37,7 @@ export default class extends Controller {
 		// Googleマップ初期表示
     this.defaultZoom = 15;
     this.map = new Map(this.mapTarget, {
-      center: mytownCoordinates, // マップの中心座標
+      center: this.mytownCoordinates, // マップの中心座標
       zoom: this.defaultZoom, // マップの拡大(0:広域 ... 拡大:18？)
       disableDefaultUI: true,
       zoomControl: true,
@@ -52,45 +53,53 @@ export default class extends Controller {
     });
     this.mainMarker = new AdvancedMarkerElement({
       map: this.map,
-      position: mytownCoordinates,
+      position: this.mytownCoordinates,
       content: pin.element,
       gmpClickable: true,
       gmpDraggable: true,
       title: this.addressValue,
     });
+
+    // エリア指定の円描画
+    this.areaCircle = new google.maps.Circle({
+      strokeColor: "#00FF00",
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: "#00FF00",
+      fillOpacity: 0.35,
+      map: this.map, // マップのインスタンス
+      center: this.mytownCoordinates,
+      radius: Number(this.hotspotAreaRadiusSelectTarget.value),
+    });
+
     // マーカーのドラッグエンドイベントリスナー
     this.mainMarker.addListener('dragend', () => {
-      console.log('dragend');
       const coordinates = this.mainMarker.position;
       // ドラッグエンド先に合わせて表示変更
       this.reverseGeocoding(coordinates);
     });
+
   }
 
   // マイタウン表示
   mytownShow() {
-    console.log('mytown click');
-    const coordinates = { lat: this.latitudeValue, lng: this.longitudeValue };
-    this.reverseGeocoding(coordinates);
+    this.reverseGeocoding(this.mytownCoordinates);
   }
 
   // 現在位置表示
   currentLocationShow() {
-    console.log('currentLocation click');
-
     // ブラウザに現在地取得機能があるか確認
     if (!navigator.geolocation) {
       alert('ブラウザに現在地取得機能がありません');
       return;
     }
-
     // 現在地の取得
     navigator.geolocation.getCurrentPosition((position) => {
+      // 現在地の緯度・経度取得
       const coordinates = {
-        lat: position.coords.latitude, // 現在地の緯度取得
-        lng: position.coords.longitude, // 現在地の経度取得
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
       };
-
       // リバースジオコーディング
       this.reverseGeocoding(coordinates);
     }, () => {
@@ -106,7 +115,6 @@ export default class extends Controller {
 
   // 検索住所表示
   searchLocationShow() {
-    console.log('searchLocation click');
     let address = this.searchTarget.value;
     this.geocoding(address);
   }
@@ -147,12 +155,11 @@ export default class extends Controller {
     this.updateView(formattedAddress, coordinates);
   }
 
-  // Googleのgeocodeから表示用住所を取得
+  // Googleマップのgeocode機能の処理結果から表示用住所を取得
   getAddressFromGeocodeResult(result) {
     const components = result.address_components;
     let prefecture = "";
     let city = "";
-
     components.forEach(component => {
       if (component.types.includes("administrative_area_level_1")) {
         prefecture = component.long_name;
@@ -171,9 +178,37 @@ export default class extends Controller {
     // マーカー
     this.mainMarker.title = address;
     this.mainMarker.position = coordinates;
+    // エリアの移動
+    this.areaCircle.setCenter(coordinates);
     // 住所の表示
     this.addressTarget.textContent = address;
     this.latitudeTarget.value = coordinates.lat;
     this.longitudeTarget.value = coordinates.lng;
+  }
+
+  // ホットスポット設定変更
+  changeHotspotSettings(event) {
+    const area = 0;     // エリア指定
+    const pinpoint = 1; // ピンポイント指定
+    this.hotspotAreaRadiusTarget.classList.toggle('hidden');
+    this.hotspotAttentionTarget.classList.toggle('hidden');
+
+    if (Number(event.target.value) === area) {
+      // エリア指定
+      // エリアの表示
+      this.areaCircle.setMap(this.map);
+    } else {
+      // ピンポイント指定
+      // １つ目option要素を選択する
+      this.hotspotAreaRadiusSelectTarget.selectedIndex = 0;
+      // エリアの非表示と半径の初期化
+      this.areaCircle.setMap(null);
+      this.areaCircle.setRadius(Number(this.hotspotAreaRadiusSelectTarget.value));
+    }
+  }
+
+  // エリア半径変更
+  changeHotspotAreaRadius(event) {
+    this.areaCircle.setRadius(Number(event.target.value));
   }
 }

@@ -17,7 +17,7 @@ ja:
         category: カテゴリー
         description: 状況説明
         hotspot_settings: ホットスポット設定
-        hotspot_area_radius: 範囲指定
+        hotspot_area_radius: エリア半径
         latitude: 緯度
         longitude: 経度
         image: 画像

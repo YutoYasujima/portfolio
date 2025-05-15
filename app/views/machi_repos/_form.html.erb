@@ -46,13 +46,42 @@
     <!-- ホットスポット設定 -->
     <div class="field">
       <%= form.label :hotspot_settings %>
-      <%= form.select :hotspot_settings, MachiRepo.hotspot_settings_i18n.invert.map { |key, value| [key, MachiRepo.hotspot_settings[value]] }, {}, class: "text-field" %>
+      <%= form.select :hotspot_settings, MachiRepo.hotspot_settings_i18n.invert.map { |key, value| [key, MachiRepo.hotspot_settings[value]] }, {}, class: "text-field",
+      data: {
+        action: "change->machi-repo-create#changeHotspotSettings"
+      }%>
     </div>
 
-    <!-- 半径（オプション） -->
-    <div class="field">
+    <!-- 半径（エリア指定時） -->
+    <div
+      data-machi-repo-create-target="hotspotAreaRadius"
+      class="field"
+    >
       <%= form.label :hotspot_area_radius %>
-      <%= form.number_field :hotspot_area_radius, class: "text-field", step: 10, min: 0 %>
+      <%= form.select :hotspot_area_radius, options_for_select([
+        ["50m",     50],
+        ["100m",   100],
+        ["200m",   200],
+        ["500m",   500],
+        ["1km",   1000],
+        ["5km",   5000],
+        ["10km", 10000],
+      ]), {}, class: "text-field",
+      data: {
+        action: "change->machi-repo-create#changeHotspotAreaRadius",
+        machi_repo_create_target: "hotspotAreaRadiusSelect"
+      } %>
+    </div>
+
+    <!-- 注意書き（ピンポイント指定時） -->
+    <div
+      data-machi-repo-create-target="hotspotAttention"
+      class="field hidden"
+    >
+      <p class="text-red-500">
+        注意：家や職場など、特定されると困る<br>
+        　　　場所は指定しないでください
+      </p>
     </div>
 
     <div class="flex justify-center gap-12 mb-4">
