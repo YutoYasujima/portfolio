@@ -4,3 +4,8 @@
 </div>
 <button class="btn btn-primary">Hello daisyUI!</button>
 <%= link_to "ログアウト", destroy_user_session_path, data: { turbo_method: :delete }, class: "link" %>
+
+<%= @profile.prefecture_id %>
+<%= @profile.prefecture.name_kanji %>
+<%= @profile.municipality_id %>
+<%= @profile.municipality.name_kanji %>
