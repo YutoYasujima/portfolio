@@ -1,7 +1,7 @@
 class CreateTags < ActiveRecord::Migration[8.0]
   def change
     create_table :tags do |t|
-      t.string :name, null: false, limit: 20
+      t.string :name, null: false, limit: 10
 
       t.timestamps
     end

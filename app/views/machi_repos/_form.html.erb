@@ -21,7 +21,7 @@
     <!-- タイトル -->
     <div class="field">
       <%= form.label :title %>
-      <%= form.text_field :title, class: "text-field", maxlength: 30, required: true %>
+      <%= form.text_field :title, class: "text-field", maxlength: 30 %>
     </div>
 
     <!-- 情報レベル -->
@@ -37,7 +37,7 @@
     </div>
 
     <div class="field">
-      <%= form.label :tag_names, "タグ（カンマ区切り 最大１０文字 ３つまで）" %>
+      <%= form.label :tag_names, "タグ（カンマ区切り 最10文字 3つまで）" %>
       <%# form.text_field :tag_names, class: "text-field", placeholder: "例: 子ども, 犬, 注意" %>
       <div class="flex mb-4">
         <%= tag.input type: "text", placeholder: "タグを作成します", maxlength: 40, data: { machi_repo_create_target: "inputTagName" }, class: "map-search-field flex-1" %>
@@ -63,7 +63,7 @@
     <!-- 状況説明 -->
     <div class="field">
       <%= form.label :description %>
-      <%= form.text_area :description, rows: 5, class: "text-field", maxlength: 500 %>
+      <%= form.text_area :description, rows: 6, class: "textarea-field", maxlength: 500 %>
     </div>
 
     <!-- Google Map関連 -->
@@ -109,6 +109,7 @@
     </div>
 
     <div class="flex justify-center gap-12 mb-4">
+      <!-- マイタウンアイコン -->
       <div data-action="click->machi-repo-create#mytownShow" class="icon-circle-wrapper">
         <div class="icon-circle">
           <svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="#000000">
@@ -118,6 +119,7 @@
         <span class="icon-circle-text">マイタウン</span>
       </div>
 
+      <!-- 現在地アイコン -->
       <div data-action="click->machi-repo-create#currentLocationShow" class="icon-circle-wrapper">
         <div class="icon-circle">
           <svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="#000000">
@@ -159,11 +161,12 @@
     <!-- 画像 -->
     <div class="field">
       <%= form.label :image %>
-      <%= form.file_field :image, class: "text-field" %>
+      <%= form.file_field :image, class: "file-field" %>
       <% if machi_repo.image? %>
         <p class="mt-2">現在の画像:</p>
         <%= image_tag(machi_repo.image.url, class: "w-32") %>
       <% end %>
+      <%= form.hidden_field :image_cache %>
     </div>
 
     <!-- 送信 -->

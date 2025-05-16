@@ -2,7 +2,7 @@
 <p><%= @machi_repo.title %></p>
 <p><%= @machi_repo.info_level %></p>
 <p><%= @machi_repo.category %></p>
-<p><%= @machi_repo.description %></p>
+<p><%= simple_format(@machi_repo.description) %></p>
 <p><%= @machi_repo.hotspot_settings %></p>
 <p><%= @machi_repo.latitude %></p>
 <p><%= @machi_repo.longitude %></p>
@@ -11,4 +11,8 @@
   <% @machi_repo.tag_names.split(',').each do |tag| %>
     <p><%= tag %></p>
   <% end %>
+<% end %>
+<% if @machi_repo.image? %>
+  <p class="mt-2">現在の画像:</p>
+  <%= image_tag(@machi_repo.image.url, class: "w-32") %>
 <% end %>
