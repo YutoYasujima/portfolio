@@ -1,5 +1,10 @@
 class MachiReposController < ApplicationController
+  before_action :set_machi_repo, only: %i[ show ]
+
   def index
+  end
+
+  def show
   end
 
   def new
@@ -9,19 +14,20 @@ class MachiReposController < ApplicationController
   end
 
   def create
-    # @user = User.new(user_params)
-    # respond_to do |format|
-    #   if @user.save
-    #     format.html { redirect_to @user, notice: "User was successfully created." }
-    #     format.json { render :show, status: :created, location: @user }
-    #   else
-    #     format.html { render :new, status: :unprocessable_entity }
-    #     format.json { render json: @user.errors, status: :unprocessable_entity }
-    #   end
-    # end
+    @machi_repo = current_user.machi_repos.build(machi_repo_params)
+    if @machi_repo.save
+      redirect_to @machi_repo, notice: "User was successfully created."
+    else
+      flash.now[:alert] = "失敗"
+      render :new, status: :unprocessable_entity
+    end
   end
 
   private
+
+  def set_machi_repo
+    @machi_repo = MachiRepo.find(params[:id])
+  end
 
   def machi_repo_params
     params.require(:machi_repo).permit(:title, :info_level, :category, :description, :hotspot_settings, :hotspot_area_radius, :latitude, :longitude, :image, :image_cache, :tag_names)

@@ -151,7 +151,8 @@ export default class extends Controller {
       (results, status) => { // resultは変換結果、statusは処理の状況
         if (status === 'OK' && results[0]) {
           formattedAddress = this.getAddressFromGeocodeResult(results[0]);
-          resolve(results[0].geometry.location);
+          const location = results[0].geometry.location;
+          resolve({ lat: location.lat(), lng: location.lng() });
         } else {
           console.warn("ジオコーディング失敗:", status);
           resolve("");

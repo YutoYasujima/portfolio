@@ -27,13 +27,13 @@
     <!-- 情報レベル -->
     <div class="field">
       <%= form.label :info_level %>
-      <%= form.select :info_level, MachiRepo.info_levels_i18n.invert.map { |key, value| [key, MachiRepo.info_levels[value]]}, {}, class: "text-field" %>
+      <%= form.select :info_level, MachiRepo.info_levels_i18n.map { |key, text| [text, key] }, {}, class: "text-field" %>
     </div>
 
     <!-- カテゴリ -->
     <div class="field">
       <%= form.label :category %>
-      <%= form.select :category, MachiRepo.categories_i18n.invert.map { |key, value| [key, MachiRepo.categories[value]] }, {}, class: "text-field" %>
+      <%= form.select :category, MachiRepo.categories_i18n.map { |key, text| [text, key] }, {}, class: "text-field" %>
     </div>
 
     <div class="field">
@@ -70,7 +70,7 @@
     <!-- ホットスポット設定 -->
     <div class="field">
       <%= form.label :hotspot_settings %>
-      <%= form.select :hotspot_settings, MachiRepo.hotspot_settings_i18n.invert.map { |key, value| [key, MachiRepo.hotspot_settings[value]] }, {}, class: "text-field",
+      <%= form.select :hotspot_settings, MachiRepo.hotspot_settings_i18n.map { |key, text| [text, key] }, {}, class: "text-field",
       data: {
         action: "change->machi-repo-create#changeHotspotSettings"
       }%>

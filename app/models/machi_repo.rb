@@ -4,6 +4,8 @@ class MachiRepo < ApplicationRecord
     self.tag_names ||= tags.map(&:name).join(', ') if persisted?
   end
 
+  attr_accessor :tag_names
+
   belongs_to :user
   has_many :machi_repo_tags, dependent: :destroy
   has_many :tags, through: :machi_repo_tags
@@ -26,8 +28,6 @@ class MachiRepo < ApplicationRecord
     area: 0,       # エリア指定
     pinpoint: 1    # ピンポイント指定
   }
-
-  attr_accessor :tag_names
 
   private
 

@@ -6,12 +6,12 @@ Rails.application.routes.draw do
     confirmations: "users/confirmations"
   }
 
-  resources :municipalities, only: %i[index]
-  resources :machi_repos, only: %i[index new create]
+  resources :municipalities, only: %i[ index ]
+  resources :machi_repos, only: %i[ index show new create ]
 
 
 
-  resources :tests, only: %i[index destroy]
+  resources :tests, only: %i[ index destroy ]
 
   root "tops#index"
 
