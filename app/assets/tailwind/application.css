@@ -40,6 +40,9 @@
 .field {
   margin-bottom: 1rem;
 }
+input:-webkit-autofill{
+  box-shadow: 0 0 0px 100px white inset;
+}
 .text-field {
   padding: 4px 12px;
   width: 100%;
@@ -48,8 +51,20 @@
   background-color: white;
   font-size: 1.25rem;
 }
-input:-webkit-autofill{
-	box-shadow: 0 0 0px 100px white inset;
+.textarea-field {
+  padding: 4px 12px;
+  width: 100%;
+  border: 1px solid #000;
+  border-radius: 4px;
+  background-color: white;
+}
+.file-field {
+  padding: 4px 12px;
+  width: 100%;
+  border: 1px solid #000;
+  border-radius: 4px;
+  background-color: white;
+  color: gray;
 }
 .select-field {
   border: 1px solid #000;
@@ -134,4 +149,22 @@ input:-webkit-autofill{
   border-radius: 4px 0 0 4px;
   background-color: white;
   font-size: 1.25rem;
+}
+
+/* タグ */
+.tag {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 1rem;
+  padding: 0.25rem 0.75rem;
+  background-color: #F5A83D;
+  cursor: default;
+}
+.default-tag {
+  display: none;
+}
+.tag-text {
+  color: white;
+  font-size:1.25rem;
 }
