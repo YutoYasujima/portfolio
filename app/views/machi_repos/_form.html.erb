@@ -41,7 +41,7 @@
       <%# form.text_field :tag_names, class: "text-field", placeholder: "例: 子ども, 犬, 注意" %>
       <div class="flex mb-4">
         <%= tag.input type: "text", placeholder: "タグを作成します", maxlength: 40, data: { machi_repo_create_target: "inputTagName" }, class: "map-search-field flex-1" %>
-          <%= button_tag type: "button", data: { action: "click->machi-repo-create#createTag" }, class: "flex justify-center items-center rounded-tr-sm rounded-br-sm w-10 aspect-square bg-[#3586FF]" do %>
+          <%= button_tag type: "button", data: { action: "click->machi-repo-create#appendTag" }, class: "flex justify-center items-center rounded-tr-sm rounded-br-sm w-10 aspect-square bg-[#3586FF]" do %>
             <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#FFFFFF">
               <path d="m239-160 40-159H120l15-60h159l51-202H186l15-60h159l39-159h59l-39 159h203l39-159h59l-39 159h159l-15 60H666l-51 202h159l-15 60H600l-40 159h-59l40-159H338l-40 159h-59Zm114-219h203l51-202H404l-51 202Z"/>
             </svg>

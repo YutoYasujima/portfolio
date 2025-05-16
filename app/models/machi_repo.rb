@@ -1,7 +1,7 @@
 class MachiRepo < ApplicationRecord
   after_save :assign_tags
   after_initialize do
-    self.tag_names ||= tags.map(&:name).join(', ') if persisted?
+    self.tag_names ||= tags.map(&:name).join(",") if persisted?
   end
 
   attr_accessor :tag_names
@@ -57,7 +57,7 @@ class MachiRepo < ApplicationRecord
   def tag_names_validation
     return unless tag_names.present?
 
-    tags_array = tag_names.split(',').map(&:strip).reject(&:empty?)
+    tags_array = tag_names.split(",").map(&:strip).reject(&:empty?)
 
     # タグ数上限チェック
     if tags_array.size > 3
@@ -80,9 +80,8 @@ class MachiRepo < ApplicationRecord
   def assign_tags
     return if tag_names.nil?
 
-    self.tags = tag_names.split(',').map(&:strip).reject(&:empty?).uniq.map do |tag_name|
+    self.tags = tag_names.split(",").map(&:strip).reject(&:empty?).uniq.map do |tag_name|
       Tag.find_or_create_by(name: tag_name)
     end
   end
-
 end

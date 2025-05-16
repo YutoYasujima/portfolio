@@ -31,9 +31,13 @@ export default class extends Controller {
     this.mytownCoordinates = { lat: this.latitudeValue, lng: this.longitudeValue };
     // タグの数を管理
     this.tagCount = 0;
+    // タグ表示
+    this.displayTag();
+    // Googleマップの導入
     loadGoogleMaps(this.apiKeyValue).then(() => this.initMap());
   }
 
+  // Googleマップの初期化
   async initMap() {
 		// 使用するライブラリのインポート
     const { Map, InfoWindow } = await google.maps.importLibrary("maps");
@@ -219,17 +223,35 @@ export default class extends Controller {
     this.areaCircle.setRadius(Number(event.target.value));
   }
 
-  // タグ作成
-  createTag() {
+  // 画面表示時にタグ表示
+  displayTag() {
+    const tagNames = this.tagNamesTarget.value;
+    if (!tagNames) {
+      return;
+    }
+    tagNames.split(',').forEach(tagName => {
+      this.createTag(tagName);
+    });
+  }
+
+  // 表示用タグ作成
+  createTag(tagName) {
+    const tagElement = document.querySelector('.default-tag').cloneNode(true);
+    const hashtaggedTagName = '#' + tagName;
+    tagElement.dataset.tagName = tagName;
+    tagElement.querySelector('.tag-text').textContent = hashtaggedTagName;
+    tagElement.classList.remove('default-tag');
+    this.tagsTarget.appendChild(tagElement);
+  }
+
+  // タグ追加
+  appendTag() {
     const MAX_TAG_COUNT = 3;
     const input = this.inputTagNameTarget.value;
-
     if (this.tagCount >= MAX_TAG_COUNT || input.trim().length === 0) {
       return;
     }
-
     this.inputTagNameTarget.value = null;
-    // 重複チェックも
     const tagNamesArray = input.split(',');
     const length = tagNamesArray.length;
     for (let i = 0; i < length; i++) {
@@ -237,20 +259,15 @@ export default class extends Controller {
       if (this.tagCount >= MAX_TAG_COUNT) {
         break;
       }
-
+      // タグ文字列の整形
       let processedTagName = Array.from(tagNamesArray[i].trim()).slice(0, 10).join('');
-      // hidden属性のvalue内に既にあるタグなら次のループへ
+      // hidden属性のvalue内に既にあるタグなら次のループへ(重複チェック)
       if (this.tagNamesTarget.value.split(',').includes(processedTagName)) {
         continue;
       }
 
       // 表示用タグ作成
-      const tagElement = document.querySelector('.default-tag').cloneNode(true);
-      const hashtaggedTagName = '#' + processedTagName;
-      tagElement.dataset.tagName = processedTagName;
-      tagElement.querySelector('.tag-text').textContent = hashtaggedTagName;
-      tagElement.classList.remove('default-tag');
-      this.tagsTarget.appendChild(tagElement);
+      this.createTag(processedTagName);
 
       // hiddenフォームにタグを保持
       // ２つ目以降のタグはカンマで繋ぐ
@@ -258,11 +275,11 @@ export default class extends Controller {
         processedTagName = ',' + processedTagName;
       }
       this.tagNamesTarget.value += processedTagName;
-
       this.tagCount += 1;
     }
   }
 
+  // タグ削除
   deleteTag(event) {
     const deleteTagName = event.currentTarget.dataset.tagName;
     // hiddenフォームに保持されているタグを更新
