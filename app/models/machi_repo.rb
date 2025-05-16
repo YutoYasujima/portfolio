@@ -1,4 +1,9 @@
 class MachiRepo < ApplicationRecord
+  after_save :assign_tags
+  after_initialize do
+    self.tag_names ||= tags.map(&:name).join(', ') if persisted?
+  end
+
   belongs_to :user
   has_many :machi_repo_tags, dependent: :destroy
   has_many :tags, through: :machi_repo_tags
@@ -21,4 +26,17 @@ class MachiRepo < ApplicationRecord
     area: 0,       # エリア指定
     pinpoint: 1    # ピンポイント指定
   }
+
+  attr_accessor :tag_names
+
+  private
+
+  def assign_tags
+    return if tag_names.nil?
+
+    self.tags = tag_names.split(',').map(&:strip).reject(&:empty?).uniq.map do |tag_name|
+      Tag.find_or_create_by(name: tag_name)
+    end
+  end
+
 end
