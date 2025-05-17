@@ -64,7 +64,7 @@ input:-webkit-autofill{
   border: 1px solid #000;
   border-radius: 4px;
   background-color: white;
-  color: gray;
+  /* color: gray; */
 }
 .select-field {
   border: 1px solid #000;
