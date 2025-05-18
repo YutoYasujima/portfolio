@@ -8,7 +8,7 @@ class MachiReposController < ApplicationController
     @latitude = geocoding[0]
     @longitude = geocoding[1]
     # 半径1km圏内のデータ取得
-    @machi_repos = MachiRepo.near([geocoding[0], geocoding[1]], 1)
+    @machi_repos = MachiRepo.near([ geocoding[0], geocoding[1] ], 1)
   end
 
   def show
@@ -38,7 +38,7 @@ class MachiReposController < ApplicationController
       results = Geocoder.search(params[:address])
     elsif params[:latitude].present? && params[:longitude].present?
       # 現在地 or マーカーの座標によるリバースジオコーディング
-      results = Geocoder.search([params[:latitude], params[:longitude]])
+      results = Geocoder.search([ params[:latitude], params[:longitude] ])
     else
       # マイタウンによるジオコーディング
       results = Geocoder.search(current_user.mytown_address)
@@ -52,7 +52,7 @@ class MachiReposController < ApplicationController
     end
 
     # 半径1km圏内のデータ取得
-    @machi_repos = MachiRepo.near([@latitude, @longitude], 1)
+    @machi_repos = MachiRepo.near([ @latitude, @longitude ], 1)
 
     respond_to do |format|
       format.turbo_stream
