@@ -10,4 +10,8 @@ class User < ApplicationRecord
   attr_accessor :agreement
 
   validates :agreement, acceptance: { accept: "1", message: "に同意してください" }
+
+  def mytown_address
+    profile.prefecture.name_kanji + profile.municipality.name_kanji
+  end
 end

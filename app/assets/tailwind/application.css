@@ -14,6 +14,16 @@
   max-width: 350px;
   font-size: 1.875rem;
 }
+.header2 {
+  display: inline-block;
+  border-left: 5px solid #F5A83D;
+  border-bottom: 1px solid #F5A83D;
+  font-size: 20px;
+}
+.header2-title {
+  padding: 0 0.5rem;
+  font-weight: 500;
+}
 
 /* リンク */
 .link {
@@ -64,7 +74,7 @@ input:-webkit-autofill{
   border: 1px solid #000;
   border-radius: 4px;
   background-color: white;
-  color: gray;
+  /* color: gray; */
 }
 .select-field {
   border: 1px solid #000;

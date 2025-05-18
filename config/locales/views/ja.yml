@@ -1,5 +1,7 @@
 ja:
   machi_repos:
+    index:
+      title: まちレポ
     new:
       title: まちレポ作成
       to_login_page: ログインページへ

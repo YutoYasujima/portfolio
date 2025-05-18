@@ -1,6 +1,16 @@
-<div>
-  <h1 class="font-bold text-4xl">MachiRepos#index</h1>
-  <p>Find me in app/views/machi_repos/index.html.erb</p>
+<div class="text-center">
+  <h2 class="mb-8">
+    <span class="header1"><%= t('.title') %></span>
+    <p>
+      "まち"の安心・安全情報を<br>
+      表示します
+    </p>
+  </h2>
+
+  <%= render "index_map",
+    address: @address,
+    latitude: @latitude,
+    longitude: @longitude,
+    machi_repos: @machi_repos
+  %>
 </div>
-<button class="btn btn-primary">Hello daisyUI!</button>
-<%= link_to "ログアウト", destroy_user_session_path, data: { turbo_method: :delete }, class: "link" %>

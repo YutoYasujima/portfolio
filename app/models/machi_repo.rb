@@ -4,6 +4,9 @@ class MachiRepo < ApplicationRecord
     self.tag_names ||= tags.map(&:name).join(",") if persisted?
   end
 
+  geocoded_by :address
+  reverse_geocoded_by :latitude, :longitude
+
   attr_accessor :tag_names
 
   mount_uploader :image, MachiRepoImageUploader
