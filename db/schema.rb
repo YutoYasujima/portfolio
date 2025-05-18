@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_13_055102) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_18_224346) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -32,13 +32,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_055102) do
     t.text "description"
     t.integer "hotspot_settings", default: 0, null: false
     t.integer "hotspot_area_radius"
-    t.string "address", null: false
     t.float "latitude", null: false
     t.float "longitude", null: false
     t.string "image"
     t.integer "views_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "address", null: false
     t.index ["address"], name: "index_machi_repos_on_address"
     t.index ["user_id"], name: "index_machi_repos_on_user_id"
   end
