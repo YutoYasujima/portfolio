@@ -10,6 +10,7 @@ export default class extends Controller {
     "hotspotAreaRadius",
     "hotspotAreaRadiusSelect",
     "hotspotAttention",
+    "displayAddress",
     "address",
     "latitude",
     "longitude",
@@ -147,7 +148,9 @@ export default class extends Controller {
     // エリアの移動
     this.areaCircle.setCenter(coordinates);
     // 住所の表示
-    this.addressTarget.textContent = address;
+    this.displayAddressTarget.textContent = address;
+    // hidden属性の値更新
+    this.addressTarget.value = address;
     this.latitudeTarget.value = coordinates.lat;
     this.longitudeTarget.value = coordinates.lng;
   }

@@ -9,7 +9,6 @@ export default class extends Controller {
   ];
 
   connect() {
-    console.log('tag');
     // タグの数を管理
     this.tagCount = 0;
     // タグ表示
