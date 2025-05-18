@@ -8,7 +8,6 @@ class CreateMachiRepos < ActiveRecord::Migration[8.0]
       t.text :description, limit: 500
       t.integer :hotspot_settings, null: false, default: 0
       t.integer :hotspot_area_radius
-      t.string :address, null: false
       t.float :latitude, null: false
       t.float :longitude, null: false
       t.string :image
@@ -16,7 +15,5 @@ class CreateMachiRepos < ActiveRecord::Migration[8.0]
 
       t.timestamps
     end
-
-    add_index :machi_repos, :address
   end
 end
