@@ -8,7 +8,9 @@ class MachiReposController < ApplicationController
     @latitude = geocoding[0]
     @longitude = geocoding[1]
     # 半径1km圏内のデータ取得
-    @machi_repos = MachiRepo.near([ geocoding[0], geocoding[1] ], 1)
+    @near_hotspots = MachiRepo.near([ geocoding[0], geocoding[1] ], 1)
+    # マイタウンのまちレポ
+    @machi_repos = MachiRepo.where(address: @address).includes(:tags, user: :profile).order(created_at: :desc)
   end
 
   def show
@@ -44,15 +46,15 @@ class MachiReposController < ApplicationController
       results = Geocoder.search(current_user.mytown_address)
     end
 
-    if results.present?
-      result = results.first
-      @address = result.state + result.city
-      @latitude = params[:latitude] || result.coordinates[0]
-      @longitude = params[:longitude] || result.coordinates[1]
-    end
+    result = results.first
+    @address = result.state + result.city
+    @latitude = params[:latitude] || result.coordinates[0]
+    @longitude = params[:longitude] || result.coordinates[1]
 
-    # 半径1km圏内のデータ取得
-    @machi_repos = MachiRepo.near([ @latitude, @longitude ], 1)
+    # 半径1km圏内のまちレポ取得
+    @near_hotspots = MachiRepo.near([ @latitude, @longitude ], 1)
+    # "まち"のまちレポ取得
+    @machi_repos = MachiRepo.where(address: @address).includes(:tags, user: :profile).order(created_at: :desc)
 
     respond_to do |format|
       format.turbo_stream

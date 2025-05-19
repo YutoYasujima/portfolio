@@ -5,9 +5,9 @@
     data-machi-repos--index-address-value="<%= address %>"
     data-machi-repos--index-latitude-value="<%= latitude %>"
     data-machi-repos--index-longitude-value="<%= longitude %>"
-    data-machi-repos--index-machi-repos-value="<%= machi_repos.to_json %>"
+    data-machi-repos--index-machi-repos-value="<%= near_hotspots.to_json %>"
     id="map-wrapper"
-    class="mx-auto w-full max-w-[300px]"
+    class="mx-auto w-full max-w-[500px]"
 >
   <div class="flex justify-center gap-12 mb-4">
     <!-- マイタウンアイコン -->
@@ -32,7 +32,7 @@
   </div>
 
   <!-- 住所検索 -->
-  <div class="flex mb-4">
+  <div class="field flex mb-4">
     <%= tag.input type: "text", placeholder: "\"まち\"を入力してください", data: { machi_repos__index_target: "search" }, class: "map-search-field flex-1" %>
     <%= button_tag type: "button", data: { action: "click->machi-repos--index#searchLocationShow" }, class: "flex justify-center items-center rounded-tr-sm rounded-br-sm w-10 aspect-square bg-[#3586FF]" do %>
       <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#FFFFFF">
@@ -53,11 +53,130 @@
     </p>
   </div>
 
+  <!-- 検索 -->
+  <section>
+    <h3>
+      <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#FFFFFF">
+        <path d="M796-121 533-384q-30 26-69.96 40.5Q423.08-329 378-329q-108.16 0-183.08-75Q120-479 120-585t75-181q75-75 181.5-75t181 75Q632-691 632-584.85 632-542 618-502q-14 40-42 75l264 262-44 44ZM377-389q81.25 0 138.13-57.5Q572-504 572-585t-56.87-138.5Q458.25-781 377-781q-82.08 0-139.54 57.5Q180-666 180-585t57.46 138.5Q294.92-389 377-389Z"/>
+      </svg>
+      <span>検索</span>
+    </h3>
+  </section>
+
   <section class="text-left">
     <h3 class="header2 mb-4 ">
       <span class="header2-title">周辺のホットスポット</span>
     </h3>
     <!-- Google Map -->
-    <div id="map" data-machi-repos--index-target="map" class="field w-full aspect-square"></div>
+    <div id="map" data-machi-repos--index-target="map" class="mb-4 w-full aspect-square"></div>
+  </section>
+
+  <section class="text-left">
+    <h3 class="header2 mb-4 ">
+      <span class="header2-title">まちレポ一覧</span>
+    </h3>
+    <% if @machi_repos.present? %>
+      <% @machi_repos.each do |machi_repo| %>
+        <!-- まちレポカード -->
+        <div class="mb-6 min-w-80 bg-white shadow-md">
+          <% bg_class = case machi_repo.info_level
+            when "share" then "bg-[#37DF6F]"
+            when "warn" then "bg-[#F2CC0D]"
+            when "emergency" then "bg-[#DF3737]"
+            else "bg-gray-500"
+          end %>
+          <div class="flex items-center px-2 min-w-0 h-10 <%= bg_class %>">
+            <div class="flex-shrink-0 w-8 aspect-square">
+              <%= render "shared/icons/#{machi_repo.info_level}_icon" %>
+            </div>
+            <span class="flex-1 ml-2 text-white text-xl font-bold truncate overflow-hidden whitespace-nowrap">
+              <%= machi_repo.title %>
+            </span>
+          </div>
+
+          <div class="flex items-center w-full">
+            <!-- 画像 -->
+            <div class="flex-shrink-0 w-31 h-31 flex justify-center items-center">
+              <% if machi_repo.image? %>
+                <%= image_tag(machi_repo.image.url, class: "w-full h-full object-cover") %>
+              <% else %>
+                <% category_emoji = case machi_repo.category
+                  when "crime" then "🚨"
+                  when "disaster" then "🌀"
+                  when "traffic" then "🚦"
+                  when "children" then "🧒"
+                  when "animal" then "🐶"
+                  when "environment" then "🏠"
+                  else "🎈"
+                end %>
+                <div class="text-7xl"><%= category_emoji %></div>
+              <% end %>
+            </div>
+            <div class="flex-1 p-2 min-w-0">
+              <!-- ユーザー名 -->
+              <p class="flex items-end mb-1">
+                <span class="flex-shrink-0 w-6 aspect-square">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#000000">
+                    <path d="M353.77-383q-22.77 0-38.27-15.73-15.5-15.72-15.5-38.5 0-22.77 15.73-38.27 15.72-15.5 38.5-15.5 22.77 0 38.27 15.73 15.5 15.72 15.5 38.5 0 22.77-15.73 38.27-15.72 15.5-38.5 15.5Zm253 0q-22.77 0-38.27-15.73-15.5-15.72-15.5-38.5 0-22.77 15.73-38.27 15.72-15.5 38.5-15.5 22.77 0 38.27 15.73 15.5 15.72 15.5 38.5 0 22.77-15.73 38.27-15.72 15.5-38.5 15.5ZM480-140q142.38 0 241.19-98.95T820-480.47q0-25.53-4-50.53t-10-46q-20 5-43.26 7-23.26 2-48.74 2-97.11 0-183.56-40Q444-648 383-722q-34 81-97.5 141.5T140-487v7q0 142.37 98.81 241.19Q337.63-140 480-140Zm0 60q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm-92-727q88 103 162.5 141T714-628q24 0 38-1t31-6q-45-81-122.5-133T480-820q-27 0-51 4t-41 9ZM149-558q48-18 109.5-81.5T346-793q-87 39-131.5 99.5T149-558Zm239-249Zm-42 14Z"/>
+                  </svg>
+                </span>
+                <span class="ml-1 truncate overflow-hidden whitespace-nowrap">
+                  <%= machi_repo.user.profile.nickname %>
+                </span>
+                <% if current_user != machi_repo.user %>
+                  <span class="flex-shrink-0 ml-auto w-8 aspect-square">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#000000">
+                      <path d="m323-245 157-94 157 95-42-178 138-120-182-16-71-168-71 167-182 16 138 120-42 178Zm-90 125 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-355Z"/>
+                    </svg>
+                  </span>
+                <% end %>
+              </p>
+              <!-- マイタウン -->
+              <p class="flex mb-1">
+                <span class="flex-shrink-0 w-6 aspect-square">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#000000">
+                    <path d="M200-120v-680h343l19 86h238v370H544l-18.93-85H260v309h-60Zm300-452Zm95 168h145v-250H511l-19-86H260v251h316l19 85Z"/>
+                  </svg>
+                </span>
+                <span class="w-full ml-1 truncate overflow-hidden whitespace-nowrap">
+                  <%= machi_repo.address %>
+                </span>
+              </p>
+              <!-- カテゴリー -->
+              <p class="flex mb-1">
+                <span class="flex-shrink-0 w-6 aspect-square">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#000000">
+                    <path d="m261-526 220-354 220 354H261ZM706-80q-74 0-124-50t-50-124q0-74 50-124t124-50q74 0 124 50t50 124q0 74-50 124T706-80Zm-586-25v-304h304v304H120Zm586.08-35Q754-140 787-173.08q33-33.09 33-81Q820-302 786.92-335q-33.09-33-81-33Q658-368 625-334.92q-33 33.09-33 81Q592-206 625.08-173q33.09 33 81 33ZM180-165h184v-184H180v184Zm189-421h224L481-767 369-586Zm112 0ZM364-349Zm342 95Z"/>
+                  </svg>
+                </span>
+                <span class="ml-1 truncate overflow-hidden whitespace-nowrap">
+                  <%= t("enums.machi_repo.category.#{machi_repo.category}") %>
+                </span>
+              </p>
+              <!-- 投稿日 -->
+              <p class="flex">
+                <span class="flex-shrink-0 w-6 aspect-square">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#000000">
+                    <path d="m627-287 45-45-159-160v-201h-60v225l174 181ZM480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-82 31.5-155t86-127.5Q252-817 325-848.5T480-880q82 0 155 31.5t127.5 86Q817-708 848.5-635T880-480q0 82-31.5 155t-86 127.5Q708-143 635-111.5T480-80Zm0-400Zm0 340q140 0 240-100t100-240q0-140-100-240T480-820q-140 0-240 100T140-480q0 140 100 240t240 100Z"/>
+                  </svg>
+                </span>
+                <span class="ml-1 truncate overflow-hidden whitespace-nowrap">
+                  <time><%= machi_repo.created_at.strftime("%Y/%m/%d %H:%M") %></time>
+                </span>
+              </p>
+            </div>
+          </div>
+          <% if machi_repo.tag_names.present? %>
+            <div class="flex flex-wrap gap-2 p-2 pt-1">
+              <% machi_repo.tag_names.split(',').each do |tag| %>
+                <div class="tag">
+                  <span class="tag-text"><%= "#" + tag %></span>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
   </section>
 </div>

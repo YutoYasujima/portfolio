@@ -118,7 +118,9 @@ ja:
         sign_in: ログイン
         sign_up: 新規登録
         forgot_your_password: パスワードを忘れましたか？
-        didn_t_receive_confirmation_instructions: ユーザー登録のメールを受け取っていませんか？
+        didn_t_receive_confirmation_instructions: |
+          ユーザー登録のメールを
+          受け取っていませんか？
       signed_in: ログインしました。
       signed_out: ログアウトしました。
     shared:

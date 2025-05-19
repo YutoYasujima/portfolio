@@ -97,33 +97,56 @@ export default class extends Controller {
       convertMachiRepos.forEach(machiRepo => {
         let borderColor = "#0000ff";
         let glyphColor = "#5d5df5";
+        let glyph = "🎈"
         // まちレポの情報レベルに応じてマーカーの色を変更
         switch (machiRepo.info_level) {
           // 共有:share
-          case 'share':
+          case "share":
             glyphColor = "hsl(120, 90%, 60%)";
             borderColor = "hsl(120, 100%, 40%)";
             break;
           // 警告:warn
-          case 'warn':
+          case "warn":
             glyphColor = "hsl(50, 90%, 60%)";
             borderColor = "hsl(50, 100%, 40%)";
             break;
           // 緊急: emergency
-          case 'emergency':
+          case "emergency":
             glyphColor = "hsl(0, 90%, 60%)";
             borderColor = "hsl(0, 100%, 40%)";
             break;
         }
+        switch (machiRepo.category) {
+          case "crime":
+            glyph = "🚨";
+            break;
+          case "disaster":
+            glyph = "🌀";
+            break;
+          case "traffic":
+            glyph = "🚦";
+            break;
+          case "children":
+            glyph = "🧒";
+            break;
+          case "animal":
+            glyph = "🐶";
+            break;
+          case "environment":
+            glyph = "🏠";
+            break;
+        }
         const pin = new PinElement({
+          glyph: glyph,
           background: glyphColor, // 背景
           borderColor: borderColor, // 枠線
-          glyphColor: glyphColor,
+          glyphColor: "#FFFFFF",
         });
         const marker = new AdvancedMarkerElement({
           map: this.map,
           position: { lat: machiRepo.convertLatitude, lng: machiRepo.convertLongitude },
           content: pin.element,
+          gmpClickable: true,
           title: machiRepo.address,
         });
 
@@ -136,7 +159,7 @@ export default class extends Controller {
         });
 
         // マーカークリックでInfoWindow表示
-        marker.addListener('click', () => {
+        marker.addEventListener('gmp-click', () => {
           infoWindow.open({
             anchor: marker,
             map: this.map,
@@ -151,7 +174,7 @@ export default class extends Controller {
 
     // 重なっているマーカーの座標をスパイラル状に変換
     spiralSpreadMarkers(machiRepos, locationMap) {
-      const spreadRadius = 0.0005;
+      const spreadRadius = 0.0003;
       return machiRepos.map(machiRepo => {
         const key = `${machiRepo.latitude.toFixed(5)}:${machiRepo.longitude.toFixed(5)}`;
         const count = locationMap.get(key) || 0;
@@ -214,7 +237,7 @@ export default class extends Controller {
 
     // 検索住所表示
     searchLocationShow() {
-      let address = { address: this.searchTarget.value };
+      const address = { address: this.searchTarget.value };
       this.fetchMachiRepos(address);
     }
 

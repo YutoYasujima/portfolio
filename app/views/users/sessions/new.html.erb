@@ -47,7 +47,7 @@
 
   <%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
     <div>
-      <%= link_to t('.didn_t_receive_confirmation_instructions'), new_confirmation_path(resource_name), class: "link text-xl" %>
+      <%= link_to t('.didn_t_receive_confirmation_instructions').gsub("\n", "<br>").html_safe, new_confirmation_path(resource_name), class: "link text-xl" %>
     </div>
   <% end %>
 </div>
