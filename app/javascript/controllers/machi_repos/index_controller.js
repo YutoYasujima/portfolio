@@ -41,6 +41,8 @@ export default class extends Controller {
     connect() {
       // マーカーをクリアするために保持
       this.markers = [];
+      // 開かれているInfoWindowの管理
+      this.currentInfoWindow = null;
       // マイタウンの緯度・経度を保持
       this.defaultCoordinates = { lat: this.latitudeValue, lng: this.longitudeValue };
       // input[type="hidden"]に値を保持
@@ -49,24 +51,28 @@ export default class extends Controller {
       this.hiddenLongitudeTarget.value = this.longitudeValue;
       // Googleマップのzoomを取得
       this.defaultZoom = Number(localStorage.getItem("mapZoom")) || 14;
+      // 検索フォームの開閉状態設定
+      if (localStorage.getItem("searchWindowOpen")) {
+        // 検索フォームを開く
+        this.searchFormWrapperTarget.classList.remove("invisible-element");
+      } else {
+        this.searchFormWrapperTarget.classList.add("invisible-element");
+      }
+      this.toggleSearchFormWindow();
       // Googleマップの導入
       loadGoogleMaps(this.apiKeyValue).then(() => this.initMap());
     }
 
     disconnect() {
+      // メモリへの影響を考慮し解放しておく
       this.clearMarkers();
       this.map = null;
     }
 
+    // マーカーをすべて解放する
     clearMarkers() {
       this.markers.forEach(marker => marker.setMap(null));
       this.markers = [];
-    }
-
-    onClickSearchFormWindow() {
-      this.searchFormWrapperTarget.classList.toggle("invisible-element");
-      this.addIconTarget.classList.toggle("hidden");
-      this.removeIconTarget.classList.toggle("hidden");
     }
 
     // Googleマップの初期化
@@ -180,24 +186,44 @@ export default class extends Controller {
         });
 
         // InfoWindowの作成
-        const infoWindow = new google.maps.InfoWindow({
-          content: `<div>
-          <strong>${machiRepo.address}</strong><br>
-          <a href="/machi_repos/${machiRepo.id}">詳細ページへ</a>
-          </div>`
-        });
+        const infoWindow = this.createInfoWindow(machiRepo);
 
         // マーカークリックでInfoWindow表示
         marker.addEventListener("gmp-click", () => {
+          if (this.currentInfoWindow) {
+            this.currentInfoWindow.close();
+          }
           infoWindow.open({
             anchor: marker,
             map: this.map,
             shouldFocus: false,
           });
+          this.currentInfoWindow = infoWindow;
         });
 
         // disconnect時にクリアするためマーカーを保持する
         this.markers.push(marker);
+      });
+    }
+
+    // InfoWindowを作成
+    createInfoWindow(machiRepo) {
+      const contentLink = document.createElement("a");
+      const titleDiv = document.createElement("div");
+      const detailDiv = document.createElement("div");
+
+      contentLink.classList.add("info-window");
+      contentLink.href = `/machi_repos/${machiRepo.id}`;
+      titleDiv.classList.add("info-window-title");
+      titleDiv.textContent = `${machiRepo.title}`;
+      detailDiv.classList.add("info-window-detail");
+      detailDiv.textContent = "詳細ページへ";
+      contentLink.appendChild(titleDiv);
+      contentLink.appendChild(detailDiv);
+
+      // InfoWindowの作成
+      return new google.maps.InfoWindow({
+        content: contentLink
       });
     }
 
@@ -290,6 +316,32 @@ export default class extends Controller {
       this.hiddenAddressTarget.value = null;
       localStorage.setItem("mapZoom", this.map.getZoom());
       this.searchFormTarget.requestSubmit();
+    }
+
+    // 検索フォームのヘッダークリックイベントリスナー
+    onClickSearchFormWindow() {
+      this.searchFormWrapperTarget.classList.toggle("invisible-element");
+      // 検索フォームの開閉処理
+      this.toggleSearchFormWindow();
+    }
+
+    // 検索フォームの開閉処理
+    toggleSearchFormWindow() {
+      // 検索フォームの開閉状態をローカルストレージ保持しておく
+      if (this.searchFormWrapperTarget.classList.contains("invisible-element")) {
+        // 検索フォームが閉じているとき
+        this.addIconTarget.classList.remove("hidden");
+        this.removeIconTarget.classList.add("hidden");
+        // 閉じているときは値を保持しない
+        // 取得時にnull(falsy)になるため
+        localStorage.removeItem("searchWindowOpen");
+      } else {
+        // 検索フォームが開いているとき
+        this.addIconTarget.classList.add("hidden");
+        this.removeIconTarget.classList.remove("hidden");
+        // 開いているときは保持する
+        localStorage.setItem("searchWindowOpen", true);
+      }
     }
 
     // 検索フォーム入力クリア
