@@ -69,8 +69,8 @@ class MachiRepo < ApplicationRecord
 
     # 各タグの文字数制限
     tags_array.each do |tag|
-      if tag.length > 10
-        errors.add(:tag_names, "の各タグは10文字以内で入力してください")
+      if tag.length > 15
+        errors.add(:tag_names, "の各タグは15文字以内で入力してください")
       end
     end
 

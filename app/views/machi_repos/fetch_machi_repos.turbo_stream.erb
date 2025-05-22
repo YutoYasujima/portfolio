@@ -1,8 +1,28 @@
+<%= turbo_stream.update "search-alert-area" do %>
+  <% if flash[:alert].present? %>
+      <div class="fixed bottom-15 left-0 w-full z-5 md:bottom-8">
+      <ul>
+        <% flash[:alert].each do |msg| %>
+          <li data-action="click->flash#close" class="flash-alert">
+            <span class="flash-text"><%= msg %></span>
+            <span class="flex-shrink-0 w-5 aspect-square text-red-500">
+              <%= render "shared/icons/close_icon" %>
+            </span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% else %>
+    <div></div> <!-- 空にして非表示 -->
+  <% end %>
+<% end %>
+
 <%= turbo_stream.replace "map-wrapper" do %>
   <%= render "index_map",
     address: @address,
     latitude: @latitude,
     longitude: @longitude,
-    near_hotspots: @near_hotspots
+    near_hotspots: @near_hotspots,
+    machi_repos: @machi_repos
   %>
 <% end %>

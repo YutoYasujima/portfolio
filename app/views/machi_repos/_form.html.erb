@@ -13,7 +13,7 @@
   <!-- タイトル -->
   <div class="field">
     <%= form.label :title %>
-    <%= form.text_field :title, class: "text-field", maxlength: 30 %>
+    <%= form.text_field :title, placeholder: "例: 不審者を見かけました", class: "text-field", maxlength: 30 %>
   </div>
 
   <!-- 情報レベル -->
@@ -30,23 +30,21 @@
 
   <!-- タグ関連 -->
   <div data-controller="tag" class="field">
-    <%= form.label :tag_names, "タグ（カンマ区切り 最大10文字 3つまで）" %>
+    <%= form.label :tag_names, "タグ（最大15文字 3つまで）" %>
     <div class="flex">
-      <%= tag.input type: "text", placeholder: "例: 子ども, 犬, 注意", maxlength: 40, data: { tag_target: "inputTagName" }, class: "map-search-field flex-1" %>
+      <%= tag.input type: "text", placeholder: "例: 子ども, 通学路, 朝", maxlength: 50, data: { tag_target: "inputTagName" }, class: "map-search-field flex-1" %>
         <%= button_tag type: "button", data: { action: "click->tag#appendTag" }, class: "flex justify-center items-center rounded-tr-sm rounded-br-sm w-10 aspect-square bg-[#3586FF]" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#FFFFFF">
-            <path d="m239-160 40-159H120l15-60h159l51-202H186l15-60h159l39-159h59l-39 159h203l39-159h59l-39 159h159l-15 60H666l-51 202h159l-15 60H600l-40 159h-59l40-159H338l-40 159h-59Zm114-219h203l51-202H404l-51 202Z"/>
-          </svg>
+          <div class="w-8 aspect-square">
+            <%= render "shared/icons/tag_icon" %>
+          </div>
         <% end %>
     </div>
     <%= form.hidden_field :tag_names, data: { tag_target: "tagNames" } %>
     <div data-tag-target="tags" class="flex flex-wrap gap-2 mt-2">
-      <div data-action="click->tag#deleteTag"  data-tag-name="" class="tag default-tag">
+      <div data-action="click->tag#deleteTag" data-tag-name="" class="tag default-tag">
         <span class="tag-text"></span>
-        <span class="tag-delete">
-          <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#FF0000" class="tag-delete">
-            <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
-          </svg>
+        <span class="w-5 aspect-square text-red-500">
+          <%= render "shared/icons/close_icon" %>
         </span>
       </div>
     </div>

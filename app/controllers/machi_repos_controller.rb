@@ -2,14 +2,19 @@ class MachiReposController < ApplicationController
   before_action :set_machi_repo, only: %i[ show ]
 
   def index
-    # Googleマップにマイタウンを表示するための情報取得
-    @address = current_user.mytown_address
-    geocoding = Geocoder.search(@address).first.coordinates
-    @latitude = geocoding[0]
-    @longitude = geocoding[1]
-    # 半径1km圏内のデータ取得
-    @near_hotspots = MachiRepo.near([ geocoding[0], geocoding[1] ], 1)
-    # マイタウンのまちレポ
+    # マイタウンによるジオコーディング
+    results = Geocoder.search(current_user.mytown_address)
+
+    result = results.first
+    @address = result.state + result.city
+    @latitude = result.coordinates[0]
+    @longitude = result.coordinates[1]
+
+    # マップのホットスポット取得
+    @search_form = MachiRepoSearchForm.new(address: @address, latitude: @latitude, longitude: @longitude)
+    @near_hotspots = @search_form.search_near_hotspots
+
+    # "まち"のまちレポ取得
     @machi_repos = MachiRepo.where(address: @address).includes(:tags, user: :profile).order(created_at: :desc)
   end
 
@@ -35,12 +40,13 @@ class MachiReposController < ApplicationController
 
   # ホーム画面のまちレポ表示
   def fetch_machi_repos
-    if params[:address].present?
+    form_params = search_params
+    if form_params[:address].present?
       # 住所検索文字によるジオコーディング
-      results = Geocoder.search(params[:address])
-    elsif params[:latitude].present? && params[:longitude].present?
-      # 現在地 or マーカーの座標によるリバースジオコーディング
-      results = Geocoder.search([ params[:latitude], params[:longitude] ])
+      results = Geocoder.search(form_params[:address])
+    elsif form_params[:latitude].present? && form_params[:longitude].present?
+      # 現在地 or マーカー or 検索ボタンクリック時の座標によるリバースジオコーディング
+      results = Geocoder.search([ form_params[:latitude], form_params[:longitude] ])
     else
       # マイタウンによるジオコーディング
       results = Geocoder.search(current_user.mytown_address)
@@ -48,16 +54,31 @@ class MachiReposController < ApplicationController
 
     result = results.first
     @address = result.state + result.city
-    @latitude = params[:latitude] || result.coordinates[0]
-    @longitude = params[:longitude] || result.coordinates[1]
+    # Rubyでは空文字がtruthyのため条件演算子を使用
+    @latitude = form_params[:latitude].present? ? form_params[:latitude] : result.coordinates[0]
+    @longitude = form_params[:longitude].present? ?  form_params[:longitude] : result.coordinates[1]
 
-    # 半径1km圏内のまちレポ取得
-    @near_hotspots = MachiRepo.near([ @latitude, @longitude ], 1)
+    form_params[:address] = @address
+    form_params[:latitude] = @latitude
+    form_params[:longitude] = @longitude
+
+    # まちレポ検索
+    @search_form = MachiRepoSearchForm.new(form_params)
+
+    # バリデーションエラーがあっても正常な項目で検索を実行
+    if !@search_form.valid?
+      flash.now[:alert] = @search_form.errors.full_messages
+    end
+
+    # マップのホットスポット取得
+    @near_hotspots = @search_form.search_near_hotspots
+
     # "まち"のまちレポ取得
-    @machi_repos = MachiRepo.where(address: @address).includes(:tags, user: :profile).order(created_at: :desc)
+    @machi_repos = @search_form.search_machi_repos
 
     respond_to do |format|
       format.turbo_stream
+      format.html { head :unprocessable_entity }
     end
   end
 
@@ -69,5 +90,9 @@ class MachiReposController < ApplicationController
 
   def machi_repo_params
     params.require(:machi_repo).permit(:title, :info_level, :category, :description, :hotspot_settings, :hotspot_area_radius, :address, :latitude, :longitude, :image, :image_cache, :tag_names)
+  end
+
+  def search_params
+    params.fetch(:search, {}).permit(:title, :info_level, :category, :tag_names, :tag_match_type, :display_range_radius, :display_hotspot_count, :start_date, :end_date, :latitude, :longitude, :address)
   end
 end

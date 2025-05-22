@@ -21,18 +21,18 @@ export default class extends Controller {
     if (!tagNames) {
       return;
     }
-    tagNames.split(',').forEach(tagName => {
+    tagNames.split(",").forEach(tagName => {
       this.createTag(tagName);
     });
   }
 
   // 表示用タグ作成
   createTag(tagName) {
-    const tagElement = document.querySelector('.default-tag').cloneNode(true);
-    const hashtaggedTagName = '#' + tagName;
+    const tagElement = document.querySelector(".default-tag").cloneNode(true);
+    const hashtaggedTagName = "#" + tagName;
     tagElement.dataset.tagName = tagName;
-    tagElement.querySelector('.tag-text').textContent = hashtaggedTagName;
-    tagElement.classList.remove('default-tag');
+    tagElement.querySelector(".tag-text").textContent = hashtaggedTagName;
+    tagElement.classList.remove("default-tag");
     this.tagsTarget.appendChild(tagElement);
   }
 
@@ -44,17 +44,19 @@ export default class extends Controller {
       return;
     }
     this.inputTagNameTarget.value = null;
-    const tagNamesArray = input.split(',');
+    // カンマ区切りで配列に変換、空文字要素を排除
+    const tagNamesArray = input.split(",").map(str => str.trim()).filter(str => str !== "");
     const length = tagNamesArray.length;
     for (let i = 0; i < length; i++) {
       // タグが合計３つ作成されていたら終了
       if (this.tagCount >= MAX_TAG_COUNT) {
         break;
       }
-      // タグ文字列の整形
-      let processedTagName = Array.from(tagNamesArray[i].trim()).slice(0, 10).join('');
-      // hidden属性のvalue内に既にあるタグなら次のループへ(重複チェック)
-      if (this.tagNamesTarget.value.split(',').includes(processedTagName)) {
+      // マルチバイト文字対応するため、文字列を配列に変換
+      // 15番目までの要素を結合し、再度文字列化
+      let processedTagName = Array.from(tagNamesArray[i]).slice(0, 15).join("");
+      // hidden属性のvalue内に既にあるタグ(重複)なら次のループへ
+      if (this.tagNamesTarget.value.split(",").includes(processedTagName)) {
         continue;
       }
 
@@ -63,8 +65,8 @@ export default class extends Controller {
 
       // hiddenフォームにタグを保持
       // ２つ目以降のタグはカンマで繋ぐ
-      if (this.tagNamesTarget.value.trim() !== '') {
-        processedTagName = ',' + processedTagName;
+      if (this.tagNamesTarget.value.trim() !== "") {
+        processedTagName = "," + processedTagName;
       }
       this.tagNamesTarget.value += processedTagName;
       this.tagCount += 1;
@@ -75,8 +77,8 @@ export default class extends Controller {
   deleteTag(event) {
     const deleteTagName = event.currentTarget.dataset.tagName;
     // hiddenフォームに保持されているタグを更新
-    const newTagNamesArray = this.tagNamesTarget.value.split(',').filter(tagName => tagName !== deleteTagName );
-    this.tagNamesTarget.value = newTagNamesArray.join(',');
+    const newTagNamesArray = this.tagNamesTarget.value.split(",").filter(tagName => tagName !== deleteTagName );
+    this.tagNamesTarget.value = newTagNamesArray.join(",");
     event.currentTarget.remove();
     this.tagCount -= 1;
   }
