@@ -68,13 +68,46 @@
 
   <section class="text-left">
     <h3 class="header2 mb-4 ">
-      "まち"のまちレポ一覧（<%= machi_repos.size %>件）
+      "まち"のまちレポ一覧（<%= machi_repos_count %>件）
     </h3>
     <!-- まちレポカード表示 -->
-    <% if machi_repos.present? %>
-      <% machi_repos.each do |machi_repo| %>
-        <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
+    <div id="machi_repos">
+      <%# 今のページの`<turbo-frame>` %>
+      <%= turbo_frame_tag "machi_repos-page-#{machi_repos.current_page}" do %>
+        <%# 今のページで取得したCat一覧 %>
+        <% machi_repos.each do |machi_repo| %>
+          <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
+        <% end %>
+
+        <%# 遅延読み込みで次ページを取得する`<turbo-frame>` %>
+        <% if machi_repos.next_page %>
+          <%= turbo_frame_tag "machi_repos-page-#{machi_repos.next_page}", loading: :lazy, src: path_to_next_page(machi_repos) %>
+        <% end %>
       <% end %>
+    </div>
+
+
+
+<%
+=begin
+%>
+    <% machi_repos.each do |machi_repo| %>
+      <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
     <% end %>
+<%
+=end
+%>
+
+
   </section>
 </div>
+
+<%
+=begin
+%>
+<% if @cats.next_page %>
+  <%= turbo_frame_tag "cats-page-#{@cats.next_page}", loading: :lazy, src: path_to_next_page(@cats) %>
+<% end %>
+<%
+=end
+%>

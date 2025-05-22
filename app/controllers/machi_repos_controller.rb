@@ -2,44 +2,6 @@ class MachiReposController < ApplicationController
   before_action :set_machi_repo, only: %i[ show ]
 
   def index
-    # マイタウンによるジオコーディング
-    results = Geocoder.search(current_user.mytown_address)
-
-    result = results.first
-    @address = result.state + result.city
-    @latitude = result.coordinates[0]
-    @longitude = result.coordinates[1]
-
-    # マップのホットスポット取得
-    @search_form = MachiRepoSearchForm.new(address: @address, latitude: @latitude, longitude: @longitude)
-    @near_hotspots = @search_form.search_near_hotspots
-
-    # "まち"のまちレポ取得
-    @machi_repos = MachiRepo.where(address: @address).includes(:tags, user: :profile).order(created_at: :desc)
-  end
-
-  def show
-  end
-
-  def new
-    # Googleマップにマイタウンを表示するための情報取得
-    address = current_user.mytown_address
-    geocoding = Geocoder.search(address).first.coordinates
-    @machi_repo = MachiRepo.new(address: address, latitude: geocoding[0], longitude: geocoding[1])
-  end
-
-  def create
-    @machi_repo = current_user.machi_repos.build(machi_repo_params)
-    if @machi_repo.save
-      redirect_to @machi_repo, notice: "User was successfully created."
-    else
-      flash.now[:alert] = "失敗"
-      render :new, status: :unprocessable_entity
-    end
-  end
-
-  # ホーム画面のまちレポ表示
-  def fetch_machi_repos
     form_params = search_params
     if form_params[:address].present?
       # 住所検索文字によるジオコーディング
@@ -74,11 +36,33 @@ class MachiReposController < ApplicationController
     @near_hotspots = @search_form.search_near_hotspots
 
     # "まち"のまちレポ取得
-    @machi_repos = @search_form.search_machi_repos
+    search_machi_repos_result = @search_form.search_machi_repos
+    @machi_repos_count = search_machi_repos_result.count
+    @machi_repos = search_machi_repos_result.page(params[:page])
 
     respond_to do |format|
       format.turbo_stream
-      format.html { head :unprocessable_entity }
+      format.html
+    end
+  end
+
+  def show
+  end
+
+  def new
+    # Googleマップにマイタウンを表示するための情報取得
+    address = current_user.mytown_address
+    geocoding = Geocoder.search(address).first.coordinates
+    @machi_repo = MachiRepo.new(address: address, latitude: geocoding[0], longitude: geocoding[1])
+  end
+
+  def create
+    @machi_repo = current_user.machi_repos.build(machi_repo_params)
+    if @machi_repo.save
+      redirect_to @machi_repo, notice: "User was successfully created."
+    else
+      flash.now[:alert] = "失敗"
+      render :new, status: :unprocessable_entity
     end
   end
 

@@ -30,7 +30,7 @@
       </div>
     </div>
     <!-- 検索フォーム -->
-    <%= form_with url: fetch_machi_repos_machi_repos_path, method: :post, scope: :search, remote: true, model: search_form, html: { data: { machi_repos__index_target: "searchForm", turbo_stream: true } } do |form| %>
+    <%= form_with url: machi_repos_path, method: :get, scope: :search, model: search_form, html: { data: { machi_repos__index_target: "searchForm", turbo_stream: true } } do |form| %>
       <!-- タイトル -->
       <div class="field">
         <%= form.label :title, "タイトル" %>

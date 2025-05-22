@@ -23,7 +23,7 @@ class MachiRepoSearchForm
   # 周辺のホットスポット検索
   def search_near_hotspots
     # ホットスポット表示範囲
-    scope = MachiRepo.near([ latitude, longitude ], (display_range_radius / 1000))
+    scope = MachiRepo.near([ latitude, longitude ], (display_range_radius.to_f / 1000))
     # 検索条件付与
     scope = filter_machi_repos(scope)
     # マップ上のホットスポット表示数分のデータ取得
