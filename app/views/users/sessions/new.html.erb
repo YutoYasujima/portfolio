@@ -4,7 +4,7 @@
     <p>ログインしてください</p>
   </h2>
 
-  <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "form" }) do |f| %>
+  <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { data: { turbo: false }, class: "form" }) do |f| %>
     <div class="field">
       <%= f.label :email %><br />
       <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "text-field" %>

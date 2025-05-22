@@ -97,6 +97,22 @@ input:-webkit-autofill{
 }
 
 /* フラッシュメッセージ */
+.flash-notice {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin: 0 auto 0.5rem;
+  border: 1px solid #86efac; /* light green border */
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  width: 90%;
+  max-width: 600px;
+  color: #065f46; /* dark green text */
+  background-color: #d1fae5; /* light green background */
+  text-align: left;
+}
 .flash-alert {
   display: flex;
   justify-content: space-between;
