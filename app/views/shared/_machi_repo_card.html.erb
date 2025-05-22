@@ -1,5 +1,5 @@
 <!-- まちレポカード -->
-<div class="mb-6 min-w-80 bg-white shadow-md">
+<div class="min-w-80 bg-white shadow-md md:w-82">
   <%= link_to machi_repo_path(machi_repo), class: "block" do %>
     <% bg_class = case machi_repo.info_level
       when "share" then "bg-[#37DF6F]"
@@ -7,6 +7,7 @@
       when "emergency" then "bg-[#DF3737]"
       else "bg-gray-500"
     end %>
+    <!-- ヘッダー -->
     <div class="flex items-center px-2 min-w-0 h-10 <%= bg_class %>">
       <div class="flex-shrink-0 w-8 aspect-square">
         <%= render "shared/icons/#{machi_repo.info_level}_icon" %>

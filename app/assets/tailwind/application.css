@@ -230,3 +230,11 @@ input:-webkit-autofill{
   font-size: 0.75rem;
   text-decoration: underline;
 }
+
+/* まちレポカード */
+.machi-repo-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}

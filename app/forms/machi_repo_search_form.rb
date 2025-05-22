@@ -70,8 +70,8 @@ class MachiRepoSearchForm
           # and検索
           scope = scope.joins(:tags)
             .where(tags: { name: tag_list })
-            .group('machi_repos.id')
-            .having('COUNT(DISTINCT tags.id) = ?', tag_list.size)
+            .group("machi_repos.id")
+            .having("COUNT(DISTINCT tags.id) = ?", tag_list.size)
         else
           # or検索
           scope = scope.joins(:tags).where(tags: { name: tag_list }).distinct

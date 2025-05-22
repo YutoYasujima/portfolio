@@ -9,7 +9,7 @@
     data-machi-repos--index-longitude-value="<%= longitude %>"
     data-machi-repos--index-machi-repos-value="<%= near_hotspots.to_json %>"
     id="map-wrapper"
-    class="mx-auto w-full max-w-[500px]"
+    class="mx-auto w-full max-w-[500px] md:max-w-175 xl:max-w-300"
 >
   <div class="flex justify-center gap-12 mb-4">
     <!-- マイタウンアイコン -->
@@ -58,56 +58,34 @@
   <!-- 検索 -->
   <%= render "index_search_form", search_form: @search_form %>
 
-  <section class="text-left">
-    <h3 class="header2 mb-4 ">
-      周辺のホットスポット（<%= near_hotspots.size %>件）
-    </h3>
-    <!-- Google Map -->
-    <div id="map" data-machi-repos--index-target="map" class="mb-4 w-full aspect-square"></div>
-  </section>
+  <div class="xl:flex xl:justify-around">
+    <section class="text-left xl:w-100">
+      <h3 class="header2 mb-4 ">
+        周辺のホットスポット（<%= near_hotspots.size %>件）
+      </h3>
+      <!-- Google Map -->
+      <div id="map" data-machi-repos--index-target="map" class="mb-4 mx-auto w-full max-w-[400px] aspect-square"></div>
+    </section>
 
-  <section class="text-left">
-    <h3 class="header2 mb-4 ">
-      "まち"のまちレポ一覧（<%= machi_repos_count %>件）
-    </h3>
-    <!-- まちレポカード表示 -->
-    <div id="machi_repos">
-      <%# 今のページの`<turbo-frame>` %>
-      <%= turbo_frame_tag "machi_repos-page-#{machi_repos.current_page}" do %>
-        <%# 今のページで取得したCat一覧 %>
-        <% machi_repos.each do |machi_repo| %>
-          <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
+    <section class="text-left xl:w-175">
+      <h3 class="header2 mb-4 ">
+        "まち"のまちレポ一覧（<%= machi_repos_count %>件）
+      </h3>
+      <!-- まちレポカード表示 -->
+      <div id="machi_repos">
+        <%# 今のページの`<turbo-frame>` %>
+        <%= turbo_frame_tag "machi_repos-page-#{machi_repos.current_page}", class: "machi-repo-cards" do %>
+          <%# 今のページで取得したまちレポ一覧 %>
+          <% machi_repos.each do |machi_repo| %>
+            <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
+          <% end %>
+
+          <%# 遅延読み込みで次ページを取得する`<turbo-frame>` %>
+          <% if machi_repos.next_page %>
+            <%= turbo_frame_tag "machi_repos-page-#{machi_repos.next_page}", loading: :lazy, src: path_to_next_page(machi_repos), class: "machi-repo-cards" %>
+          <% end %>
         <% end %>
-
-        <%# 遅延読み込みで次ページを取得する`<turbo-frame>` %>
-        <% if machi_repos.next_page %>
-          <%= turbo_frame_tag "machi_repos-page-#{machi_repos.next_page}", loading: :lazy, src: path_to_next_page(machi_repos) %>
-        <% end %>
-      <% end %>
-    </div>
-
-
-
-<%
-=begin
-%>
-    <% machi_repos.each do |machi_repo| %>
-      <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
-    <% end %>
-<%
-=end
-%>
-
-
-  </section>
+      </div>
+    </section>
+  </div>
 </div>
-
-<%
-=begin
-%>
-<% if @cats.next_page %>
-  <%= turbo_frame_tag "cats-page-#{@cats.next_page}", loading: :lazy, src: path_to_next_page(@cats) %>
-<% end %>
-<%
-=end
-%>
