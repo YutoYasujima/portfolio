@@ -16,13 +16,12 @@
 }
 .header2 {
   display: inline-block;
+  margin-left: 0.5rem;
   border-left: 5px solid #F5A83D;
   border-bottom: 1px solid #F5A83D;
-  font-size: 20px;
-}
-.header2-title {
   padding: 0 0.5rem;
   font-weight: 500;
+  font-size: 20px;
 }
 
 /* リンク */
@@ -44,11 +43,12 @@
 .form {
   margin: 0 auto 2rem;
   width: 100%;
-  max-width: 300px;
-  text-align: left;
+  max-width: 500px;
 }
 .field {
-  margin-bottom: 1rem;
+  max-width: 300px;
+  margin: 0 auto 1rem;
+  text-align: left;
 }
 input:-webkit-autofill{
   box-shadow: 0 0 0px 100px white inset;
@@ -86,6 +86,53 @@ input:-webkit-autofill{
 /* letter-spacingによる末尾空白文字対策 */
 .text-indent-1em {
   text-indent: 1em;
+}
+
+/* 要素を視覚的に隠す */
+.invisible-element {
+  border: none;
+  padding: 0;
+  height: 0;
+  visibility: hidden;
+}
+
+/* フラッシュメッセージ */
+.flash-notice {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin: 0 auto 0.5rem;
+  border: 1px solid #86efac; /* light green border */
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  width: 90%;
+  max-width: 600px;
+  color: #065f46; /* dark green text */
+  background-color: #d1fae5; /* light green background */
+  text-align: left;
+}
+.flash-alert {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin: 0 auto 0.5rem;
+  border: 1px solid #fca5a5;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  width: 90%;
+  max-width: 600px;
+  color: #991b1b;
+  background-color: #fee2e2;
+  text-align: left;
+}
+.flash-text {
+  flex: 1;
+  flex-wrap: wrap;
+  word-break: break-all;
 }
 
 /* トップページのカードデザイン */
@@ -167,7 +214,7 @@ input:-webkit-autofill{
   align-items: center;
   gap: 0.5rem;
   border-radius: 1rem;
-  padding: 0.25rem 0.75rem;
+  padding: 0 0.75rem;
   background-color: #F5A83D;
   cursor: default;
 }
@@ -176,5 +223,12 @@ input:-webkit-autofill{
 }
 .tag-text {
   color: white;
-  font-size:1.25rem;
+}
+
+/* まちレポカード */
+.machi-repo-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
 }

@@ -1,0 +1,92 @@
+<!-- まちレポカード -->
+<div class="w-80 bg-white shadow-md">
+  <%= link_to machi_repo_path(machi_repo), class: "block" do %>
+    <% bg_class = case machi_repo.info_level
+      when "share" then "bg-[#37DF6F]"
+      when "warn" then "bg-[#F2CC0D]"
+      when "emergency" then "bg-[#DF3737]"
+      else "bg-gray-500"
+    end %>
+    <!-- ヘッダー -->
+    <div class="flex items-center px-2 min-w-0 h-10 <%= bg_class %>">
+      <div class="flex-shrink-0 w-8 aspect-square">
+        <%= render "shared/icons/#{machi_repo.info_level}_icon" %>
+      </div>
+      <span class="flex-1 ml-2 text-white text-xl font-bold truncate overflow-hidden whitespace-nowrap">
+        <%= machi_repo.title %>
+      </span>
+    </div>
+
+    <div class="flex items-center w-full">
+      <!-- 画像 -->
+      <div class="flex-shrink-0 w-31 h-31 flex justify-center items-center">
+        <% if machi_repo.image? %>
+          <%= image_tag(machi_repo.image.url, class: "w-full h-full object-cover") %>
+        <% else %>
+          <% category_emoji = case machi_repo.category
+            when "crime" then "🚨"
+            when "disaster" then "🌀"
+            when "traffic" then "🚦"
+            when "children" then "🧒"
+            when "animal" then "🐶"
+            when "environment" then "🏠"
+            else "🎈"
+          end %>
+          <div class="text-7xl"><%= category_emoji %></div>
+        <% end %>
+      </div>
+      <div class="flex-1 p-2 min-w-0">
+        <!-- ユーザー名 -->
+        <p class="flex items-end mb-1">
+          <span class="flex-shrink-0 w-6 aspect-square">
+            <%= render "shared/icons/face_icon" %>
+          </span>
+          <span class="ml-1 truncate overflow-hidden whitespace-nowrap">
+            <%= machi_repo.user.profile.nickname %>
+          </span>
+          <% if current_user != machi_repo.user %>
+            <span class="flex-shrink-0 ml-auto w-8 aspect-square">
+              <%= render "shared/icons/star_icon" %>
+            </span>
+          <% end %>
+        </p>
+        <!-- マイタウン -->
+        <p class="flex mb-1">
+          <span class="flex-shrink-0 w-6 aspect-square">
+              <%= render "shared/icons/flag_icon" %>
+          </span>
+          <span class="w-full ml-1 truncate overflow-hidden whitespace-nowrap">
+            <%= machi_repo.address %>
+          </span>
+        </p>
+        <!-- カテゴリー -->
+        <p class="flex mb-1">
+          <span class="flex-shrink-0 w-6 aspect-square">
+            <%= render "shared/icons/category_icon" %>
+          </span>
+          <span class="ml-1 truncate overflow-hidden whitespace-nowrap">
+            <%= t("enums.machi_repo.category.#{machi_repo.category}") %>
+          </span>
+        </p>
+        <!-- 投稿日 -->
+        <p class="flex">
+          <span class="flex-shrink-0 w-6 aspect-square">
+            <%= render "shared/icons/schedule_icon" %>
+          </span>
+          <span class="ml-1 truncate overflow-hidden whitespace-nowrap">
+            <time><%= machi_repo.created_at.strftime("%Y/%m/%d %H:%M") %></time>
+          </span>
+        </p>
+      </div>
+    </div>
+    <% if machi_repo.tag_names.present? %>
+      <div class="flex flex-wrap gap-2 p-2 pt-1">
+        <% machi_repo.tag_names.split(',').each do |tag| %>
+          <div class="tag">
+            <span class="tag-text"><%= "#" + tag %></span>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

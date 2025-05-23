@@ -1,0 +1,127 @@
+<section class="mb-4 border-2 border-gray-500 md:mx-auto md:max-w-175 xl:mb-8">
+  <h3 data-action="click->machi-repos--index#onClickSearchFormWindow" class="flex justify-between p-2 bg-[#6495ED] text-white">
+    <div class="flex items-center">
+      <div class="flex-shrink-0 w-6 aspect-square">
+        <%= render "shared/icons/search_icon" %>
+      </div>
+      <span class="text-xl">検索</span>
+    </div>
+    <div class="flex items-center">
+      <!-- プラスアイコン -->
+      <div data-machi-repos--index-target="addIcon" class="w-6 aspect-square">
+        <%= render "shared/icons/add_icon" %>
+      </div>
+      <!-- マイナスアイコン -->
+      <div data-machi-repos--index-target="removeIcon" class="hidden w-6 aspect-square">
+        <%= render "shared/icons/remove_icon" %>
+      </div>
+    </div>
+  </h3>
+  <div data-machi-repos--index-target="searchFormWrapper" class="border-t-2 border-gray-400 p-4 invisible-element">
+    <!-- クリアアイコン -->
+    <div data-action="click->machi-repos--index#onClickSearchFormClearIcon" class="text-right">
+      <div class="inline-block">
+        <div class="flex flex-col justify-center">
+          <div class="flex-shrink-0 w-10 aspect-square">
+            <%= render "shared/icons/clear_day_icon" %>
+          </div>
+          <span class="text-center text-sm">クリア</span>
+        </div>
+      </div>
+    </div>
+    <!-- 検索フォーム -->
+    <%= form_with url: machi_repos_path, method: :get, scope: :search, model: search_form, html: { data: { machi_repos__index_target: "searchForm", turbo_stream: true } } do |form| %>
+      <div class="md:flex md:flex-wrap">
+        <!-- タイトル -->
+        <div class="field md:w-1/2">
+          <%= form.label :title, "タイトル" %>
+          <%= form.text_field :title, placeholder: "例: 不審者", class: "text-field", maxlength: 30, data: { machi_repos__index_target: "inputTitle" } %>
+        </div>
+
+        <!-- 情報レベル -->
+        <div class="field md:w-1/2">
+          <%= form.label :info_level, "情報レベル" %>
+          <%= form.select :info_level, [["選択してください", ""]] + MachiRepo.info_levels_i18n.map { |key, text| [text, key] }, {}, class: "text-field", data: { machi_repos__index_target: "inputInfoLevel" } %>
+        </div>
+
+        <!-- カテゴリ -->
+        <div class="field md:w-1/2">
+          <%= form.label :category, "カテゴリー" %>
+          <%= form.select :category, [["選択してください", ""]] + MachiRepo.categories_i18n.map { |key, text| [text, key] }, {}, class: "text-field", data: { machi_repos__index_target: "inputCategory" } %>
+        </div>
+
+        <!-- タグ -->
+        <div class="field md:w-1/2">
+          <div class="mb-4">
+            <%= form.label :tag_names, "タグ（最大15文字 3つまで）" %>
+            <%= form.text_field :tag_names, placeholder: "例: 子ども, 通学路, 朝", class: "text-field", maxlength: 50, data: { machi_repos__index_target: "inputTagNames" } %>
+          </div>
+          <!-- タグの検索条件 -->
+          <div class="ml-4">
+            <div class="mb-2">
+              <%= form.radio_button :tag_match_type, "or", checked: true, data: { machi_repos__index_target: "inputTagMatchTypeOr" } %>
+              <%= form.label :tag_match_type_or, "OR（どれかに一致）" %>
+            </div>
+            <div>
+              <%= form.radio_button :tag_match_type, "and" %>
+              <%= form.label :tag_match_type_and, "AND（すべてに一致）" %>
+            </div>
+          </div>
+        </div>
+
+        <!-- 表示範囲 -->
+        <div class="field md:w-1/2">
+          <%= form.label :display_range_radius, "ホットスポット表示範囲" %>
+          <%= form.select :display_range_radius, options_for_select([
+            ["半径 50m",     50],
+            ["半径 100m",   100],
+            ["半径 200m",   200],
+            ["半径 500m",   500],
+            ["半径 1km",   1000],
+            ["半径 2km",   2000],
+            ["半径 5km",   5000],
+            ["半径 10km", 10000],
+          ], form.object.display_range_radius), {}, class: "text-field", data: { machi_repos__index_target: "inputDisplayRangeRadius" } %>
+        </div>
+
+        <!-- ホットスポット表示数 -->
+        <div class="field md:w-1/2">
+          <%= form.label :display_hotspot_count, "ホットスポット表示数" %>
+          <%= form.select :display_hotspot_count, options_for_select([
+            ["10",   10],
+            ["20",   20],
+            ["30",   30],
+            ["40",   40],
+            ["50",   50],
+            ["100", 100],
+          ], form.object.display_hotspot_count), {}, class: "text-field", data: { machi_repos__index_target: "inputDisplayHotspotCount" } %>
+        </div>
+
+        <!-- まちレポ作成日 -->
+        <div class="mb-4 mx-auto w-full max-w-[300px] text-left md:max-w-full">
+          <%= form.label :start_date, "まちレポ作成日", class: "ml-4" %>
+          <div class="md:flex md:justify-center md:items-center md:gap-x-2">
+            <%= form.date_field :start_date, class: "py-1 px-3 w-full border-1 rounded-sm bg-white text-xl md:w-[300px]", data: { machi_repos__index_target: "inputStartDate" } %>
+            <div class="text-center font-bold">
+              <span>～</span>
+            </div>
+            <%= form.date_field :end_date, class: "py-1 px-3 w-full border-1 rounded-sm bg-white text-xl md:w-[300px]", data: { machi_repos__index_target: "inputEndDate" } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- 住所 -->
+      <%= form.hidden_field :address, data: { machi_repos__index_target: "hiddenAddress" } %>
+
+      <!-- 緯度 -->
+      <%= form.hidden_field :latitude, data: { machi_repos__index_target: "hiddenLatitude" } %>
+
+      <!-- 経度 -->
+      <%= form.hidden_field :longitude, data: { machi_repos__index_target: "hiddenLongitude" } %>
+
+      <div class="mt-8">
+        <%= button_tag "検索", type: "button", class: "button", data: { action: "click->machi-repos--index#onClickSearchFormButton" } %>
+      </div>
+    <% end %>
+  </div>
+</section>

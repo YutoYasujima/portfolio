@@ -5,39 +5,39 @@
     data-machi-repos--index-address-value="<%= address %>"
     data-machi-repos--index-latitude-value="<%= latitude %>"
     data-machi-repos--index-longitude-value="<%= longitude %>"
-    data-machi-repos--index-machi-repos-value="<%= machi_repos.to_json %>"
+    data-machi-repos--index-machi-repos-value="<%= near_hotspots.to_json(include: { user: { include: :profile } }) %>"
     id="map-wrapper"
-    class="mx-auto w-full max-w-[300px]"
+    class="mx-auto w-full max-w-[500px] md:max-w-175 xl:max-w-300"
 >
   <div class="flex justify-center gap-12 mb-4">
     <!-- マイタウンアイコン -->
-    <div data-action="click->machi-repos--index#mytownShow" class="icon-circle-wrapper">
+    <div data-action="click->machi-repos--index#onClickMytownIcon" class="icon-circle-wrapper">
       <div class="icon-circle">
-        <svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="#000000">
-          <path d="M370-440h60v-120h100v120h60v-185l-110-73-110 73v185Zm110 281q133-121 196.5-219.5T740-552q0-118-75.5-193T480-820q-109 0-184.5 75T220-552q0 75 65 173.5T480-159Zm0 79Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/>
-        </svg>
+        <div class="w-10 aspect-square">
+          <%= render "shared/icons/home_pin_icon" %>
+        </div>
       </div>
       <span class="icon-circle-text">マイタウン</span>
     </div>
 
     <!-- 現在地アイコン -->
-    <div data-action="click->machi-repos--index#currentLocationShow" class="icon-circle-wrapper">
+    <div data-action="click->machi-repos--index#onClickCurrentLocationIcon" class="icon-circle-wrapper">
       <div class="icon-circle">
-        <svg xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="#000000">
-          <path d="M450-42v-75q-137-14-228-105T117-450H42v-60h75q14-137 105-228t228-105v-75h60v75q137 14 228 105t105 228h75v60h-75q-14 137-105 228T510-117v75h-60Zm30-134q125 0 214.5-89.5T784-480q0-125-89.5-214.5T480-784q-125 0-214.5 89.5T176-480q0 125 89.5 214.5T480-176Zm0-154q-63 0-106.5-43.5T330-480q0-63 43.5-106.5T480-630q63 0 106.5 43.5T630-480q0 63-43.5 106.5T480-330Zm0-60q38 0 64-26t26-64q0-38-26-64t-64-26q-38 0-64 26t-26 64q0 38 26 64t64 26Zm0-90Z"/>
-        </svg>
+        <div class="w-10 aspect-square">
+          <%= render "shared/icons/my_location_icon" %>
+        </div>
       </div>
       <span class="icon-circle-text">現在地</span>
     </div>
   </div>
 
   <!-- 住所検索 -->
-  <div class="flex mb-4">
+  <div class="field flex mb-4">
     <%= tag.input type: "text", placeholder: "\"まち\"を入力してください", data: { machi_repos__index_target: "search" }, class: "map-search-field flex-1" %>
-    <%= button_tag type: "button", data: { action: "click->machi-repos--index#searchLocationShow" }, class: "flex justify-center items-center rounded-tr-sm rounded-br-sm w-10 aspect-square bg-[#3586FF]" do %>
-      <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#FFFFFF">
-        <path d="M638-511v-1.5 1.5-189 189ZM170-142q-17 9-33.5-1T120-173v-558q0-13 7.5-23t19.5-15l202-71 263 92 178-71q17-8 33.5 1.5T840-788v388q-11-21-26-38.5T780-470v-284l-142 54v189q-16 2-31 5t-29 8v-202l-196-66v540l-212 84Zm10-65 142-54v-505l-142 47v512Zm474-5q38 0 64-26t26-64q0-38-26-64t-64-26q-38 0-64 26t-26 64q0 38 26 64t64 26Zm0 60q-62 0-106-44t-44-106q0-63 44-106.5T654-452q63 0 106.5 43.5T804-302q0 23-6.5 44T779-219l101 101-38 38-101-100q-19 14-40.5 21t-46.5 7ZM322-766v505-505Z"/>
-      </svg>
+    <%= button_tag type: "button", data: { action: "click->machi-repos--index#onClickSearchLocationButtton" }, class: "flex justify-center items-center rounded-tr-sm rounded-br-sm bg-[#3586FF]" do %>
+      <div class="w-10 aspect-square">
+        <%= render "shared/icons/map_search_icon" %>
+      </div>
     <% end %>
   </div>
 
@@ -53,11 +53,43 @@
     </p>
   </div>
 
-  <section class="text-left">
-    <h3 class="header2 mb-4 ">
-      <span class="header2-title">周辺のホットスポット</span>
-    </h3>
-    <!-- Google Map -->
-    <div id="map" data-machi-repos--index-target="map" class="field w-full aspect-square"></div>
-  </section>
+  <!-- 検索 -->
+  <%= render "index_search_form", search_form: @search_form %>
+
+  <div class="xl:flex xl:justify-around">
+    <section class="text-left xl:w-100">
+      <h3 class="header2 mb-4 ">
+        周辺のホットスポット（<%= near_hotspots.size %>件）
+      </h3>
+      <!-- Google Map -->
+      <div id="map" data-machi-repos--index-target="map" class="mb-4 mx-auto w-full max-w-[400px] aspect-square"></div>
+    </section>
+
+    <section class="text-left xl:w-175">
+      <h3 class="header2 mb-4 ">
+        "まち"のまちレポ一覧（<%= machi_repos_count %>件）
+      </h3>
+      <!-- まちレポカード表示 -->
+      <div id="machi_repos">
+        <%# 今のページの`<turbo-frame>` %>
+        <%= turbo_frame_tag "machi_repos-page-#{machi_repos.current_page}", class: "machi-repo-cards" do %>
+          <%# 今のページで取得したまちレポ一覧 %>
+          <% machi_repos.each do |machi_repo| %>
+            <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
+          <% end %>
+
+          <%# 遅延読み込みで次ページを取得する`<turbo-frame>` %>
+          <% if machi_repos.next_page %>
+            <%= turbo_frame_tag "machi_repos-page-#{machi_repos.next_page}", loading: :lazy, src: path_to_next_page(machi_repos), class: "machi-repo-cards" %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  </div>
+
+  <%# CustomInfoWindowのコピー元 %>
+  <div data-machi-repos--index-target="infoWindowWrapper" class="hidden">
+    <%= render "shared/info_window" %>
+  </div>
 </div>
+

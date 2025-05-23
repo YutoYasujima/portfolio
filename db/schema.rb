@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_18_224346) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_21_062953) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -27,12 +27,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_18_224346) do
   create_table "machi_repos", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "title", limit: 30, null: false
-    t.integer "info_level", default: 0, null: false
-    t.integer "category", default: 0, null: false
+    t.integer "info_level", null: false
+    t.integer "category", null: false
     t.text "description"
-    t.integer "hotspot_settings", default: 0, null: false
+    t.integer "hotspot_settings", null: false
     t.integer "hotspot_area_radius"
-    t.float "latitude", null: false
+    t.float "ratitude", null: false
     t.float "longitude", null: false
     t.string "image"
     t.integer "views_count", default: 0, null: false
@@ -79,7 +79,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_18_224346) do
   end
 
   create_table "tags", force: :cascade do |t|
-    t.string "name", limit: 10, null: false
+    t.string "name", limit: 15, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_tags_on_name", unique: true

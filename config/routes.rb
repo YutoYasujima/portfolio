@@ -7,13 +7,7 @@ Rails.application.routes.draw do
   }
 
   resources :municipalities, only: %i[ index ]
-  resources :machi_repos, only: %i[ index show new create ] do
-    collection do
-      post :fetch_machi_repos
-    end
-  end
-
-
+  resources :machi_repos, only: %i[ index show new create ]
 
   resources :tests, only: %i[ index destroy ]
 

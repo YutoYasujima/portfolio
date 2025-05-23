@@ -1,0 +1,33 @@
+<div class="relative text-sm py-2 px-3 w-60 bg-white border-1 border-gray-400 rounded-lg shadow cursor-pointer
+  after:content-['']
+  after:absolute
+  after:-bottom-2 after:left-[111px]
+  after:w-4 after:h-4
+  after:bg-white
+  after:border-l after:border-b after:border-gray-400
+  after:-rotate-45"
+>
+  <div class="info-window-close ml-auto w-8 aspect-square text-red-500">
+    <%= render "shared/icons/close_icon" %>
+  </div>
+  <%= link_to "#", class: "info-window-link" do %>
+    <div class="mb-3">
+      <span class="info-window-title inline-block border-l-5 border-amber-400 pl-1 w-full text-xl font-bold text-[##2c3e50] break-all">タイトル</span>
+    </div>
+    <div class="flex items-center mb-1 ml-2">
+      <div class="w-6 aspect-square">
+        <%= render "shared/icons/face_icon" %>
+      </div>
+      <span class="info-window-user ml-1 truncate overflow-hidden whitespace-nowrap">ユーザー</span>
+    </div>
+    <div class="flex items-center mb-1 ml-2">
+      <div class="w-6 aspect-square">
+        <%= render "shared/icons/flag_icon" %>
+      </div>
+      <span class="info-window-address ml-1 truncate overflow-hidden whitespace-nowrap">アドレス</span>
+    </div>
+    <div class="text-right">
+      <span class="underline">詳細ページへ</span>
+    </div>
+  <% end %>
+</div>

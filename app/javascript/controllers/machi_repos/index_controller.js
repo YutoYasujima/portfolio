@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
-import { loadGoogleMaps, geocoding, reverseGeocoding } from "../../lib/google_maps_utils";
+import { loadGoogleMaps } from "../../lib/google_maps_utils";
+import { createCustomInfoWindowClass } from "../../lib/custom_info_window";
 
 // Connects to data-controller="machi-repo--index"
 export default class extends Controller {
@@ -10,6 +11,24 @@ export default class extends Controller {
       "address",
       "latitude",
       "longitude",
+      "mapFrame",
+      "addIcon",
+      "removeIcon",
+      "searchFormWrapper",
+      "searchForm",
+      "inputTitle",
+      "inputInfoLevel",
+      "inputCategory",
+      "inputTagNames",
+      "inputTagMatchTypeOr",
+      "inputDisplayRangeRadius",
+      "inputDisplayHotspotCount",
+      "inputStartDate",
+      "inputEndDate",
+      "hiddenAddress",
+      "hiddenLatitude",
+      "hiddenLongitude",
+      "infoWindowWrapper",
     ];
 
     static values = {
@@ -22,18 +41,37 @@ export default class extends Controller {
     };
 
     connect() {
+      // マーカーをクリアするために保持
       this.markers = [];
+      // 開かれているInfoWindowの管理
+      this.currentInfoWindow = null;
       // マイタウンの緯度・経度を保持
       this.defaultCoordinates = { lat: this.latitudeValue, lng: this.longitudeValue };
+      // input[type="hidden"]に値を保持
+      this.hiddenAddressTarget.value = this.addressValue;
+      this.hiddenLatitudeTarget.value = this.latitudeValue;
+      this.hiddenLongitudeTarget.value = this.longitudeValue;
+      // Googleマップのzoomを取得
+      this.defaultZoom = Number(localStorage.getItem("mapZoom")) || 14;
+      // 検索フォームの開閉状態設定
+      if (localStorage.getItem("searchWindowOpen")) {
+        // 検索フォームを開く
+        this.searchFormWrapperTarget.classList.remove("invisible-element");
+      } else {
+        this.searchFormWrapperTarget.classList.add("invisible-element");
+      }
+      this.toggleSearchFormWindow();
       // Googleマップの導入
       loadGoogleMaps(this.apiKeyValue).then(() => this.initMap());
     }
 
     disconnect() {
+      // メモリへの影響を考慮し解放しておく
       this.clearMarkers();
       this.map = null;
     }
 
+    // マーカーをすべて解放する
     clearMarkers() {
       this.markers.forEach(marker => marker.setMap(null));
       this.markers = [];
@@ -47,7 +85,6 @@ export default class extends Controller {
       const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
 
       // Googleマップ初期表示
-      this.defaultZoom = 14;
       this.map = new GoogleMap(this.mapTarget, {
         center: this.defaultCoordinates, // マップの中心座標
         zoom: this.defaultZoom, // マップの拡大
@@ -75,7 +112,7 @@ export default class extends Controller {
         title: this.addressValue,
       });
       // マーカーのドラッグエンドイベントリスナー
-      this.mainMarker.addListener('dragend', () => this.dragendMarker());
+      this.mainMarker.addListener("dragend", () => this.onDragendMarker());
       // disconnect時にクリアするためマーカーを保持する
       this.markers.push(this.mainMarker);
     }
@@ -83,6 +120,8 @@ export default class extends Controller {
     // 周辺のまちレポマーカー表示
     async createMachiRepoMarkers() {
       const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+      // カスタムInfoWindowクラス呼び出し
+      const CustomInfoWindow = createCustomInfoWindowClass();
       // 表示するマーカーの位置が重なっていた場合、スパイラル状に少しずらす
       // 先にメインマーカーの座標を登録
       const locationMap = new Map();
@@ -97,51 +136,75 @@ export default class extends Controller {
       convertMachiRepos.forEach(machiRepo => {
         let borderColor = "#0000ff";
         let glyphColor = "#5d5df5";
+        let glyph = "🎈"
         // まちレポの情報レベルに応じてマーカーの色を変更
         switch (machiRepo.info_level) {
           // 共有:share
-          case 'share':
+          case "share":
             glyphColor = "hsl(120, 90%, 60%)";
             borderColor = "hsl(120, 100%, 40%)";
             break;
           // 警告:warn
-          case 'warn':
+          case "warn":
             glyphColor = "hsl(50, 90%, 60%)";
             borderColor = "hsl(50, 100%, 40%)";
             break;
           // 緊急: emergency
-          case 'emergency':
+          case "emergency":
             glyphColor = "hsl(0, 90%, 60%)";
             borderColor = "hsl(0, 100%, 40%)";
             break;
         }
+        switch (machiRepo.category) {
+          case "crime":
+            glyph = "🚨";
+            break;
+          case "disaster":
+            glyph = "🌀";
+            break;
+          case "traffic":
+            glyph = "🚦";
+            break;
+          case "children":
+            glyph = "🧒";
+            break;
+          case "animal":
+            glyph = "🐶";
+            break;
+          case "environment":
+            glyph = "🏠";
+            break;
+        }
         const pin = new PinElement({
+          glyph: glyph,
           background: glyphColor, // 背景
           borderColor: borderColor, // 枠線
-          glyphColor: glyphColor,
+          glyphColor: "#FFFFFF",
         });
         const marker = new AdvancedMarkerElement({
           map: this.map,
           position: { lat: machiRepo.convertLatitude, lng: machiRepo.convertLongitude },
           content: pin.element,
+          gmpClickable: true,
           title: machiRepo.address,
         });
 
         // InfoWindowの作成
-        const infoWindow = new google.maps.InfoWindow({
-          content: `<div>
-          <strong>${machiRepo.address}</strong><br>
-          <a href="/machi_repos/${machiRepo.id}">詳細ページへ</a>
-          </div>`
-        });
+        const infoWindowTemplate = this.infoWindowWrapperTarget.children[0].cloneNode(true);
+        const infoWindow = new CustomInfoWindow(infoWindowTemplate, marker, machiRepo);
 
         // マーカークリックでInfoWindow表示
-        marker.addListener('click', () => {
-          infoWindow.open({
-            anchor: marker,
-            map: this.map,
-            shouldFocus: false,
-          });
+        marker.addEventListener("gmp-click", () => {
+          if (this.currentInfoWindow) {
+            // 開かれているInfoWindowを閉じる
+            this.currentInfoWindow.setMap(null);
+          }
+          // InfoWindow表示
+          infoWindow.setMap(this.map);
+          // InfoWindowの表示が全部見えるようにマップを移動
+          this.map.panTo(marker.position);
+          this.map.panBy(0, -80);
+          this.currentInfoWindow = infoWindow;
         });
 
         // disconnect時にクリアするためマーカーを保持する
@@ -151,7 +214,7 @@ export default class extends Controller {
 
     // 重なっているマーカーの座標をスパイラル状に変換
     spiralSpreadMarkers(machiRepos, locationMap) {
-      const spreadRadius = 0.0005;
+      const spreadRadius = 0.0003;
       return machiRepos.map(machiRepo => {
         const key = `${machiRepo.latitude.toFixed(5)}:${machiRepo.longitude.toFixed(5)}`;
         const count = locationMap.get(key) || 0;
@@ -171,37 +234,45 @@ export default class extends Controller {
     }
 
     // マーカードラッグ後の表示
-    dragendMarker() {
+    onDragendMarker() {
       const position = this.mainMarker.position;
-      const coords = {
-        latitude: position.lat,
-        longitude: position.lng
-      };
-
-      this.fetchMachiRepos(coords);
+      // 検索フォームの値を更新
+      // リバースジオコーディングため緯度・経度のみ送信
+      this.hiddenAddressTarget.value = null;
+      this.hiddenLatitudeTarget.value = position.lat;
+      this.hiddenLongitudeTarget.value = position.lng;
+      localStorage.setItem("mapZoom", this.map.getZoom());
+      this.searchFormTarget.requestSubmit();
     }
 
     // マイタウン表示
-    mytownShow() {
-      this.fetchMachiRepos({});
+    onClickMytownIcon() {
+      // 検索フォームの値を更新
+      // マイタウンはサーバーで取得する
+      this.hiddenAddressTarget.value = null;
+      this.hiddenLatitudeTarget.value = null;
+      this.hiddenLongitudeTarget.value = null;
+      localStorage.setItem("mapZoom", this.map.getZoom());
+      this.searchFormTarget.requestSubmit();
     }
 
     // 現在位置表示
-    currentLocationShow() {
+    onClickCurrentLocationIcon() {
       // ブラウザに現在地取得機能があるか確認
       if (!navigator.geolocation) {
-        alert('ブラウザに現在地取得機能がありません');
+        alert("ブラウザに現在地取得機能がありません");
         return;
       }
 
       // 現在地の取得
       navigator.geolocation.getCurrentPosition(position => {
-        const coords = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        };
-
-        this.fetchMachiRepos(coords);
+        // 検索フォームの値を更新
+        // リバースジオコーディングするため緯度・経度のみ送信
+        this.hiddenAddressTarget.value = null;
+        this.hiddenLatitudeTarget.value = position.coords.latitude;
+        this.hiddenLongitudeTarget.value = position.coords.longitude;
+        localStorage.setItem("mapZoom", this.map.getZoom());
+        this.searchFormTarget.requestSubmit();
       }, (error) => {
         console.error("現在地位置情報の取得に失敗:", error)
       }, {
@@ -213,25 +284,61 @@ export default class extends Controller {
     }
 
     // 検索住所表示
-    searchLocationShow() {
-      let address = { address: this.searchTarget.value };
-      this.fetchMachiRepos(address);
+    onClickSearchLocationButtton() {
+      const address = this.searchTarget.value;
+      // 検索フォームの値を更新
+      // ジオコーディングするため住所のみ送信
+      this.hiddenAddressTarget.value = address;
+      this.hiddenLatitudeTarget.value = null;
+      this.hiddenLongitudeTarget.value = null;
+      localStorage.setItem("mapZoom", this.map.getZoom());
+      this.searchFormTarget.requestSubmit();
     }
 
-    // まちレポ情報の取得とマップ関連表示更新
-    fetchMachiRepos(data) {
-      fetch(`/machi_repos/fetch_machi_repos`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.text())
-      .then(html => Turbo.renderStreamMessage(html))
-      .catch(error => {
-        console.error("まちレポ取得失敗:", error)
-      });
+    // 検索フォーム
+    onClickSearchFormButton() {
+      // リバースジオコーディングするため緯度・経度のみ送信
+      this.hiddenAddressTarget.value = null;
+      localStorage.setItem("mapZoom", this.map.getZoom());
+      this.searchFormTarget.requestSubmit();
+    }
+
+    // 検索フォームのヘッダークリックイベントリスナー
+    onClickSearchFormWindow() {
+      this.searchFormWrapperTarget.classList.toggle("invisible-element");
+      // 検索フォームの開閉処理
+      this.toggleSearchFormWindow();
+    }
+
+    // 検索フォームの開閉処理
+    toggleSearchFormWindow() {
+      // 検索フォームの開閉状態をローカルストレージ保持しておく
+      if (this.searchFormWrapperTarget.classList.contains("invisible-element")) {
+        // 検索フォームが閉じているとき
+        this.addIconTarget.classList.remove("hidden");
+        this.removeIconTarget.classList.add("hidden");
+        // 閉じているときは値を保持しない
+        // 取得時にnull(falsy)になるため
+        localStorage.removeItem("searchWindowOpen");
+      } else {
+        // 検索フォームが開いているとき
+        this.addIconTarget.classList.add("hidden");
+        this.removeIconTarget.classList.remove("hidden");
+        // 開いているときは保持する
+        localStorage.setItem("searchWindowOpen", true);
+      }
+    }
+
+    // 検索フォーム入力クリア
+    onClickSearchFormClearIcon() {
+      this.inputTitleTarget.value = "";
+      this.inputInfoLevelTarget.value = "";
+      this.inputCategoryTarget.value = "";
+      this.inputTagNamesTarget.value = "";
+      this.inputTagMatchTypeOrTarget.checked = true;
+      this.inputDisplayRangeRadiusTarget.value = 1000;
+      this.inputDisplayHotspotCountTarget.value = 20;
+      this.inputStartDateTarget.value = "";
+      this.inputEndDateTarget.value = "";
     }
 }

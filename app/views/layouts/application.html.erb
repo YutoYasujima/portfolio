@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
     <title><%= content_for(:title) || "Portfolio" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -18,12 +18,15 @@
   </head>
 
   <body class="flex flex-col min-h-[100vh] bg-[#E6F0FE]">
-    <%= render "shared/header"%>
+    <% unless controller.controller_name == "tops" %>
+      <%= render "shared/header"%>
+    <% end %>
 
-    <p class=""><%= notice %></p>
-    <p class=""><%= alert %></p>
+    <div id="flash_messages">
+      <%= render "shared/flash_messages" %>
+    </div>
 
-    <main class="container mx-auto p-4 pt-5">
+    <main class="mb-8">
       <%= yield %>
     </main>
 

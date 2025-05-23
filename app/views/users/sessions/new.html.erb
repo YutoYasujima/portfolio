@@ -4,7 +4,7 @@
     <p>ログインしてください</p>
   </h2>
 
-  <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "form" }) do |f| %>
+  <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { data: { turbo: false }, class: "form" }) do |f| %>
     <div class="field">
       <%= f.label :email %><br />
       <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "text-field" %>
@@ -47,7 +47,7 @@
 
   <%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
     <div>
-      <%= link_to t('.didn_t_receive_confirmation_instructions'), new_confirmation_path(resource_name), class: "link text-xl" %>
+      <%= link_to t('.didn_t_receive_confirmation_instructions').gsub("\n", "<br>").html_safe, new_confirmation_path(resource_name), class: "link text-xl" %>
     </div>
   <% end %>
 </div>
