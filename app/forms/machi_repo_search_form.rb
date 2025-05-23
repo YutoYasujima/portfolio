@@ -29,8 +29,8 @@ class MachiRepoSearchForm
     # マップ上のホットスポット表示数分のデータ取得
     scope = scope.limit(display_hotspot_count)
 
-    # N+1問題対応
-    scope.includes(user: :profile).order(created_at: :desc)
+    # N+1問題対応(tagsテーブルはタグ条件でJOIN済み)
+    scope.preload(user: :profile).order(created_at: :desc)
   end
 
   # "まち"のまちレポ検索
@@ -38,8 +38,8 @@ class MachiRepoSearchForm
     scope = MachiRepo.where(address: address)
     # 検索条件付与
     scope = filter_machi_repos(scope)
-    # N+1問題対応
-    scope.includes(:tags, user: :profile).order(created_at: :desc)
+    # N+1問題対応(tagsテーブルはタグ条件でJOIN済み)
+    scope.preload(user: :profile).order(created_at: :desc)
   end
 
   private
@@ -71,7 +71,8 @@ class MachiRepoSearchForm
       if tag_list.present?
         if tag_match_type == "and"
           # and検索
-          scope = scope.joins(:tags)
+          scope = scope
+            .joins(:tags)
             .where(tags: { name: tag_list })
             .group("machi_repos.id")
             .having("COUNT(DISTINCT tags.id) = ?", tag_list.size)
