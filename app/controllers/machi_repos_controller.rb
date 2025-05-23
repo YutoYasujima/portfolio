@@ -37,7 +37,7 @@ class MachiReposController < ApplicationController
 
     # "まち"のまちレポ取得
     search_machi_repos_result = @search_form.search_machi_repos
-    @machi_repos_count = search_machi_repos_result.count
+    @machi_repos_count = search_machi_repos_result.length
     @machi_repos = search_machi_repos_result.page(params[:page])
 
     respond_to do |format|
