@@ -225,28 +225,6 @@ input:-webkit-autofill{
   color: white;
 }
 
-/* InfoWindow */
-.info-window {
-  display: inline-block;
-  padding: 0 12px 12px 0;
-  width: 180px;
-  overflow: hidden;
-}
-.info-window-title {
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-  font-weight: bold;
-  padding-left: 0.5em;
-  border-left: 4px solid #007bff; /* 青の強調バー */
-  color: #222;
-  word-break: break-all;
-}
-.info-window-detail {
-  text-align: right;
-  font-size: 0.75rem;
-  text-decoration: underline;
-}
-
 /* まちレポカード */
 .machi-repo-cards {
   display: flex;

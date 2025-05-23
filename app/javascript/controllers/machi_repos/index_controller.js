@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
-import { loadGoogleMaps, geocoding, reverseGeocoding } from "../../lib/google_maps_utils";
+import { loadGoogleMaps } from "../../lib/google_maps_utils";
+import { createCustomInfoWindowClass } from "../../lib/custom_info_window";
 
 // Connects to data-controller="machi-repo--index"
 export default class extends Controller {
@@ -27,6 +28,7 @@ export default class extends Controller {
       "hiddenAddress",
       "hiddenLatitude",
       "hiddenLongitude",
+      "infoWindowWrapper",
     ];
 
     static values = {
@@ -186,18 +188,19 @@ export default class extends Controller {
         });
 
         // InfoWindowの作成
-        const infoWindow = this.createInfoWindow(machiRepo);
+        const infoWindow = this.createInfoWindow(marker, machiRepo);
 
         // マーカークリックでInfoWindow表示
         marker.addEventListener("gmp-click", () => {
           if (this.currentInfoWindow) {
-            this.currentInfoWindow.close();
+            // 開かれているInfoWindowを閉じる
+            this.currentInfoWindow.setMap(null);
           }
-          infoWindow.open({
-            anchor: marker,
-            map: this.map,
-            shouldFocus: false,
-          });
+          // InfoWindow表示
+          infoWindow.setMap(this.map);
+          // InfoWindowの表示が全部見えるようにマップを移動
+          this.map.panTo(marker.position);
+          this.map.panBy(0, -80);
           this.currentInfoWindow = infoWindow;
         });
 
@@ -207,24 +210,37 @@ export default class extends Controller {
     }
 
     // InfoWindowを作成
-    createInfoWindow(machiRepo) {
-      const contentLink = document.createElement("a");
-      const titleDiv = document.createElement("div");
-      const detailDiv = document.createElement("div");
+    createInfoWindow(marker, machiRepo) {
+      // カスタムInfoWindow用クラス定義
+      const CustomInfoWindow = createCustomInfoWindowClass();
+      const infoWindowTemplate = this.infoWindowWrapperTarget.children[0].cloneNode(true);
+      return new CustomInfoWindow(infoWindowTemplate, marker, machiRepo);
 
-      contentLink.classList.add("info-window");
-      contentLink.href = `/machi_repos/${machiRepo.id}`;
-      titleDiv.classList.add("info-window-title");
-      titleDiv.textContent = `${machiRepo.title}`;
-      detailDiv.classList.add("info-window-detail");
-      detailDiv.textContent = "詳細ページへ";
-      contentLink.appendChild(titleDiv);
-      contentLink.appendChild(detailDiv);
 
-      // InfoWindowの作成
-      return new google.maps.InfoWindow({
-        content: contentLink
-      });
+
+      // const contentLink = document.createElement("a");
+      // const titleDiv = document.createElement("div");
+      // const userDiv = document.createElement("div");
+      // const addressDiv = document.createElement("div");
+      // const detailDiv = document.createElement("div");
+
+      // contentLink.classList.add("info-window");
+      // contentLink.href = `/machi_repos/${machiRepo.id}`;
+      // titleDiv.classList.add("info-window-title");
+      // titleDiv.textContent = `${machiRepo.title}`;
+      // userDiv.textContent = `${machiRepo.user.profile.nickname}`;
+      // addressDiv.textContent = `${machiRepo.address}`;
+      // detailDiv.classList.add("info-window-detail");
+      // detailDiv.textContent = "詳細ページへ";
+      // contentLink.appendChild(titleDiv);
+      // contentLink.appendChild(userDiv);
+      // contentLink.appendChild(addressDiv);
+      // contentLink.appendChild(detailDiv);
+
+      // // InfoWindowの作成
+      // return new google.maps.InfoWindow({
+      //   content: contentLink
+      // });
     }
 
     // 重なっているマーカーの座標をスパイラル状に変換

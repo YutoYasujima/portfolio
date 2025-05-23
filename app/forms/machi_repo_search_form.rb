@@ -27,7 +27,10 @@ class MachiRepoSearchForm
     # 検索条件付与
     scope = filter_machi_repos(scope)
     # マップ上のホットスポット表示数分のデータ取得
-    scope.limit(display_hotspot_count)
+    scope = scope.limit(display_hotspot_count)
+
+    # N+1問題対応
+    scope.includes(user: :profile).order(created_at: :desc)
   end
 
   # "まち"のまちレポ検索

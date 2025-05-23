@@ -5,7 +5,7 @@
     data-machi-repos--index-address-value="<%= address %>"
     data-machi-repos--index-latitude-value="<%= latitude %>"
     data-machi-repos--index-longitude-value="<%= longitude %>"
-    data-machi-repos--index-machi-repos-value="<%= near_hotspots.to_json %>"
+    data-machi-repos--index-machi-repos-value="<%= near_hotspots.to_json(include: { user: { include: :profile } }) %>"
     id="map-wrapper"
     class="mx-auto w-full max-w-[500px] md:max-w-175 xl:max-w-300"
 >
@@ -86,4 +86,10 @@
       </div>
     </section>
   </div>
+
+  <%# CustomInfoWindowのコピー元 %>
+  <div data-machi-repos--index-target="infoWindowWrapper" class="hidden">
+    <%= render "shared/info_window" %>
+  </div>
 </div>
+
