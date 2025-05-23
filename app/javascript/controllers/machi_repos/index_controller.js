@@ -120,6 +120,8 @@ export default class extends Controller {
     // 周辺のまちレポマーカー表示
     async createMachiRepoMarkers() {
       const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+      // カスタムInfoWindowクラス呼び出し
+      const CustomInfoWindow = createCustomInfoWindowClass();
       // 表示するマーカーの位置が重なっていた場合、スパイラル状に少しずらす
       // 先にメインマーカーの座標を登録
       const locationMap = new Map();
@@ -188,7 +190,8 @@ export default class extends Controller {
         });
 
         // InfoWindowの作成
-        const infoWindow = this.createInfoWindow(marker, machiRepo);
+        const infoWindowTemplate = this.infoWindowWrapperTarget.children[0].cloneNode(true);
+        const infoWindow = new CustomInfoWindow(infoWindowTemplate, marker, machiRepo);
 
         // マーカークリックでInfoWindow表示
         marker.addEventListener("gmp-click", () => {
@@ -207,40 +210,6 @@ export default class extends Controller {
         // disconnect時にクリアするためマーカーを保持する
         this.markers.push(marker);
       });
-    }
-
-    // InfoWindowを作成
-    createInfoWindow(marker, machiRepo) {
-      // カスタムInfoWindow用クラス定義
-      const CustomInfoWindow = createCustomInfoWindowClass();
-      const infoWindowTemplate = this.infoWindowWrapperTarget.children[0].cloneNode(true);
-      return new CustomInfoWindow(infoWindowTemplate, marker, machiRepo);
-
-
-
-      // const contentLink = document.createElement("a");
-      // const titleDiv = document.createElement("div");
-      // const userDiv = document.createElement("div");
-      // const addressDiv = document.createElement("div");
-      // const detailDiv = document.createElement("div");
-
-      // contentLink.classList.add("info-window");
-      // contentLink.href = `/machi_repos/${machiRepo.id}`;
-      // titleDiv.classList.add("info-window-title");
-      // titleDiv.textContent = `${machiRepo.title}`;
-      // userDiv.textContent = `${machiRepo.user.profile.nickname}`;
-      // addressDiv.textContent = `${machiRepo.address}`;
-      // detailDiv.classList.add("info-window-detail");
-      // detailDiv.textContent = "詳細ページへ";
-      // contentLink.appendChild(titleDiv);
-      // contentLink.appendChild(userDiv);
-      // contentLink.appendChild(addressDiv);
-      // contentLink.appendChild(detailDiv);
-
-      // // InfoWindowの作成
-      // return new google.maps.InfoWindow({
-      //   content: contentLink
-      // });
     }
 
     // 重なっているマーカーの座標をスパイラル状に変換
