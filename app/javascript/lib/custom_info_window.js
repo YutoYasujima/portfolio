@@ -17,16 +17,24 @@ export function createCustomInfoWindowClass() {
       this.div = document.createElement("div");
       this.div.style.position = "absolute";
       this.div.appendChild(this.infoWindowElements);
-      this.div.querySelector(".info-window-link").href = `/machi_repos/${this.machiRepo.id}`;
+      const link = this.div.querySelector(".info-window-link");
+      link.href = `/machi_repos/${this.machiRepo.id}`;
       this.div.querySelector(".info-window-title").textContent = `${this.machiRepo.title}`;
       this.div.querySelector(".info-window-user").textContent = `${this.machiRepo.user.profile.nickname}`;
       this.div.querySelector(".info-window-address").textContent = `${this.machiRepo.address}`;
       const panes = this.getPanes();
       panes.floatPane.appendChild(this.div);
 
+      // InfoWindowを閉じる
       this.div.querySelector(".info-window-close").addEventListener("click", () => {
         this.setMap(null);
       });
+
+      // タッチイベント時にInfoWindowを表示すると同時に遷移してしまう現象の対策
+      link.style.pointerEvents = "none";
+      setTimeout(() => {
+        link.style.pointerEvents = "auto";
+      }, 300);
     }
 
     draw() {

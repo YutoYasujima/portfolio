@@ -8,10 +8,10 @@
 /* 共通見出し */
 .header1 {
   display: inline-block;
-  padding: 0 0.5em 0.25rem;
+  padding: 2rem 0.5em 0.25rem;
   border-bottom: 2px solid #F5A83D;
   min-width: 250px;
-  max-width: 350px;
+  max-width: 300px;
   font-size: 1.875rem;
 }
 .header2 {
@@ -195,6 +195,9 @@ input:-webkit-autofill{
   height: 3rem;
   background-color: white;
 }
+.icon-circle-current {
+  background-color: #F5A83D;
+}
 .icon-circle-text {
   font-weight: bold;
 }
@@ -232,3 +235,18 @@ input:-webkit-autofill{
   gap: 1rem;
   justify-content: center;
 }
+
+/* まちレポ詳細 */
+.machi-repo-emergency {
+  background-color: #FEE6E6;
+}
+/* .machi-repo-detail-header {
+  display: inline-block;
+  min-width: 250px;
+  max-width: 85%;
+  font-size: 1.25rem;
+  text-decoration: underline;
+}
+.header-emergency {
+  text-decoration-color: #DF3737;
+} */

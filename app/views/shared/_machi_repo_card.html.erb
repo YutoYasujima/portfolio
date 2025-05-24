@@ -1,6 +1,6 @@
 <!-- まちレポカード -->
 <div class="w-80 bg-white shadow-md">
-  <%= link_to machi_repo_path(machi_repo), class: "block" do %>
+  <%= link_to machi_repo_path(machi_repo), data: { turbo: false }, class: "block" do %>
     <% bg_class = case machi_repo.info_level
       when "share" then "bg-[#37DF6F]"
       when "warn" then "bg-[#F2CC0D]"

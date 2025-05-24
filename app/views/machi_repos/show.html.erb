@@ -1,3 +1,51 @@
+<%# content_for :body_class, "bg-[#FEE6E6]" if @machi_repo.emergency? %>
+<% content_for :body_class, "bg-[#FEE6E6]" %>
+
+<div class="text-center">
+  <h2 class="py-4 px-2">
+    <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center text-[#DF3737]">
+        <div class="w-10 aspect-square">
+          <%= render "shared/icons/emergency_full_icon" %>
+        </div>
+        <span class="text-xl font-bold">緊急</span>
+      </div>
+      <div class="w-10 aspect-square">
+        <%= render "shared/icons/star_icon" %>
+      </div>
+    </div>
+    <div class="mx-auto w-[90%]">
+      <span class="inline-block px-4 py-2 min-w-[50%] bg-[#DF3737] text-white text-xl font-bold rounded shadow">
+        <%= @machi_repo.title %>
+      </span>
+    </div>
+  </h2>
+  <nav>
+    <ul class="flex justify-center gap-12 mb-4">
+      <li>
+        <div class="icon-circle-wrapper">
+          <div class="icon-circle icon-circle-current">
+            <div class="w-8 aspect-square">
+              <%= render "shared/icons/description_icon" %>
+            </div>
+          </div>
+          <span class="icon-circle-text">詳細</span>
+        </div>
+      </li>
+      <li>
+        <div class="icon-circle-wrapper">
+          <div class="icon-circle">
+            <div class="w-8 aspect-square">
+              <%= render "shared/icons/chat_icon" %>
+            </div>
+          </div>
+          <span class="icon-circle-text">チャット</span>
+        </div>
+      </li>
+    </ul>
+  </nav>
+</div>
+
 <h2>まちレポ詳細</h2>
 <p><%= @machi_repo.title %></p>
 <p><%= @machi_repo.info_level %></p>
