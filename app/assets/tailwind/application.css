@@ -237,8 +237,45 @@ input:-webkit-autofill{
 }
 
 /* まちレポ詳細 */
-.machi-repo-emergency {
+/* 背景色 */
+.bg-emergency {
   background-color: #FEE6E6;
+}
+.bg-warn {
+  background-color: #FEFAE6;
+}
+.bg-share {
+  background-color: #EAFEE6;
+}
+/* タイトル背景色 */
+.title-bg-emergency {
+  background-color: #DF3737;
+}
+.title-bg-warn {
+  background-color: #DFA737
+}
+.title-bg-share {
+  background-color: #44D926;
+}
+/* テキストカラー */
+.text-emergency {
+  color: #DF3737;
+}
+.text-warn {
+  color: #DFA737;
+}
+.text-share {
+  color: #44D926;
+}
+/* ボーダーカラー */
+.border-color-emergency {
+  border-color: #DF3737;
+}
+.border-color-warn {
+  border-color: #DFA737;
+}
+.border-color-share {
+  border-color: #44D926;
 }
 /* .machi-repo-detail-header {
   display: inline-block;

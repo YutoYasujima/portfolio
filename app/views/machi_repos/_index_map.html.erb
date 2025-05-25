@@ -7,7 +7,7 @@
     data-machi-repos--index-longitude-value="<%= longitude %>"
     data-machi-repos--index-machi-repos-value="<%= near_hotspots.to_json(include: { user: { include: :profile } }) %>"
     id="map-wrapper"
-    class="mx-auto w-full max-w-[500px] md:max-w-175 xl:max-w-300"
+    class="mx-auto mb-8 w-full max-w-[500px] md:max-w-175 xl:max-w-300"
 >
   <div class="flex justify-center gap-12 mb-4">
     <!-- マイタウンアイコン -->
@@ -43,14 +43,16 @@
 
   <!-- 住所 -->
   <div class="mb-4">
-    <p class="inline-block px-2 border-b-2 border-[#DF3737] text-2xl">
-      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#EA3323" class="inline-block">
-        <path d="M200-120v-680h343l19 86h238v370H544l-19-85H260v309h-60Z"/>
-      </svg>
-      <span data-machi-repos--index-target="address" class="text-xl font-bold">
-        <%= address %>
-      </span>
-    </p>
+    <div class="inline-block px-2 border-b-2 border-[#DF3737] text-2xl">
+      <div class="flex items-center">
+        <div class="inline-block w-6 aspect-square text-[#DF3737]">
+          <%= render "shared/icons/flag_full_icon" %>
+        </div>
+        <span data-machi-repos--index-target="address" class="text-xl font-bold">
+          <%= address %>
+        </span>
+      </div>
+    </div>
   </div>
 
   <!-- 検索 -->
