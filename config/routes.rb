@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   }
 
   resources :municipalities, only: %i[ index ]
-  resources :machi_repos, only: %i[ index show new create ]
+  resources :machi_repos, only: %i[ index show new create edit update ]
 
   resources :tests, only: %i[ index destroy ]
 

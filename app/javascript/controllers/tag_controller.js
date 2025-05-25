@@ -12,15 +12,18 @@ export default class extends Controller {
     // タグの数を管理
     this.tagCount = 0;
     // タグ表示
-    this.displayTag();
+    this.displayTags();
   }
 
     // 画面表示時にタグ表示
-  displayTag() {
+  displayTags() {
     const tagNames = this.tagNamesTarget.value;
     if (!tagNames) {
       return;
     }
+    // タグ表示領域をクリアする
+    this.tagsTarget.innerHTML = "";
+    // タグの数だけ表示する
     tagNames.split(",").forEach(tagName => {
       this.createTag(tagName);
     });
