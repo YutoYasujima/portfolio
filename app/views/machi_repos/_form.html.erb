@@ -29,14 +29,13 @@
         <% end %>
     </div>
     <%= form.hidden_field :tag_names, data: { tag_target: "tagNames" } %>
-    <div data-tag-target="tags" class="flex flex-wrap gap-2 mt-2">
-      <div data-action="click->tag#deleteTag" data-tag-name="" class="tag default-tag">
-        <span class="tag-text"></span>
-        <span class="w-5 aspect-square text-red-500">
-          <%= render "shared/icons/close_icon" %>
-        </span>
-      </div>
+    <div data-action="click->tag#deleteTag" data-tag-name="" class="tag default-tag">
+      <span class="tag-text"></span>
+      <span class="w-5 aspect-square text-red-500">
+        <%= render "shared/icons/close_icon" %>
+      </span>
     </div>
+    <div data-tag-target="tags" class="flex flex-wrap gap-2 mt-2"></div>
   </div>
 
   <!-- 状況説明 -->
