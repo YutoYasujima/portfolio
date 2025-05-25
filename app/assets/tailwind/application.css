@@ -234,6 +234,7 @@ input:-webkit-autofill{
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
+  align-items: start;
 }
 
 /* まちレポ詳細 */
