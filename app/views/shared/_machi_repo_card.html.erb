@@ -1,6 +1,6 @@
 <!-- まちレポカード -->
 <div class="w-80 bg-white shadow-md">
-  <%= link_to machi_repo_path(machi_repo), class: "block" do %>
+  <%= link_to machi_repo_path(machi_repo), data: { turbo: false }, class: "block" do %>
     <% bg_class = case machi_repo.info_level
       when "share" then "bg-[#37DF6F]"
       when "warn" then "bg-[#F2CC0D]"
@@ -23,16 +23,9 @@
         <% if machi_repo.image? %>
           <%= image_tag(machi_repo.image.url, class: "w-full h-full object-cover") %>
         <% else %>
-          <% category_emoji = case machi_repo.category
-            when "crime" then "🚨"
-            when "disaster" then "🌀"
-            when "traffic" then "🚦"
-            when "children" then "🧒"
-            when "animal" then "🐶"
-            when "environment" then "🏠"
-            else "🎈"
-          end %>
-          <div class="text-7xl"><%= category_emoji %></div>
+          <div class="text-7xl">
+            <%= display_machi_repo_category_emoji(machi_repo.category) %>
+          </div>
         <% end %>
       </div>
       <div class="flex-1 p-2 min-w-0">
@@ -68,7 +61,7 @@
             <%= t("enums.machi_repo.category.#{machi_repo.category}") %>
           </span>
         </p>
-        <!-- 投稿日 -->
+        <!-- 投稿日時 -->
         <p class="flex">
           <span class="flex-shrink-0 w-6 aspect-square">
             <%= render "shared/icons/schedule_icon" %>

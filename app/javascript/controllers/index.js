@@ -19,6 +19,9 @@ application.register("machi-repos--index", MachiRepos__IndexController)
 import MachiRepos__NewController from "./machi_repos/new_controller"
 application.register("machi-repos--new", MachiRepos__NewController)
 
+import MachiRepos__ShowController from "./machi_repos/show_controller"
+application.register("machi-repos--show", MachiRepos__ShowController)
+
 import PrefectureMunicipalityController from "./prefecture_municipality_controller"
 application.register("prefecture-municipality", PrefectureMunicipalityController)
 

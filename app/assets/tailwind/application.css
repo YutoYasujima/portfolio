@@ -8,10 +8,10 @@
 /* 共通見出し */
 .header1 {
   display: inline-block;
-  padding: 0 0.5em 0.25rem;
+  padding: 2rem 0.5em 0.25rem;
   border-bottom: 2px solid #F5A83D;
   min-width: 250px;
-  max-width: 350px;
+  max-width: 300px;
   font-size: 1.875rem;
 }
 .header2 {
@@ -195,6 +195,9 @@ input:-webkit-autofill{
   height: 3rem;
   background-color: white;
 }
+.icon-circle-current {
+  background-color: #F5A83D;
+}
 .icon-circle-text {
   font-weight: bold;
 }
@@ -231,4 +234,57 @@ input:-webkit-autofill{
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
+  align-items: start;
 }
+
+/* まちレポ詳細 */
+/* 背景色 */
+.bg-emergency {
+  background-color: #FEE6E6;
+}
+.bg-warn {
+  background-color: #FEFAE6;
+}
+.bg-share {
+  background-color: #EAFEE6;
+}
+/* タイトル背景色 */
+.title-bg-emergency {
+  background-color: #DF3737;
+}
+.title-bg-warn {
+  background-color: #DFA737
+}
+.title-bg-share {
+  background-color: #44D926;
+}
+/* テキストカラー */
+.text-emergency {
+  color: #DF3737;
+}
+.text-warn {
+  color: #DFA737;
+}
+.text-share {
+  color: #44D926;
+}
+/* ボーダーカラー */
+.border-color-emergency {
+  border-color: #DF3737;
+}
+.border-color-warn {
+  border-color: #DFA737;
+}
+.border-color-share {
+  border-color: #44D926;
+}
+/* .machi-repo-detail-header {
+  display: inline-block;
+  min-width: 250px;
+  max-width: 85%;
+  font-size: 1.25rem;
+  text-decoration: underline;
+}
+.header-emergency {
+  text-decoration-color: #DF3737;
+} */

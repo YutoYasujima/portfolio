@@ -69,7 +69,7 @@ class MachiReposController < ApplicationController
   private
 
   def set_machi_repo
-    @machi_repo = MachiRepo.find(params[:id])
+    @machi_repo = MachiRepo.includes(user: :profile).find(params[:id])
   end
 
   def machi_repo_params

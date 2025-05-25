@@ -17,7 +17,7 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body class="flex flex-col min-h-[100vh] bg-[#E6F0FE]">
+  <body class="flex flex-col min-h-[100vh] <%= content_for?(:body_class) ? yield(:body_class) : "bg-[#E6F0FE]" %>">
     <% unless controller.controller_name == "tops" %>
       <%= render "shared/header"%>
     <% end %>
@@ -26,7 +26,7 @@
       <%= render "shared/flash_messages" %>
     </div>
 
-    <main class="mb-8">
+    <main class="flex-1">
       <%= yield %>
     </main>
 
