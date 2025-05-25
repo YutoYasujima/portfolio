@@ -22,6 +22,7 @@ export default class extends Controller {
     latitude: Number,
     longitude: Number,
     address: String,
+    machiRepo: Object,
   };
 
   connect() {
@@ -62,17 +63,24 @@ export default class extends Controller {
       title: this.addressValue,
     });
 
-    // エリア指定の円描画
+    // エリア指定の円作成
     this.areaCircle = new google.maps.Circle({
       strokeColor: "#00FF00",
       strokeOpacity: 0.8,
       strokeWeight: 2,
       fillColor: "#00FF00",
       fillOpacity: 0.35,
-      map: this.map, // マップのインスタンス
+      // map: this.map, // マップのインスタンス
       center: this.mytownCoordinates,
       radius: Number(this.hotspotAreaRadiusSelectTarget.value),
     });
+    // エリア指定orピンポイント指定
+    if (this.machiRepoValue.hotspot_settings === "area") {
+      this.areaCircle.setMap(this.map);
+      this.hotspotAreaRadiusTarget.classList.remove("hidden");
+    } else {
+      this.hotspotAttentionTarget.classList.remove("hidden");
+    }
 
     // マーカーのドラッグエンドイベントリスナー
     this.mainMarker.addListener('dragend', () => this.dragendMarker());
@@ -157,12 +165,10 @@ export default class extends Controller {
 
   // ホットスポット設定変更
   changeHotspotSettings(event) {
-    const area = 0;     // エリア指定
-    const pinpoint = 1; // ピンポイント指定
     this.hotspotAreaRadiusTarget.classList.toggle('hidden');
     this.hotspotAttentionTarget.classList.toggle('hidden');
 
-    if (Number(event.target.value) === area) {
+    if (event.target.value === "area") {
       // エリア指定
       // エリアの表示
       this.areaCircle.setMap(this.map);

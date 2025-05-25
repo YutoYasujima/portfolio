@@ -1,5 +1,5 @@
 class MachiReposController < ApplicationController
-  before_action :set_machi_repo, only: %i[ show ]
+  before_action :set_machi_repo, only: %i[ show edit ]
 
   def index
     form_params = search_params
@@ -46,8 +46,7 @@ class MachiReposController < ApplicationController
     end
   end
 
-  def show
-  end
+  def show; end
 
   def new
     # Googleマップにマイタウンを表示するための情報取得
@@ -59,17 +58,35 @@ class MachiReposController < ApplicationController
   def create
     @machi_repo = current_user.machi_repos.build(machi_repo_params)
     if @machi_repo.save
-      redirect_to @machi_repo, notice: "User was successfully created."
+      redirect_to @machi_repo, notice: "まちレポを作成しました"
     else
-      flash.now[:alert] = "失敗"
+      flash.now[:alert] = [ "まちレポの作成に失敗しました" ]
+      if @machi_repo.errors.any?
+        flash.now[:alert] += @machi_repo.errors.full_messages
+      end
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit; end
+
+  def update
+    @machi_repo = current_user.machi_repos.find(params[:id])
+    if @machi_repo.update(machi_repo_params)
+      redirect_to machi_repo_path(@machi_repo), notice: "まちレポを更新しました"
+    else
+      flash.now[:alert] = [ "まちレポの更新に失敗しました" ]
+      if @machi_repo.errors.any?
+        flash.now[:alert] += @machi_repo.errors.full_messages
+      end
+      render :edit, status: :unprocessable_entity
     end
   end
 
   private
 
   def set_machi_repo
-    @machi_repo = MachiRepo.includes(user: :profile).find(params[:id])
+    @machi_repo = current_user.machi_repos.includes(user: :profile).find(params[:id])
   end
 
   def machi_repo_params

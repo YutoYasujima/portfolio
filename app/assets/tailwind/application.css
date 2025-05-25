@@ -38,6 +38,9 @@
   color: white;
   background-color: #3586FF;
 }
+.button-edit {
+  background-color: #14B866;
+}
 
 /* フォーム */
 .form {
