@@ -76,7 +76,7 @@
         </div>
       <% end %>
       <%# 削除 %>
-      <%= link_to "#", class: "inline-block border-2 rounded px-2 bg-red-100 text-red-700 shadow" do %>
+      <%= link_to machi_repo_path(@machi_repo), data: { turbo_method: :delete, turbo_confirm: "まちレポを削除しますか？" }, class: "inline-block border-2 rounded px-2 bg-red-100 text-red-700 shadow" do %>
         <div class="flex flex-col justify-center items-center">
           <div class="w-8 aspect-square">
             <%= render "shared/icons/delete_icon" %>
