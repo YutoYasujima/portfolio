@@ -102,7 +102,7 @@ class MachiRepoSearchForm
   def start_date_should_be_before_end_date
     return if start_date.blank? || end_date.blank?
     if start_date > end_date
-      errors.add(:base, "まちレポ作成日を確認してください")
+      errors.add(:base, "まちレポ作成日は、終了日を開始日以降の日付にしてください")
     end
   end
 end

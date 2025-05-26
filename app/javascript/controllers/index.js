@@ -22,6 +22,9 @@ application.register("machi-repos--new", MachiRepos__NewController)
 import MachiRepos__ShowController from "./machi_repos/show_controller"
 application.register("machi-repos--show", MachiRepos__ShowController)
 
+import ModalController from "./modal_controller"
+application.register("modal", ModalController)
+
 import PrefectureMunicipalityController from "./prefecture_municipality_controller"
 application.register("prefecture-municipality", PrefectureMunicipalityController)
 
