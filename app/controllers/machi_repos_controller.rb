@@ -1,6 +1,4 @@
 class MachiReposController < ApplicationController
-  before_action :set_machi_repo, only: %i[ show edit ]
-
   def index
     prepare_search_data
     respond_to do |format|
@@ -15,7 +13,9 @@ class MachiReposController < ApplicationController
     end
   end
 
-  def show; end
+  def show
+    @machi_repo = MachiRepo.includes(user: :profile).find(params[:id])
+  end
 
   def new
     # Googleマップにマイタウンを表示するための情報取得
@@ -37,7 +37,9 @@ class MachiReposController < ApplicationController
     end
   end
 
-  def edit; end
+  def edit
+    @machi_repo = current_user.machi_repos.includes(user: :profile).find(params[:id])
+  end
 
   def update
     @machi_repo = current_user.machi_repos.find(params[:id])
@@ -64,12 +66,12 @@ class MachiReposController < ApplicationController
     form_params = search_params
 
     results = if form_params[:address].present?
-                Geocoder.search(form_params[:address])
-              elsif form_params[:latitude].present? && form_params[:longitude].present?
-                Geocoder.search([form_params[:latitude], form_params[:longitude]])
-              else
-                Geocoder.search(current_user.mytown_address)
-              end
+      Geocoder.search(form_params[:address])
+    elsif form_params[:latitude].present? && form_params[:longitude].present?
+      Geocoder.search([ form_params[:latitude], form_params[:longitude] ])
+    else
+      Geocoder.search(current_user.mytown_address)
+    end
 
     result = results.first
     @address = result.state + result.city
@@ -83,7 +85,7 @@ class MachiReposController < ApplicationController
     @search_form = MachiRepoSearchForm.new(form_params)
 
     unless @search_form.valid?
-      flash.now[:alert] = ["検索条件を確認してください"]
+      flash.now[:alert] = [ "検索条件を確認してください" ]
       flash.now[:alert] += @search_form.errors.full_messages
     end
 
@@ -92,10 +94,6 @@ class MachiReposController < ApplicationController
     search_result = @search_form.search_machi_repos
     @machi_repos_count = search_result.length
     @machi_repos = search_result.page(params[:page])
-  end
-
-  def set_machi_repo
-    @machi_repo = current_user.machi_repos.includes(user: :profile).find(params[:id])
   end
 
   def machi_repo_params

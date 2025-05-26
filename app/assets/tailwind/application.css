@@ -1,9 +1,4 @@
 @import "tailwindcss";
-@source "../../../public/*.html";
-@source "../../../app/helpers/**/*.rb";
-@source "../../../app/javascript/**/*.js";
-@source "../../../app/views/**/*";
-@plugin "./daisyui.js";
 
 /* 共通見出し */
 .header1 {
@@ -107,13 +102,13 @@ input:-webkit-autofill{
   gap: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin: 0 auto 0.5rem;
-  border: 1px solid #86efac; /* light green border */
+  border: 1px solid #86efac;
   border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
   width: 90%;
   max-width: 600px;
-  color: #065f46; /* dark green text */
-  background-color: #d1fae5; /* light green background */
+  color: #065f46;
+  background-color: #d1fae5;
   text-align: left;
 }
 .flash-alert {
@@ -136,6 +131,60 @@ input:-webkit-autofill{
   flex: 1;
   flex-wrap: wrap;
   word-break: break-all;
+}
+
+/* モーダル */
+.overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  padding-top: 100px;
+  z-index: 50;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+.overlay.hidden {
+  display: none;
+}
+.modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 2px solid hsl(30, 100%, 50%);
+  border-radius: 0.75rem;
+  padding: 2rem 1rem 1rem;
+  width: 300px;
+  height: 150px;
+  background-color: hsl(30, 100%, 85%);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+.modal-text {
+  font-size: 1.25rem;
+  text-align: center;
+  color: hsl(18, 100%, 50%);
+  font-weight: 600;
+}
+.modal-button-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+.modal-button {
+  border-radius: 0.75rem;
+  width: 100px;
+  height: 40px;
+}
+.modal-ok {
+  color: white;
+  background-color: hsl(25, 100%, 50%);
+}
+.modal-cancel {
+  border: 1px solid hsl(30, 100%, 50%);
+  color: hsl(18, 100%, 40%);
+  background-color: hsl(30, 100%, 80%);
 }
 
 /* トップページのカードデザイン */
@@ -281,13 +330,3 @@ input:-webkit-autofill{
 .border-color-share {
   border-color: #44D926;
 }
-/* .machi-repo-detail-header {
-  display: inline-block;
-  min-width: 250px;
-  max-width: 85%;
-  font-size: 1.25rem;
-  text-decoration: underline;
-}
-.header-emergency {
-  text-decoration-color: #DF3737;
-} */
