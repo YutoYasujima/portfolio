@@ -1,0 +1,67 @@
+<%# info_levelに応じてbody背景色変更 %>
+<% content_for :body_class, "bg-#{machi_repo.info_level}" %>
+
+<div class="border-b-3 border-gray-500">
+  <div class="text-center">
+    <div class="mx-auto py-4 px-2 max-w-[550px]">
+      <div class="flex justify-between items-center mx-auto mb-4">
+        <div class="flex items-center <%= "text-#{machi_repo.info_level}" %>">
+          <%# info_levelに応じてアイコン変更 %>
+          <div class="w-10 aspect-square">
+            <% if machi_repo.emergency? %>
+              <%= render "shared/icons/emergency_full_icon" %>
+              <% info_level_text = "緊急" %>
+            <% elsif machi_repo.warn? %>
+              <%= render "shared/icons/warn_full_icon" %>
+              <% info_level_text = "警告" %>
+            <% else %>
+              <%= render "shared/icons/share_full_icon" %>
+              <% info_level_text = "共有" %>
+            <% end %>
+          </div>
+          <span class="text-xl font-bold"><%= info_level_text %></span>
+        </div>
+        <% if machi_repo.user != current_user %>
+          <div class="w-10 aspect-square">
+            <%= render "shared/icons/star_icon" %>
+          </div>
+        <% end %>
+      </div>
+      <div class="mx-auto w-[90%] md:w-full">
+        <h2 class="inline-block px-4 py-2 min-w-[50%] <%= "title-bg-#{machi_repo.info_level}" %> text-white text-xl font-bold rounded shadow">
+          <%= machi_repo.title %>
+        </h2>
+      </div>
+    </div>
+    <nav class="md:fixed md:top-[250px] md:right-[calc(100vw/2+280px)] xl:right-[calc(100vw/2+460px)]">
+      <ul class="flex justify-center gap-12 mb-4 md:flex-col">
+        <!-- 詳細アイコン -->
+        <li>
+          <%= link_to machi_repo_path(machi_repo) do %>
+            <div class="icon-circle-wrapper">
+              <div class="icon-circle icon-circle-current">
+                <div class="w-8 aspect-square">
+                  <%= render "shared/icons/description_icon" %>
+                </div>
+              </div>
+              <span class="icon-circle-text">詳細</span>
+            </div>
+          <% end %>
+        </li>
+        <!-- チャットアイコン -->
+        <li>
+          <%= link_to machi_repo_chat_path(machi_repo) do %>
+            <div class="icon-circle-wrapper">
+              <div class="icon-circle">
+                <div class="w-8 aspect-square">
+                  <%= render "shared/icons/chat_icon" %>
+                </div>
+              </div>
+              <span class="icon-circle-text">チャット</span>
+            </div>
+          <% end %>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

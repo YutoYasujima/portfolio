@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     collection do
       get :search
     end
+
+    resource :chat, only: [:show], controller: "machi_repo_chats"
   end
 
   resources :tests, only: %i[ index destroy ]

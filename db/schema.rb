@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_21_062953) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_26_123803) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "chats", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.text "message"
+    t.string "image"
+    t.string "chatable_type", null: false
+    t.bigint "chatable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chatable_type", "chatable_id"], name: "index_chats_on_chatable"
+    t.index ["user_id"], name: "index_chats_on_user_id"
+  end
 
   create_table "machi_repo_tags", force: :cascade do |t|
     t.bigint "machi_repo_id", null: false
@@ -27,12 +39,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_21_062953) do
   create_table "machi_repos", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "title", limit: 30, null: false
-    t.integer "info_level", null: false
-    t.integer "category", null: false
+    t.integer "info_level", default: 0, null: false
+    t.integer "category", default: 0, null: false
     t.text "description"
-    t.integer "hotspot_settings", null: false
+    t.integer "hotspot_settings", default: 0, null: false
     t.integer "hotspot_area_radius"
-    t.float "ratitude", null: false
+    t.float "latitude", null: false
     t.float "longitude", null: false
     t.string "image"
     t.integer "views_count", default: 0, null: false
@@ -105,6 +117,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_21_062953) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "chats", "users"
   add_foreign_key "machi_repo_tags", "machi_repos"
   add_foreign_key "machi_repo_tags", "tags"
   add_foreign_key "machi_repos", "users"
