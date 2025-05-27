@@ -5,39 +5,54 @@
 
   <section
     id="chat-section"
-    class="mx-auto pt-3 px-2 max-w-120 h-[calc(100%-220px)] overflow-y-auto xl:max-w-205"
-    data-controller="chat-scroll"
+    class="mx-auto pt-3 px-2 w-full max-w-120 h-[calc(100%-220px)] overflow-y-auto xl:max-w-205"
+    data-controller="chat-scroll machi-repos--chat"
     data-chat-scroll-target="container"
+    data-machi-repos--chat-machi-repo-id-value="<%= @machi_repo.id %>"
+    data-machi-repos--chat-user-id-value="<%= current_user.id %>"
   >
-    <div data-chat-scroll-target="container">
-      <%= render "shared/chat_others" %>
-      <%= render "shared/chat_mine", machi_repo: @machi_repo %>
-      <%= render "shared/chat_others" %>
-      <%= render "shared/chat_others" %>
-      <%= render "shared/chat_mine", machi_repo: @machi_repo %>
-    </div>
-  </section>
-</div>
-
-<section>
-  <%= form_with url: "#", method: :post, id: "chat-form", local: true, class:"fixed right-0 bottom-17 left-0 shadow-lg" do |form| %>
-    <div class="flex items-end">
-      <%= form.text_area :body,
-        id: "body",
-        rows: 1,
-        placeholder: "メッセージを入力してください",
-        class: "border rounded-tl rounded-bl px-2 py-1 w-full bg-white resize-none overflow-hidden",
-        data: {
-          controller: "textarea-resize",
-          textarea_resize_target: "textarea",
-          action: "input->textarea-resize#resize"
-        }
-      %>
-      <%= form.button id: "btn", type: "button" do %>
-        <div class="w-8 aspect-square bg-blue-500 text-white">
-          <%= render "shared/icons/send_icon" %>
+    <div
+      id="chat-area"
+      data-chat-scroll-target="chatArea"
+      data-machi-repos--chat-target="chatArea"
+    >
+      <div class="hidden">
+        <div data-machi-repos--chat-target="defaultChatMine">
+          <%= render "shared/chat_mine", info_level: @machi_repo.info_level, chat: nil %>
         </div>
+        <div data-machi-repos--chat-target="defaultChatOthers">
+          <%= render "shared/chat_others", nickname: nil, chat: nil %>
+        </div>
+      </div>
+      <% @chats.reverse_each do |chat| %>
+        <% if current_user == chat.user %>
+          <%= render "shared/chat_mine", info_level: @machi_repo.info_level, chat: chat %>
+        <% else %>
+          <%= render "shared/chat_others", nickname: chat.user.profile.nickname, chat: chat %>
+        <% end %>
       <% end %>
     </div>
-  <% end %>
-</section>
+
+    <%= form_with url: "#", method: :post, id: "chat-form", local: true, class:"fixed right-0 bottom-17 left-0 shadow-lg" do |form| %>
+      <div class="flex items-end">
+        <%= form.text_area :body,
+          id: "body",
+          rows: 1,
+          placeholder: "メッセージを入力してください",
+          class: "border rounded-tl rounded-bl px-2 py-1 w-full bg-white resize-none overflow-hidden",
+          data: {
+            controller: "textarea-resize",
+            textarea_resize_target: "textarea",
+            action: "input->textarea-resize#resize",
+            machi_repos__chat_target: "textarea"
+          }
+        %>
+        <%= form.button id: "btn", type: "button", data: { action: "click->machi-repos--chat#onClickSendButton"} do %>
+          <div class="w-8 aspect-square bg-blue-500 text-white">
+            <%= render "shared/icons/send_icon" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+</div>

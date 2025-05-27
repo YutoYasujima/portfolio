@@ -5,17 +5,17 @@
   </div>
   <div>
     <div>
-      <span class="text-sm">ユーザー名</span>
+      <span class="chat-nickname text-sm"><%= nickname %></span>
     </div>
     <div class="chat-message-wrapper"
     >
-      <%= simple_format("ありがとうございますありがとうございますありがとうございますありがとうございますありがとうございます", class: "chat-message") %>
+      <%= simple_format(chat&.message, class: "chat-message") %>
     </div>
   </div>
   <div class="chat-else">
     <div></div>
     <div class="chat-time">
-      <time>00:00</time>
+      <time><%= chat&.created_at&.strftime("%H:%M") %></time>
     </div>
   </div>
 </div>

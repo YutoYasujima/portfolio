@@ -8,8 +8,16 @@ class MachiRepoChatChannel < ApplicationCable::Channel
     # Any cleanup needed when channel is unsubscribed
   end
 
-  def sendChat
-    ActionCable.server.broadcast "general", { name: data["name"], body: data["body"] }
-    Message.create topic: "general", name: data["name"], body: data["body"]
+  def send_chat(data)
+    user = User.find(data["user_id"])
+    chat = Chat.create(message: data["message"], image: data["image"], user: user, chatable: @machi_repo)
+    # ビューに返すオブジェクト
+    ActionCable.server.broadcast "machi_repo_chat_#{@machi_repo.id}",
+      {
+        user_id: user.id,
+        nickname: user.profile.nickname,
+        message: chat.message,
+        time: chat.created_at
+      }
   end
 end

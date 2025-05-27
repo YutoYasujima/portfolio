@@ -2,7 +2,10 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="chat-scroll"
 export default class extends Controller {
-  static targets = ["container"];
+  static targets = [
+    "container",
+    "chatArea",
+  ];
 
   connect() {
     this.scrollToBottom();
@@ -10,7 +13,7 @@ export default class extends Controller {
     // 新しいメッセージ追加(DOMの変化)を監視する
     const observer = new MutationObserver(() => this.scrollToBottom());
     // 監視対象の設定と子要素、子孫要素まで監視するかを設定
-    observer.observe(this.containerTarget, { childList: true, subtree: false });
+    observer.observe(this.chatAreaTarget, { childList: true, subtree: false });
 
     this.observer = observer;
   }

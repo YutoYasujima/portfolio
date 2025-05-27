@@ -14,6 +14,6 @@ consumer.subscriptions.create("MachiRepoChatChannel", {
   },
 
   sendChat: function() {
-    return this.perform('sendChat');
+    return this.perform('send_chat');
   }
 });

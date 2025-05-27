@@ -19,6 +19,9 @@ application.register("hamburger-menu", HamburgerMenuController)
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
+import MachiRepos__ChatController from "./machi_repos/chat_controller"
+application.register("machi-repos--chat", MachiRepos__ChatController)
+
 import MachiRepos__IndexController from "./machi_repos/index_controller"
 application.register("machi-repos--index", MachiRepos__IndexController)
 
