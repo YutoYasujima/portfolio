@@ -12,7 +12,7 @@ Rails.application.routes.draw do
       get :search
     end
 
-    resource :chat, only: [:show], controller: "machi_repo_chats"
+    resources :chats, only: %i[ index ], module: :machi_repos
   end
 
   resources :tests, only: %i[ index destroy ]
