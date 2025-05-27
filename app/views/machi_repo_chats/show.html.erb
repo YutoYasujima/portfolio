@@ -1,1 +1,6 @@
 <%= render "machi_repos/machi_repo_info", machi_repo: @machi_repo %>
+
+<section class="flex flex-col justify-end mx-auto pt-3 pl-1 pr-3 pb-8 max-w-120 xl:max-w-205">
+  <%= render "shared/chat_others" %>
+  <%= render "shared/chat_mine", machi_repo: @machi_repo %>
+</section>

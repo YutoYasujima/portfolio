@@ -330,3 +330,78 @@ input:-webkit-autofill{
 .border-color-share {
   border-color: #44D926;
 }
+
+/* チャット */
+.chat {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: end;
+  margin-bottom: 1rem;
+}
+.other.chat {
+  justify-content: start;
+}
+/* 既読・投稿時間領域 */
+.chat-else {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  color: #4b5563;
+}
+/* 投稿時間 */
+.chat-time {
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+}
+/* メッセージ領域 */
+.chat-message-wrapper {
+  position: relative;
+  border-radius: 1rem;
+  padding: 0.25rem 0.75rem;
+  max-width: 14em;
+  background-color: hsl(30, 100%, 80%);
+}
+/* チャット背景色 */
+.emergency .chat-message-wrapper {
+  background-color: #FF9999;
+}
+.warn .chat-message-wrapper {
+  background-color: #FFEE99;
+}
+.share .chat-message-wrapper {
+  background-color: #AAFF99;
+}
+/* 吹き出し */
+.chat-message-wrapper::after {
+  content: '';
+  position: absolute;
+  top: -0.125rem;
+  right: -0.125rem;
+  border: 10px solid transparent;
+  transform: rotate(20deg);
+}
+.other .chat-message-wrapper::after {
+  right: auto;
+  left: -0.125rem;
+  border-left-color: hsl(30, 100%, 80%);
+  transform: rotate(-20deg);
+}
+/* 吹き出しボーダーカラー */
+.emergency .chat-message-wrapper::after {
+  border-right-color: #FF9999;
+}
+.warn .chat-message-wrapper::after {
+  border-right-color: #FFEE99;
+}
+.share .chat-message-wrapper::after {
+  border-right-color: #AAFF99;
+}
+/* メッセージ */
+.chat-message {
+  display: inline-block;
+  overflow-wrap: break-word;
+  line-height: 1.625;
+  letter-spacing: 0em;
+  vertical-align: top;
+}
+

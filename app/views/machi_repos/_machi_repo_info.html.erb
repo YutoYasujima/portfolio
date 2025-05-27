@@ -39,7 +39,7 @@
         <li>
           <%= link_to machi_repo_path(machi_repo) do %>
             <div class="icon-circle-wrapper">
-              <div class="icon-circle icon-circle-current">
+              <div class="icon-circle <%= controller_name == "machi_repos" && action_name == "show" ? "icon-circle-current" : "" %>">
                 <div class="w-8 aspect-square">
                   <%= render "shared/icons/description_icon" %>
                 </div>
@@ -52,7 +52,7 @@
         <li>
           <%= link_to machi_repo_chat_path(machi_repo) do %>
             <div class="icon-circle-wrapper">
-              <div class="icon-circle">
+              <div class="icon-circle <%= controller_name == "machi_repo_chats" && action_name == "show" ? "icon-circle-current" : "" %>">
                 <div class="w-8 aspect-square">
                   <%= render "shared/icons/chat_icon" %>
                 </div>
