@@ -4,6 +4,12 @@
 
 import { application } from "./application"
 
+import ChatScrollController from "./chat_scroll_controller"
+application.register("chat-scroll", ChatScrollController)
+
+import DisableScrollController from "./disable_scroll_controller"
+application.register("disable-scroll", DisableScrollController)
+
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
 
@@ -30,3 +36,9 @@ application.register("prefecture-municipality", PrefectureMunicipalityController
 
 import TagController from "./tag_controller"
 application.register("tag", TagController)
+
+import TextareaResizeController from "./textarea_resize_controller"
+application.register("textarea-resize", TextareaResizeController)
+
+import ToggleController from "./toggle_controller"
+application.register("toggle", ToggleController)

@@ -1,6 +1,43 @@
-<%= render "machi_repos/machi_repo_info", machi_repo: @machi_repo %>
+<div data-controller="disable-scroll"></div>
 
-<section class="flex flex-col justify-end mx-auto pt-3 pl-1 pr-3 pb-8 max-w-120 xl:max-w-205">
-  <%= render "shared/chat_others" %>
-  <%= render "shared/chat_mine", machi_repo: @machi_repo %>
+<div class="flex flex-col justify-between h-[calc(100vh-200px)]">
+  <%= render "machi_repos/machi_repo_info", machi_repo: @machi_repo %>
+
+  <section
+    id="chat-section"
+    class="mx-auto pt-3 px-2 max-w-120 h-[calc(100%-220px)] overflow-y-auto xl:max-w-205"
+    data-controller="chat-scroll"
+    data-chat-scroll-target="container"
+  >
+    <div data-chat-scroll-target="container">
+      <%= render "shared/chat_others" %>
+      <%= render "shared/chat_mine", machi_repo: @machi_repo %>
+      <%= render "shared/chat_others" %>
+      <%= render "shared/chat_others" %>
+      <%= render "shared/chat_mine", machi_repo: @machi_repo %>
+    </div>
+  </section>
+</div>
+
+<section>
+  <%= form_with url: "#", method: :post, id: "chat-form", local: true, class:"fixed right-0 bottom-17 left-0 shadow-lg" do |form| %>
+    <div class="flex items-end">
+      <%= form.text_area :body,
+        id: "body",
+        rows: 1,
+        placeholder: "メッセージを入力してください",
+        class: "border rounded-tl rounded-bl px-2 py-1 w-full bg-white resize-none overflow-hidden",
+        data: {
+          controller: "textarea-resize",
+          textarea_resize_target: "textarea",
+          action: "input->textarea-resize#resize"
+        }
+      %>
+      <%= form.button id: "btn", type: "button" do %>
+        <div class="w-8 aspect-square bg-blue-500 text-white">
+          <%= render "shared/icons/send_icon" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 </section>
