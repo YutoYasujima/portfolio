@@ -7,7 +7,10 @@ export default class extends Controller {
     "chatArea",
     "defaultChatMine",
     "defaultChatOthers",
+    "textareaForm",
     "textarea",
+    "fileFieldForm",
+    "fileField",
   ];
 
   static values = {
@@ -44,37 +47,29 @@ export default class extends Controller {
             hour12: false,
           });
           chat.querySelector(".chat-time time").textContent = date;
-          chat.querySelector(".chat-message").textContent = data.message;
+          const wrapper = chat.querySelector(".chat-content-wrapper");
+          if (data.message) {
+            wrapper.classList.add("chat-message-wrapper");
+            const p = document.createElement("p");
+            p.classList.add("chat-message");
+            p.textContent = data.message;
+            wrapper.appendChild(p);
+          } else if (data.image_url) {
+            wrapper.classList.add("chat-image-wrapper");
+            const img = document.createElement("img");
+            img.classList.add("chat-image");
+            img.src = data.image_url;
+            wrapper.appendChild(img);
+          }
           controller.chatAreaTarget.appendChild(chat);
         },
         // チャットを送信
-        sendChat({ user_id, message, image }) {
+        sendChat(message) {
           // サーバーのsend_chatメソッドにデータを送信
-          return this.perform("send_chat", { user_id, message, image });
+          return this.perform("send_chat", { message });
         }
       }
     );
-  }
-
-  onClickSendButton(event) {
-    event.preventDefault();
-    const message = this.textareaTarget.value.trim();
-    if (!message) {
-      return;
-    }
-    // １回のタッチで２回クリックイベントが発火してしまう対応
-    if (this.isSending) {
-      return;
-    }
-    this.isSending = true;
-
-    this.subscription.sendChat({ user_id: this.userIdValue, message: message, image: null });
-    this.textareaTarget.value = "";
-
-    // 一定時間後にフラグを解除（例：300ms）
-    setTimeout(() => {
-      this.isSending = false;
-    }, 300);
   }
 
   // このdisconnectはstimulusのメソッド
@@ -82,6 +77,68 @@ export default class extends Controller {
     if (this.subscription) {
 	    // 購読を破棄する
       this.subscription.unsubscribe();
+    }
+  }
+
+  // チャットにメッセージ投稿
+  postMessage(event) {
+    event.preventDefault();
+    const message = this.textareaTarget.value.trim();
+    if (!message) {
+      return;
+    }
+
+    // １回のタッチで２回クリックイベントが発火してしまう対応
+    if (this.isSending) {
+      return;
+    }
+    this.isSending = true;
+
+    this.subscription.sendChat(message);
+    this.textareaTarget.value = "";
+
+    // 一定時間後にフラグを解除
+    setTimeout(() => {
+      this.isSending = false;
+    }, 300);
+  }
+
+  // チャットに画像投稿
+  async uploadImage(event) {
+    event.preventDefault();
+
+    const fileInput = this.fileFieldTarget;
+    if (fileInput.files.length <= 0) {
+      return;
+    }
+
+    const imageFile = fileInput.files[0];
+    const formData = new FormData();
+    formData.append("chat[image]", imageFile);
+
+    const response = await fetch(`/machi_repos/${this.machiRepoIdValue}/chats`, {
+      method: "POST",
+      headers: {
+        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+      },
+      body: formData
+    });
+
+    if (response.ok) {
+      fileInput.value = "";
+    } else {
+      const errorData = await response.json();
+      console.error("送信失敗", errorData.errors);
+    }
+  }
+
+  toggleChatForm() {
+    if (this.textareaFormTarget.classList.contains("hidden")) {
+      this.fileFieldFormTarget.classList.add("hidden");
+      this.textareaFormTarget.classList.remove("hidden");
+    } else {
+      this.fileFieldFormTarget.classList.remove("hidden");
+      this.textareaFormTarget.classList.add("hidden");
     }
   }
 }

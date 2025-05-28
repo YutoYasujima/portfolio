@@ -24,6 +24,25 @@
           <%= render "shared/chat_others", nickname: nil, chat: nil %>
         </div>
       </div>
+      <%# 今のページの`<turbo-frame>` %>
+      <%= turbo_frame_tag "chat-page-#{@chats.current_page}" do %>
+        <%# 遅延読み込みで次ページを取得する`<turbo-frame>` %>
+        <% if @chats.next_page %>
+          <%= turbo_frame_tag "chat-page-#{@chats.next_page}", loading: :lazy, src: path_to_next_page(@chats) %>
+        <% end %>
+
+        <%# 今のページで取得したまちレポ一覧 %>
+        <% @chats.reverse_each do |chat| %>
+          <% if current_user == chat.user %>
+            <%= render "shared/chat_mine", info_level: @machi_repo.info_level, chat: chat %>
+          <% else %>
+            <%= render "shared/chat_others", nickname: chat.user.profile.nickname, chat: chat %>
+          <% end %>
+        <% end %>
+      <% end %>
+<%
+=begin
+%>
       <% @chats.reverse_each do |chat| %>
         <% if current_user == chat.user %>
           <%= render "shared/chat_mine", info_level: @machi_repo.info_level, chat: chat %>
@@ -31,27 +50,56 @@
           <%= render "shared/chat_others", nickname: chat.user.profile.nickname, chat: chat %>
         <% end %>
       <% end %>
+<%
+=end
+%>
     </div>
 
-    <%= form_with url: "#", method: :post, id: "chat-form", local: true, class:"fixed right-0 bottom-17 left-0 shadow-lg" do |form| %>
-      <div class="flex items-end">
-        <%= form.text_area :body,
-          id: "body",
-          rows: 1,
-          placeholder: "メッセージを入力してください",
-          class: "border rounded-tl rounded-bl px-2 py-1 w-full bg-white resize-none overflow-hidden",
-          data: {
-            controller: "textarea-resize",
-            textarea_resize_target: "textarea",
-            action: "input->textarea-resize#resize",
-            machi_repos__chat_target: "textarea"
-          }
-        %>
-        <%= form.button id: "btn", type: "button", data: { action: "click->machi-repos--chat#onClickSendButton"} do %>
-          <div class="w-8 aspect-square bg-blue-500 text-white">
-            <%= render "shared/icons/send_icon" %>
+    <%= form_with url: "#", method: :post, local: true, class:"fixed right-0 bottom-17 left-0 shadow-lg" do |form| %>
+      <div data-machi-repos--chat-target="textareaForm">
+        <div class="flex items-end p-1 bg-white">
+          <div data-action="click->machi-repos--chat#toggleChatForm" class="flex-shrink-0 w-8 aspect-square">
+            <%= render "shared/icons/image_icon" %>
           </div>
-        <% end %>
+
+          <%= form.text_area :message,
+            maxlength: 500,
+            rows: 1,
+            placeholder: "メッセージを入力してください",
+            class: "rounded-xl px-2 py-1 w-full resize-none overflow-hidden bg-gray-100",
+            data: {
+              controller: "textarea-resize",
+              textarea_resize_target: "textarea",
+              action: "input->textarea-resize#resize",
+              machi_repos__chat_target: "textarea"
+            }
+          %>
+
+          <%= form.button id: "btn", type: "button", data: { action: "click->machi-repos--chat#postMessage"} do %>
+            <div class="flex-shrink-0 w-8 aspect-square text-blue-500">
+              <%= render "shared/icons/send_full_icon" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div data-machi-repos--chat-target="fileFieldForm" class="hidden">
+        <div class="flex items-end p-1 bg-white">
+          <div data-action="click->machi-repos--chat#toggleChatForm" class="flex-shrink-0 w-8 aspect-square">
+            <%= render "shared/icons/chat_add_on_icon" %>
+          </div>
+
+          <%= form.file_field :image,
+            class: "rounded-xl px-2 py-1 w-full bg-gray-100",
+            data: { machi_repos__chat_target: "fileField" }
+          %>
+
+          <%= form.button id: "btn", type: "button", data: { action: "click->machi-repos--chat#uploadImage"} do %>
+            <div class="flex-shrink-0 w-8 aspect-square text-blue-500">
+              <%= render "shared/icons/upload_icon" %>
+            </div>
+          <% end %>
+        </div>
       </div>
     <% end %>
   </section>
