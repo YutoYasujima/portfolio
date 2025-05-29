@@ -7,57 +7,96 @@ export default class extends Controller {
     "chatArea",
   ];
 
+  static values = {
+    machiRepoId: Number,
+  };
+
   connect() {
-    // 最初は一番下へスクロール
-    this.scrollToBottom();
+    this.waitFormImagesLoaded().then(() => {
+      // 最初は一番下へスクロール
+      this.scrollToBottom();
+      this.chatAreaTarget.classList.remove("invisible");
+      this.chatAreaTarget.classList.add("visible");
 
-    // 初期値を保存
-    this.previousScrollHeight = this.containerTarget.scrollHeight;
-
-    // DOM変化を監視（チャットメッセージ追加など）
-    this.observer = new MutationObserver(this.handleMutations.bind(this));
-    this.observer.observe(this.chatAreaTarget, { childList: true, subtree: true });
-
-    // スクロール位置を常に記録
-    this.containerTarget.addEventListener("scroll", this.recordScrollPosition);
-    this._isNearBottom = true;
+      this.loading = false;
+      this.currentPage = 1;
+      this.containerTarget.addEventListener("scroll", this.onScroll);
+    });
   }
 
   disconnect() {
-    this.observer?.disconnect();
-    this.containerTarget.removeEventListener("scroll", this.recordScrollPosition);
+    this.containerTarget.removeEventListener("scroll", this.onScroll);
   }
 
-  // DOMの変化があったときの処理
-  handleMutations() {
-    const newScrollHeight = this.containerTarget.scrollHeight;
-
-    // 下にいる場合は強制スクロール
-    if (this._isNearBottom) {
-      setTimeout(() => {
-        this.scrollToBottom();
-      }, 300);
-    } else {
-      // 上方向の読み込み(無限スクロール)によるscrollHeight増加分だけ補正
-      const diff = newScrollHeight - this.previousScrollHeight;
-      if (diff > 0) {
-        this.containerTarget.scrollTop += diff;
-      }
+  onScroll = () => {
+    if (this.containerTarget.scrollTop < 250) {
+      // ページ最上部に近づいたとき
+      this.loadPreviousPage();
     }
+  }
 
-    // 次回の比較用に記録
-    this.previousScrollHeight = newScrollHeight;
+  // 無限スクロール
+  loadPreviousPage() {
+    if (this.loading) {
+      return;
+    }
+    this.loading = true;
+    this.currentPage++;
+
+    const url = `/machi_repos/${this.machiRepoIdValue}/chats/load_more?page=${this.currentPage}`;
+    // 次のページ（上方向）を非同期で取得（URLなどは外部から渡してもよい）
+    fetch(url, {
+      headers: {
+        "Accept": "text/vnd.turbo-stream.html"
+      }
+    })
+    .then(response => response.text())
+    .then(html => {
+      Turbo.renderStreamMessage(html);
+      this.loading = false;
+      // Turbo StreamのHTMLが挿入された後にDOMを見る
+      requestAnimationFrame(() => {
+        const lastPageMarker = document.getElementById("chat-last-page-marker");
+        const isLastPage = lastPageMarker?.dataset.lastPage === "true";
+        if (isLastPage) {
+          this.containerTarget.removeEventListener("scroll", this.onScroll);
+        }
+      });
+    });
+  }
+
+  // すべての画像が表示されるまで待つ
+  waitFormImagesLoaded() {
+    return new Promise(resolve => {
+      const images = this.element.querySelectorAll("img");
+      if (images.length === 0) {
+        resolve();
+        return;
+      }
+
+      let loadedCount = 0;
+      // stimulusコントローラー配下の画像読み込みをチェック
+      const checkLoaded = () => {
+        loadedCount++;
+        if (loadedCount === images.length) {
+          resolve();
+        }
+      };
+
+      images.forEach(img => {
+        if (img.complete && img.naturalHeight !== 0) {
+          // 既に読み込み済み
+          checkLoaded();
+        } else {
+          img.addEventListener("load", checkLoaded, { once: true });
+          img.addEventListener("error", checkLoaded, { once: true });
+        }
+      });
+    });
   }
 
   // 強制的に一番下にスクロール
   scrollToBottom() {
     this.containerTarget.scrollTop = this.containerTarget.scrollHeight;
-  }
-
-  // スクロール位置を記録して「下にいるかどうか」を判断
-  recordScrollPosition = () => {
-    const { scrollTop, scrollHeight, clientHeight } = this.containerTarget;
-    const threshold = 50; // ピクセル以内なら「下にいる」と判定
-    this._isNearBottom = scrollTop + clientHeight >= scrollHeight - threshold;
   }
 }

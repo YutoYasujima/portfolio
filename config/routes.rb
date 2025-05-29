@@ -12,7 +12,11 @@ Rails.application.routes.draw do
       get :search
     end
 
-    resources :chats, only: %i[ index create ], module: :machi_repos
+    resources :chats, only: %i[ index create ], module: :machi_repos do
+      collection do
+        get :load_more
+      end
+    end
   end
 
   resources :tests, only: %i[ index destroy ]

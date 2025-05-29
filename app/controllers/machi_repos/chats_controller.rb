@@ -4,6 +4,14 @@ class MachiRepos::ChatsController < ApplicationController
     @chats = @machi_repo.chats.includes(:user).order(created_at: :desc).page(params[:page]).per(12)
   end
 
+  def load_more
+    @machi_repo = MachiRepo.includes(user: :profile).find(params[:machi_repo_id])
+    @chats = @machi_repo.chats.includes(:user).order(created_at: :desc).page(params[:page]).per(12)
+    respond_to do |format|
+      format.turbo_stream
+    end
+  end
+
   def create
     machi_repo = MachiRepo.find(params[:machi_repo_id])
     chat = machi_repo.chats.build(chat_params)

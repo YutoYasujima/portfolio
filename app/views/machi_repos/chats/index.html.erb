@@ -8,6 +8,7 @@
     class="mx-auto pt-3 px-2 w-full max-w-120 h-[calc(100%-220px)] overflow-y-auto xl:max-w-205"
     data-controller="chat-scroll machi-repos--chat"
     data-chat-scroll-target="container"
+    data-chat-scroll-machi-repo-id-value="<%= @machi_repo.id %>"
     data-machi-repos--chat-machi-repo-id-value="<%= @machi_repo.id %>"
     data-machi-repos--chat-user-id-value="<%= current_user.id %>"
   >
@@ -15,7 +16,9 @@
       id="chat-area"
       data-chat-scroll-target="chatArea"
       data-machi-repos--chat-target="chatArea"
+      class="invisible"
     >
+      <%# クローン用のデフォルトchatテンプレート %>
       <div class="hidden">
         <div data-machi-repos--chat-target="defaultChatMine">
           <%= render "shared/chat_mine", info_level: @machi_repo.info_level, chat: nil %>
@@ -24,25 +27,11 @@
           <%= render "shared/chat_others", nickname: nil, chat: nil %>
         </div>
       </div>
-      <%# 今のページの`<turbo-frame>` %>
-      <%= turbo_frame_tag "chat-page-#{@chats.current_page}" do %>
-        <%# 遅延読み込みで次ページを取得する`<turbo-frame>` %>
-        <% if @chats.next_page %>
-          <%= turbo_frame_tag "chat-page-#{@chats.next_page}", loading: :lazy, src: path_to_next_page(@chats) %>
-        <% end %>
 
-        <%# 今のページで取得したまちレポ一覧 %>
-        <% @chats.reverse_each do |chat| %>
-          <% if current_user == chat.user %>
-            <%= render "shared/chat_mine", info_level: @machi_repo.info_level, chat: chat %>
-          <% else %>
-            <%= render "shared/chat_others", nickname: chat.user.profile.nickname, chat: chat %>
-          <% end %>
-        <% end %>
-      <% end %>
-<%
-=begin
-%>
+      <%# id="chat-last-page-marker"の後にturbo_frameでchatを追加(無限スクロール) %>
+      <div id="chat-last-page-marker" data-last-page="<%= @chats.last_page? %>" class="hidden"></div>
+
+      <%# chatの初期表示 %>
       <% @chats.reverse_each do |chat| %>
         <% if current_user == chat.user %>
           <%= render "shared/chat_mine", info_level: @machi_repo.info_level, chat: chat %>
@@ -50,9 +39,6 @@
           <%= render "shared/chat_others", nickname: chat.user.profile.nickname, chat: chat %>
         <% end %>
       <% end %>
-<%
-=end
-%>
     </div>
 
     <%= form_with url: "#", method: :post, local: true, class:"fixed right-0 bottom-17 left-0 shadow-lg" do |form| %>
