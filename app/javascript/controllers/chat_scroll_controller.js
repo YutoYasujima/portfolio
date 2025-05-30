@@ -20,7 +20,13 @@ export default class extends Controller {
 
       this.loading = false;
       this.currentPage = 1;
-      this.containerTarget.addEventListener("scroll", this.onScroll);
+
+      // 無限スクロールの要否判定
+      const lastPageMarker = document.getElementById("chat-last-page-marker");
+      const isLastPage = lastPageMarker?.dataset.lastPage === "true";
+      if (!isLastPage) {
+        this.containerTarget.addEventListener("scroll", this.onScroll);
+      }
     });
   }
 
@@ -29,7 +35,7 @@ export default class extends Controller {
   }
 
   onScroll = () => {
-    if (this.containerTarget.scrollTop < 250) {
+    if (this.containerTarget.scrollTop < 500) {
       // ページ最上部に近づいたとき
       this.loadPreviousPage();
     }
@@ -52,8 +58,24 @@ export default class extends Controller {
     })
     .then(response => response.text())
     .then(html => {
+      // 日付表示対応
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+      const streamElements = doc.querySelectorAll("turbo-stream");
+      streamElements.forEach(streamEl => {
+        const templateContent = streamEl.querySelector("template")?.content;
+        const chatDates = templateContent?.querySelectorAll("[data-chat-date]");
+        chatDates?.forEach(chatDate => {
+          const date = chatDate.dataset.chatDate;
+          const existedChatDates = this.chatAreaTarget.querySelectorAll(`[data-chat-date="${CSS.escape(date)}"]`);
+          existedChatDates.forEach(existedChatDate => {
+            existedChatDate.remove();
+          });
+        });
+      });
+
+      // Turbo Streamの中身を処理する
       Turbo.renderStreamMessage(html);
-      this.loading = false;
       // Turbo StreamのHTMLが挿入された後にDOMを見る
       requestAnimationFrame(() => {
         const lastPageMarker = document.getElementById("chat-last-page-marker");
@@ -61,6 +83,7 @@ export default class extends Controller {
         if (isLastPage) {
           this.containerTarget.removeEventListener("scroll", this.onScroll);
         }
+        this.loading = false;
       });
     });
   }

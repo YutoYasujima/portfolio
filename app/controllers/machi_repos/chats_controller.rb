@@ -1,12 +1,12 @@
 class MachiRepos::ChatsController < ApplicationController
-  def index
-    @machi_repo = MachiRepo.includes(user: :profile).find(params[:machi_repo_id])
-    @chats = @machi_repo.chats.includes(:user).order(created_at: :desc).page(params[:page]).per(12)
-  end
+  before_action :set_machi_repo_and_chats, only: [:index, :load_more]
+
+  CHAT_PER_PAGE = 12
+
+  def index; end
 
   def load_more
-    @machi_repo = MachiRepo.includes(user: :profile).find(params[:machi_repo_id])
-    @chats = @machi_repo.chats.includes(:user).order(created_at: :desc).page(params[:page]).per(12)
+    @new_prev_date = @chats.last&.created_at&.to_date
     respond_to do |format|
       format.turbo_stream
     end
@@ -40,6 +40,11 @@ class MachiRepos::ChatsController < ApplicationController
   end
 
   private
+
+  def set_machi_repo_and_chats
+    @machi_repo = MachiRepo.includes(user: :profile).find(params[:machi_repo_id])
+    @chats = @machi_repo.chats.includes(:user).order(created_at: :desc).page(params[:page]).per(CHAT_PER_PAGE)
+  end
 
   def chat_params
     params.require(:chat).permit(:image).merge(user: current_user)

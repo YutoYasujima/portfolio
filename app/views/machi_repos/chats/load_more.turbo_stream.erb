@@ -1,5 +1,15 @@
 <%= turbo_stream.after "chat-last-page-marker" do %>
+  <% previous_date = @new_prev_date %>
+  <%= render "chat_date_block", date: previous_date %>
+  <% if @chats.last_page? %>
+  <% end %>
   <% @chats.reverse_each do |chat| %>
+    <% chat_date = chat.created_at.to_date %>
+    <% if previous_date != chat_date %>
+      <%= render "chat_date_block", date: chat_date %>
+    <% end %>
+    <% previous_date = chat_date %>
+
     <% if current_user == chat.user %>
       <%= render "shared/chat_mine", info_level: @machi_repo.info_level, chat: chat %>
     <% else %>

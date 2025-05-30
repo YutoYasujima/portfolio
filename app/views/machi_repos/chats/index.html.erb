@@ -5,7 +5,7 @@
 
   <section
     id="chat-section"
-    class="mx-auto pt-3 px-2 w-full max-w-120 h-[calc(100%-220px)] overflow-y-auto xl:max-w-205"
+    class="mx-auto px-2 w-full max-w-120 h-[calc(100%-220px)] overflow-y-auto xl:max-w-205"
     data-controller="chat-scroll machi-repos--chat"
     data-chat-scroll-target="container"
     data-chat-scroll-machi-repo-id-value="<%= @machi_repo.id %>"
@@ -28,11 +28,27 @@
         </div>
       </div>
 
+      <%# チャット投稿が日を跨いだときのために用意 %>
+      <div data-machi-repos--chat-target="defaultChatDate" class="hidden">
+        <%= render "chat_date_block", date: Date.parse("2025-01-01") %>
+      </div>
+
       <%# id="chat-last-page-marker"の後にturbo_frameでchatを追加(無限スクロール) %>
       <div id="chat-last-page-marker" data-last-page="<%= @chats.last_page? %>" class="hidden"></div>
 
       <%# chatの初期表示 %>
+      <%# 日付表示 %>
+      <% top_chat_date = @chats.last&.created_at&.to_date || Date.current %>
+      <%= render "chat_date_block", date: top_chat_date %>
+
+      <% previous_date = top_chat_date %>
       <% @chats.reverse_each do |chat| %>
+        <% chat_date = chat.created_at.to_date %>
+        <% if previous_date != chat_date %>
+          <%= render "chat_date_block", date: chat_date %>
+        <% end %>
+        <% previous_date = chat_date %>
+
         <% if current_user == chat.user %>
           <%= render "shared/chat_mine", info_level: @machi_repo.info_level, chat: chat %>
         <% else %>

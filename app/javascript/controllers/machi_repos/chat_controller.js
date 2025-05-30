@@ -7,6 +7,7 @@ export default class extends Controller {
     "chatArea",
     "defaultChatMine",
     "defaultChatOthers",
+    "defaultChatDate",
     "textareaForm",
     "textarea",
     "fileFieldForm",
@@ -61,6 +62,29 @@ export default class extends Controller {
             img.src = data.image_url;
             wrapper.appendChild(img);
           }
+
+          // 日付追加
+          const now = new Date(Date.now());
+          const fmtDate = new Intl.DateTimeFormat("ja-JP", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          });
+          const latestDate = fmtDate.format(now);
+          const formattedLatestDate = latestDate.replaceAll("/", "-");
+          const existedChatDate = controller.chatAreaTarget.querySelector(`[data-chat-date="${CSS.escape(formattedLatestDate)}"]`);
+
+          if (!existedChatDate) {
+            const fmtWeekday = new Intl.DateTimeFormat("ja-JP", {
+              weekday: "short",
+            });
+            const displayDate = `${latestDate}(${fmtWeekday.format(now)})`;
+            const template = controller.defaultChatDateTarget.children[0].cloneNode(true);
+            template.dataset.chatDate = formattedLatestDate;
+            template.querySelector(".chat-date").textContent = displayDate;
+            controller.chatAreaTarget.appendChild(template);
+          }
+
           controller.chatAreaTarget.appendChild(chat);
         },
         // チャットを送信
