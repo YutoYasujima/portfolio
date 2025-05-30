@@ -21,8 +21,9 @@ export default class extends Controller {
       });
 
       if (chatSection) {
-        // 閉じた後のチャット領域の高さ
-        chatSection.style.height = "calc(100vh - 132px)";
+        // contentを閉じた後のチャット領域の高さ
+        this.chatSectionBeforeHeight = chatSection.clientHeight;
+        chatSection.style.height = `calc(${this.chatSectionBeforeHeight}px + ${content.clientHeight}px)`;
       }
     } else {
       // 開く処理
@@ -36,8 +37,8 @@ export default class extends Controller {
       });
 
       if (chatSection) {
-        // 開いた後のチャット領域の高さ
-        chatSection.style.height = "calc(100vh - 220px)";
+        // contentを開いた後のチャット領域の高さ
+        chatSection.style.height = `${this.chatSectionBeforeHeight}px`;
       }
     }
 

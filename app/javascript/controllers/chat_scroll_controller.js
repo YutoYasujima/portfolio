@@ -12,6 +12,7 @@ export default class extends Controller {
   };
 
   connect() {
+    // 画像の表示が終了してから初期設定を行う
     this.waitFormImagesLoaded().then(() => {
       // 最初は一番下へスクロール
       this.scrollToBottom();
@@ -34,6 +35,7 @@ export default class extends Controller {
     this.containerTarget.removeEventListener("scroll", this.onScroll);
   }
 
+  // 無限スクロール用トリガー
   onScroll = () => {
     if (this.containerTarget.scrollTop < 500) {
       // ページ最上部に近づいたとき
@@ -50,7 +52,7 @@ export default class extends Controller {
     this.currentPage++;
 
     const url = `/machi_repos/${this.machiRepoIdValue}/chats/load_more?page=${this.currentPage}`;
-    // 次のページ（上方向）を非同期で取得（URLなどは外部から渡してもよい）
+    // 次のページ（上方向）を非同期で取得
     fetch(url, {
       headers: {
         "Accept": "text/vnd.turbo-stream.html"
@@ -59,6 +61,9 @@ export default class extends Controller {
     .then(response => response.text())
     .then(html => {
       // 日付表示対応
+      // 受け取ったTurbo Streamファイルを解析
+      // 解析したファイル内にある日付表示がDOM上に既にあった場合は
+      // DOM上の表示を削除する
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, "text/html");
       const streamElements = doc.querySelectorAll("turbo-stream");
@@ -74,7 +79,7 @@ export default class extends Controller {
         });
       });
 
-      // Turbo Streamの中身を処理する
+      // Turbo Streamの中身を表示する
       Turbo.renderStreamMessage(html);
       // Turbo StreamのHTMLが挿入された後にDOMを見る
       requestAnimationFrame(() => {

@@ -2,7 +2,7 @@
 <% content_for :body_class, "bg-#{machi_repo.info_level}" %>
 
 <section data-controller="toggle">
-  <div data-toggle-target="content" class="open text-center transition-all duration-300 ease-in-out overflow-hidden">
+  <div data-toggle-target="content" class="open text-center transition-all duration-300 ease-in-out overflow-hidden md:border-b-2 md:border-gray-500">
     <div class="mx-auto py-4 px-2 max-w-[550px]">
       <div class="flex justify-between items-center mx-auto mb-4">
         <div class="flex items-center <%= "text-#{machi_repo.info_level}" %>">
@@ -64,7 +64,7 @@
       </ul>
     </nav>
   </div>
-  <div data-action="click->toggle#toggle" class="border-t-2 border-b-2 border-gray-500 bg-white">
+  <div data-action="click->toggle#toggle" class="border-t-2 border-b-2 border-gray-500 bg-white md:hidden">
     <div class="mx-auto w-8 aspect-square">
       <%= render "shared/icons/eject_icon" %>
     </div>
