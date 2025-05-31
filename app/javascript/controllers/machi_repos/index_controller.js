@@ -66,6 +66,8 @@ export default class extends Controller {
     }
 
     disconnect() {
+      // Googleマップのzoomを保持
+      localStorage.setItem("mapZoom", this.map.getZoom());
       // メモリへの影響を考慮し解放しておく
       this.clearMarkers();
       this.map = null;

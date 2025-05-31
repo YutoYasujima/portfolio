@@ -1,0 +1,121 @@
+<div data-controller="disable-scroll"></div>
+
+<div class="flex flex-col">
+  <%= render "machi_repos/machi_repo_info", machi_repo: @machi_repo %>
+
+  <section
+    class="relative flex-1 mx-auto w-full max-w-120 shadow-lg"
+    data-controller="chat-scroll machi-repos--chat"
+    data-chat-scroll-machi-repo-id-value="<%= @machi_repo.id %>"
+    data-machi-repos--chat-machi-repo-id-value="<%= @machi_repo.id %>"
+    data-machi-repos--chat-user-id-value="<%= current_user.id %>"
+  >
+    <div
+      id="chat-section"
+      class="px-2 h-[calc(100vh-460px)] overflow-y-auto transition-all duration-300 ease-in-out md:h-[calc(100vh-375px)]"
+      data-chat-scroll-target="container"
+      data-machi-repos--chat-target="container"
+    >
+      <div
+        id="chat-area"
+        data-chat-scroll-target="chatArea"
+        data-machi-repos--chat-target="chatArea"
+        class="invisible"
+      >
+        <%# クローン用のデフォルトchatテンプレート %>
+        <div class="hidden">
+          <div data-machi-repos--chat-target="defaultChatMine">
+            <%= render "shared/chat_mine", info_level: @machi_repo.info_level, chat: nil %>
+          </div>
+          <div data-machi-repos--chat-target="defaultChatOthers">
+            <%= render "shared/chat_others", nickname: nil, chat: nil %>
+          </div>
+        </div>
+
+        <%# チャット投稿が日を跨いだときのために用意 %>
+        <div data-machi-repos--chat-target="defaultChatDate" class="hidden">
+          <%= render "chat_date_block", date: Date.parse("2025-01-01") %>
+        </div>
+
+        <%# id="chat-last-page-marker"の後にturbo_frameでchatを追加(無限スクロール) %>
+        <div id="chat-last-page-marker" data-last-page="<%= @chats.last_page? %>" class="hidden"></div>
+
+        <%# chatの初期表示 %>
+        <%# 日付表示 %>
+        <% top_chat_date = @chats.last&.created_at&.to_date || Date.current %>
+        <%= render "chat_date_block", date: top_chat_date %>
+
+        <% previous_date = top_chat_date %>
+        <% @chats.reverse_each do |chat| %>
+          <% chat_date = chat.created_at.to_date %>
+          <% if previous_date != chat_date %>
+            <%= render "chat_date_block", date: chat_date %>
+          <% end %>
+          <% previous_date = chat_date %>
+
+          <% if current_user == chat.user %>
+            <%= render "shared/chat_mine", info_level: @machi_repo.info_level, chat: chat %>
+          <% else %>
+            <%= render "shared/chat_others", nickname: chat.user.profile.nickname, chat: chat %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <%= form_with url: "#", method: :post, local: true, class:"fixed bottom-[68px] left-1/2 -translate-x-1/2 shadow-lg w-full max-w-[480px] md:bottom-[105px]" do |form| %>
+      <div data-machi-repos--chat-target="textareaForm">
+        <div class="flex items-end p-1 bg-white">
+          <div data-action="click->machi-repos--chat#toggleChatForm" class="flex-shrink-0 w-8 aspect-square">
+            <%= render "shared/icons/image_icon" %>
+          </div>
+
+          <%= form.text_area :message,
+            maxlength: 500,
+            rows: 1,
+            placeholder: "メッセージを入力してください",
+            class: "rounded-xl px-2 py-1 w-full resize-none overflow-hidden bg-gray-100",
+            data: {
+              controller: "textarea-resize",
+              textarea_resize_target: "textarea",
+              action: "input->textarea-resize#resize",
+              machi_repos__chat_target: "textarea"
+            }
+          %>
+
+          <%= form.button id: "btn", type: "button", data: { action: "click->machi-repos--chat#postMessage"} do %>
+            <div class="flex-shrink-0 w-8 aspect-square text-blue-500">
+              <%= render "shared/icons/send_full_icon" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div data-machi-repos--chat-target="fileFieldForm" class="hidden">
+        <div class="flex items-end p-1 bg-white">
+          <div data-action="click->machi-repos--chat#toggleChatForm" class="flex-shrink-0 w-8 aspect-square">
+            <%= render "shared/icons/chat_add_on_icon" %>
+          </div>
+
+          <%= form.file_field :image,
+            class: "rounded-xl px-2 py-1 w-full bg-gray-100",
+            data: { machi_repos__chat_target: "fileField" }
+          %>
+
+          <%= form.button id: "btn", type: "button", data: { action: "click->machi-repos--chat#uploadImage"} do %>
+            <div class="flex-shrink-0 w-8 aspect-square text-blue-500">
+              <%= render "shared/icons/upload_icon" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <%# 新着チャット表示 %>
+    <div
+      data-action="click->machi-repos--chat#scrollNewChat"
+      data-machi-repos--chat-target="newIcon"
+      class="hidden absolute bottom-2 right-2 shadow-lg border-2 border-orange-400 rounded-full w-[60px] aspect-square text-center leading-[60px] bg-white text-orange-500 font-semibold z-1 md:right-4">
+      New!!
+    </div>
+  </section>
+</div>
