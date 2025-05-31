@@ -1,5 +1,8 @@
 <!-- 自分のチャット -->
-<div class="chat <%= "#{info_level}" %>">
+<div
+  data-chat-id="<%= chat&.id %>"
+  class="chat <%= "#{info_level}" %>"
+>
   <div class="chat-else">
     <div></div>
     <div class="chat-time">

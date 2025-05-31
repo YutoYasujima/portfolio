@@ -16,6 +16,9 @@ Rails.application.routes.draw do
       collection do
         get :load_more
       end
+      member do
+        get :render_chat
+      end
     end
   end
 
