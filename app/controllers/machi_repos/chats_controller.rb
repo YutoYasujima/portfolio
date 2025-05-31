@@ -17,8 +17,6 @@ class MachiRepos::ChatsController < ApplicationController
     chat = machi_repo.chats.build(chat_params)
 
     unless chat.save
-      flash.now[:alert] = [ "画像のアップロードに失敗しました" ]
-      flash.now[:alert] += chat.errors.full_messages if chat.errors.any?
       render json: {
         status: "ng", errors: chat.errors.full_messages
       }, status: :unprocessable_entity
@@ -29,14 +27,28 @@ class MachiRepos::ChatsController < ApplicationController
     chat.reload
 
     # Action Cableで他のユーザーにも通知
-    ActionCable.server.broadcast "machi_repo_chat_#{chat.chatable.id}", {
-      user_id: chat.user_id,
-      nickname: chat.user.profile.nickname,
-      image_url: chat.image.url,
-      time: chat.created_at
+    ActionCable.server.broadcast "machi_repo_chat_#{machi_repo.id}", {
+      chat_id: chat.id
     }
 
     render json: { status: "ok" }
+  end
+
+  def render_chat
+    @chat = Chat.find(params[:id])
+    @user = @chat.user
+    @machi_repo = @chat.chatable
+
+    # @chatが本当にmachi_repo_idのまちレポに属するのか確認
+    unless @machi_repo.id == params[:machi_repo_id].to_i
+      head :forbidden and return
+    end
+
+    @other_chats_on_same_day_exist = @machi_repo.chats.where(created_at: @chat.created_at.to_date.all_day).where.not(id: @chat.id).exists?
+
+    respond_to do |format|
+      format.turbo_stream
+    end
   end
 
   private
@@ -47,6 +59,6 @@ class MachiRepos::ChatsController < ApplicationController
   end
 
   def chat_params
-    params.require(:chat).permit(:image).merge(user: current_user)
+    params.require(:chat).permit(:message, :image).merge(user: current_user)
   end
 end

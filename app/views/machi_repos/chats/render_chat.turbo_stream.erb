@@ -1,0 +1,10 @@
+<%= turbo_stream.append "chat-area" do %>
+  <% unless @other_chats_on_same_day_exist %>
+    <%= render "chat_date_block", date: @chat.created_at.to_date %>
+  <% end %>
+  <% if current_user == @user %>
+    <%= render "shared/chat_mine", info_level: @machi_repo.info_level, chat: @chat %>
+  <% else %>
+    <%= render "shared/chat_others", nickname: @user.profile.nickname, chat: @chat %>
+  <% end %>
+<% end %>

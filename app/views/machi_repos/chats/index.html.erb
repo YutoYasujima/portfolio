@@ -22,15 +22,6 @@
         data-machi-repos--chat-target="chatArea"
         class="invisible"
       >
-        <%# クローン用のデフォルトchatテンプレート %>
-        <div class="hidden">
-          <div data-machi-repos--chat-target="defaultChatMine">
-            <%= render "shared/chat_mine", info_level: @machi_repo.info_level, chat: nil %>
-          </div>
-          <div data-machi-repos--chat-target="defaultChatOthers">
-            <%= render "shared/chat_others", nickname: nil, chat: nil %>
-          </div>
-        </div>
 
         <%# チャット投稿が日を跨いだときのために用意 %>
         <div data-machi-repos--chat-target="defaultChatDate" class="hidden">
@@ -42,8 +33,10 @@
 
         <%# chatの初期表示 %>
         <%# 日付表示 %>
-        <% top_chat_date = @chats.last&.created_at&.to_date || Date.current %>
-        <%= render "chat_date_block", date: top_chat_date %>
+        <% top_chat_date = @chats.last&.created_at&.to_date %>
+        <% if top_chat_date %>
+          <%= render "chat_date_block", date: top_chat_date %>
+        <% end %>
 
         <% previous_date = top_chat_date %>
         <% @chats.reverse_each do |chat| %>

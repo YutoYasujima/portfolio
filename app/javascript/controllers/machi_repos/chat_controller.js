@@ -6,9 +6,6 @@ export default class extends Controller {
   static targets = [
     "container",
     "chatArea",
-    "defaultChatMine",
-    "defaultChatOthers",
-    "defaultChatDate",
     "textareaForm",
     "textarea",
     "fileFieldForm",
@@ -37,30 +34,26 @@ export default class extends Controller {
       {
         // メソッド定義
         // サーバーから受信
-        received(data) {
-          // 今日の日付表示追加
-          controller.insertTodayLabel();
+        async received(data) {
+          const chatId = data.chat_id;
 
           // チャット表示
-          const chat = controller.createChat(data);
-          controller.chatAreaTarget.appendChild(chat);
+          await controller.fetchChatPartial(chatId);
 
-          // 新着チャット処理
-          if (controller.isNearBottom()) {
-            // チャット画像の読み込み終了待ち
-            controller.waitFormImageLoaded(chat).then(() => {
-              // bottom付近を見ていた場合、最下部へスクロール
-              controller.containerTarget.scrollTop = controller.containerTarget.scrollHeight;
-            });
-          } else {
-            // Newアイコンを表示
-            controller.newIconTarget.classList.remove("hidden");
-          }
-        },
-        // チャットを送信
-        sendChat(message) {
-          // サーバーのsend_chatメソッドにデータを送信
-          return this.perform("send_chat", { message });
+          // Turbo Streamの描画が終わった後に実行
+          requestAnimationFrame(() => {
+            // 新着チャット処理
+            if (controller.isNearBottom()) {
+              // チャット画像の読み込み終了待ち
+              controller.waitFormImageLoaded(chatId).then(() => {
+                // bottom付近を見ていた場合、最下部へスクロール
+                controller.containerTarget.scrollTop = controller.containerTarget.scrollHeight;
+              });
+            } else {
+              // Newアイコンを表示
+              controller.newIconTarget.classList.remove("hidden");
+            }
+          });
         }
       }
     );
@@ -75,8 +68,26 @@ export default class extends Controller {
     this.containerTarget.removeEventListener("scroll", this.hiddenNewIcon.bind(this));
   }
 
+  // 部分テンプレート取得によるチャット表示
+  async fetchChatPartial(chatId) {
+    await fetch(`/machi_repos/${this.machiRepoIdValue}/chats/${chatId}/render_chat`, {
+      headers: {
+        "Accept": "text/vnd.turbo-stream.html"
+      }
+    })
+    .then(response => response.text())
+    .then(html => {
+      // チャット表示
+      // Turbo Streamの中身を表示する
+      Turbo.renderStreamMessage(html);
+    })
+    .catch(error => {
+      console.error("部分テンプレートの取得に失敗:", error);
+    });
+  }
+
   // チャットにメッセージ投稿
-  postMessage(event) {
+  async postMessage(event) {
     event.preventDefault();
     const message = this.textareaTarget.value.trim();
     if (!message) {
@@ -89,13 +100,29 @@ export default class extends Controller {
     }
     this.isMessageSending = true;
 
-    this.subscription.sendChat(message);
-    this.textareaTarget.value = "";
+    const formData = new FormData();
+    formData.append("chat[message]", message);
 
-    // 一定時間後に連打フラグを解除
-    setTimeout(() => {
+    try {
+      const response = await fetch(`/machi_repos/${this.machiRepoIdValue}/chats`, {
+        method: "POST",
+        headers: {
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        this.textareaTarget.value = "";
+      } else {
+        const errorData = await response.json();
+        console.error("送信失敗", errorData.errors);
+      }
+    } catch (error) {
+      console.error("ネットワークエラー", error);
+    } finally {
       this.isMessageSending = false;
-    }, 300);
+    }
   }
 
   // チャットに画像投稿
@@ -150,72 +177,10 @@ export default class extends Controller {
     }
   }
 
-  // 取得したデータを元にチャット作成
-  createChat(data) {
-    // 画面に表示する
-    let chat = null;
-    if (Number(data.user_id) === Number(this.userIdValue)) {
-      // 自分のチャット表示
-      chat = this.defaultChatMineTarget.children[0].cloneNode(true);
-    } else {
-      // 他人のチャット表示
-      chat = this.defaultChatOthersTarget.children[0].cloneNode(true);
-      chat.querySelector(".chat-nickname").textContent = data.nickname;
-    }
-    const date = new Date(data.time).toLocaleTimeString("ja-JP", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-    chat.querySelector(".chat-time time").textContent = date;
-    const wrapper = chat.querySelector(".chat-content-wrapper");
-    if (data.message) {
-      // メッセージ表示
-      wrapper.classList.add("chat-message-wrapper");
-      const p = document.createElement("p");
-      p.classList.add("chat-message");
-      p.textContent = data.message;
-      wrapper.appendChild(p);
-    } else if (data.image_url) {
-      // 画像表示
-      wrapper.classList.add("chat-image-wrapper");
-      const img = document.createElement("img");
-      img.classList.add("chat-image");
-      img.src = data.image_url;
-      wrapper.appendChild(img);
-    }
-
-    return chat;
-  }
-
-  // チャット前に今日の日付を表示する
-  insertTodayLabel() {
-    const now = new Date(Date.now());
-    const fmtDate = new Intl.DateTimeFormat("ja-JP", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-    const latestDate = fmtDate.format(now);
-    const formattedLatestDate = latestDate.replaceAll("/", "-");
-    const existedChatDate = this.chatAreaTarget.querySelector(`[data-chat-date="${CSS.escape(formattedLatestDate)}"]`);
-
-    if (!existedChatDate) {
-      const fmtWeekday = new Intl.DateTimeFormat("ja-JP", {
-        weekday: "short",
-      });
-      const displayDate = `${latestDate}(${fmtWeekday.format(now)})`;
-      const template = this.defaultChatDateTarget.children[0].cloneNode(true);
-      template.dataset.chatDate = formattedLatestDate;
-      template.querySelector(".chat-date").textContent = displayDate;
-      this.chatAreaTarget.appendChild(template);
-    }
-  }
-
   // チャット画像が表示されるまで待機
-  waitFormImageLoaded(chat) {
+  waitFormImageLoaded(chatId) {
     return new Promise(resolve => {
-      const image = chat.querySelector("img");
+      const image = this.chatAreaTarget.querySelector(`[data-chat-id="${CSS.escape(chatId)}"] img`);
       if (!image) {
         resolve();
         return;
