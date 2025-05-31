@@ -23,7 +23,8 @@ export default class extends Controller {
 
   connect() {
     // 送信中フラグ
-    this.isSending = false;
+    this.isMessageSending = false;
+    this.isImageSending = false;
     // stimulusコントローラーを保持する
     const controller = this;
     // Newアイコンを非表示にする
@@ -82,18 +83,18 @@ export default class extends Controller {
       return;
     }
 
-    // １回のタッチで２回クリックイベントが発火してしまう対応
-    if (this.isSending) {
+    // 連打対応
+    if (this.isMessageSending) {
       return;
     }
-    this.isSending = true;
+    this.isMessageSending = true;
 
     this.subscription.sendChat(message);
     this.textareaTarget.value = "";
 
-    // 一定時間後にフラグを解除
+    // 一定時間後に連打フラグを解除
     setTimeout(() => {
-      this.isSending = false;
+      this.isMessageSending = false;
     }, 300);
   }
 
@@ -106,23 +107,35 @@ export default class extends Controller {
       return;
     }
 
+    // 連打対応
+    if (this.isImageSending) {
+      return;
+    }
+    this.isImageSending = true;
+
     const imageFile = fileInput.files[0];
     const formData = new FormData();
     formData.append("chat[image]", imageFile);
 
-    const response = await fetch(`/machi_repos/${this.machiRepoIdValue}/chats`, {
-      method: "POST",
-      headers: {
-        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
-      },
-      body: formData
-    });
+    try {
+      const response = await fetch(`/machi_repos/${this.machiRepoIdValue}/chats`, {
+        method: "POST",
+        headers: {
+          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+        },
+        body: formData
+      });
 
-    if (response.ok) {
-      fileInput.value = "";
-    } else {
-      const errorData = await response.json();
-      console.error("送信失敗", errorData.errors);
+      if (response.ok) {
+        fileInput.value = "";
+      } else {
+        const errorData = await response.json();
+        console.error("送信失敗", errorData.errors);
+      }
+    } catch (error) {
+      console.error("ネットワークエラー", error);
+    } finally {
+      this.isImageSending = false;
     }
   }
 
