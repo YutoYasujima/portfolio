@@ -5,6 +5,7 @@ class MachiRepos::ChatsController < ApplicationController
 
   def index; end
 
+  # 無限スクロール用データ取得
   def load_more
     @new_prev_date = @chats.last&.created_at&.to_date
     respond_to do |format|
@@ -12,6 +13,7 @@ class MachiRepos::ChatsController < ApplicationController
     end
   end
 
+  # DB登録とブロードキャスト
   def create
     machi_repo = MachiRepo.find(params[:machi_repo_id])
     chat = machi_repo.chats.build(chat_params)
@@ -28,12 +30,14 @@ class MachiRepos::ChatsController < ApplicationController
 
     # Action Cableで他のユーザーにも通知
     ActionCable.server.broadcast "machi_repo_chat_#{machi_repo.id}", {
+      type: "create",
       chat_id: chat.id
     }
 
     render json: { status: "ok" }
   end
 
+  # チャットパーシャル取得
   def render_chat
     @chat = Chat.find(params[:id])
     @user = @chat.user
@@ -46,6 +50,25 @@ class MachiRepos::ChatsController < ApplicationController
 
     @other_chats_on_same_day_exist = @machi_repo.chats.where(created_at: @chat.created_at.to_date.all_day).where.not(id: @chat.id).exists?
 
+    respond_to do |format|
+      format.turbo_stream
+    end
+  end
+
+  def destroy
+    @chat = current_user.chats.find(params[:id])
+    @machi_repo = @chat.chatable
+
+    @chat.destroy!
+
+    # Action Cableで他のユーザーにも通知
+    ActionCable.server.broadcast "machi_repo_chat_#{@machi_repo.id}", {
+      type: "destroy",
+      chat_id: @chat.id,
+      user_id: current_user.id
+    }
+
+    # 自身のチャットはTurbo Streamで画面から削除
     respond_to do |format|
       format.turbo_stream
     end

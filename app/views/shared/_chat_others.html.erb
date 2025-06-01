@@ -1,7 +1,8 @@
 <!-- 誰かのチャット -->
 <div
-  data-chat-id="<%= chat&.id %>"
+  id="chat_<%= chat&.id %>"
   class="chat other"
+  data-chat-own="others"
 >
   <div class="w-8 aspect-square">
     <%= render "shared/icons/face_icon" %>
@@ -18,8 +19,6 @@
       <div class="chat-message-wrapper">
         <%= simple_format(chat&.message, class: "chat-message") %>
       </div>
-    <% else %>
-      <div class="chat-content-wrapper"></div>
     <% end %>
   </div>
   <div class="chat-else">
