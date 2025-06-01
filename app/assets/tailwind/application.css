@@ -337,7 +337,12 @@ input:-webkit-autofill{
   display: flex;
   gap: 0.25rem;
   justify-content: end;
+  position: relative;
   margin-bottom: 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 .other.chat {
   justify-content: start;
@@ -417,3 +422,30 @@ input:-webkit-autofill{
   object-fit: cover;
 }
 
+/* スクロールバー非表示 */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+/* アニメーション */
+.shake {
+  animation: shake 1.5s infinite linear;
+}
+@keyframes shake {
+  0%   { transform: translate(1px, -1px); }
+  10%  { transform: translate(-1px, 1px); }
+  20%  { transform: translate(1px, -1px); }
+  30%  { transform: translate(-1px, 1px); }
+  40%  { transform: translate(1px, -1px); }
+  50%  { transform: translate(-1px, -1px); }
+  60%  { transform: translate(1px, 1px); }
+  70%  { transform: translate(-1px, -1px); }
+  80%  { transform: translate(1px, 1px); }
+  90%  { transform: translate(-1px, -1px); }
+  100% { transform: translate(1px, -1px); }
+}

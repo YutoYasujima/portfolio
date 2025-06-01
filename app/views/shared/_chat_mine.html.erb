@@ -1,7 +1,8 @@
 <!-- 自分のチャット -->
 <div
-  data-chat-id="<%= chat&.id %>"
-  class="chat <%= "#{info_level}" %>"
+  id="chat_<%= chat&.id %>"
+  class="chat <%= "#{machi_repo.info_level}" %>"
+  data-chat-own="mine"
 >
   <div class="chat-else">
     <div></div>
@@ -9,15 +10,23 @@
       <time><%= chat&.created_at&.strftime("%H:%M") %></time>
     </div>
   </div>
-  <% if chat&.image? %>
-    <div class="chat-image-wrapper">
-      <%= image_tag(chat.image.url, class: "chat-image") %>
+  <div class="chat-contents relative">
+    <%= button_to machi_repo_chat_path(machi_repo, chat), method: :delete, data: { controller: "modal", action: "click->modal#confirm", modal_text_value: "削除しますか？" }, class: "hidden absolute top-1/2 -translate-y-1/2 left-0 -translate-x-[calc(100%+8px)] border-2 border-red-700 rounded-xl p-1 shadow-lg bg-red-100" do %>
+      <span class="block w-8 aspect-square text-red-700">
+        <%= render "shared/icons/delete_icon" %>
+      </span>
+    <% end %>
+    <div class="chat-contents-wrapper">
+      <% if chat&.image? %>
+        <div class="chat-image-wrapper">
+          <%= image_tag(chat.image.url, class: "chat-image") %>
+        </div>
+      <% elsif chat&.message.present? %>
+        <div class="chat-message-wrapper">
+          <%= simple_format(chat&.message, class: "chat-message") %>
+        </div>
+      <% end %>
     </div>
-  <% elsif chat&.message.present? %>
-    <div class="chat-message-wrapper">
-      <%= simple_format(chat&.message, class: "chat-message") %>
-    </div>
-  <% else %>
-    <div class="chat-content-wrapper"></div>
-  <% end %>
+  </div>
 </div>
+

@@ -19,6 +19,25 @@ export default class extends Controller {
   };
 
   connect() {
+    // 選択中のチャットの削除ボタン
+    this.selectedChatButton = null;
+    this.timeoutId = null;
+    // 削除ボタン表示制御
+    this.boundPressStart = this.pressStart.bind(this);
+    this.boundCancelPress = this.cancelPress.bind(this);
+
+    // PCイベント
+    document.addEventListener("mousedown", this.boundPressStart);
+    this.chatAreaTarget.addEventListener("mousedown", this.boundPressStart);
+    this.chatAreaTarget.addEventListener("mouseup", this.boundCancelPress);
+    this.chatAreaTarget.addEventListener("mouseleave", this.boundCancelPress);
+
+    // モバイルイベント
+    document.addEventListener("touchstart", this.boundPressStart);
+    this.chatAreaTarget.addEventListener("touchstart", this.boundPressStart);
+    this.chatAreaTarget.addEventListener("touchend", this.boundCancelPress);
+    this.chatAreaTarget.addEventListener("touchcancel", this.boundCancelPress);
+
     // 送信中フラグ
     this.isMessageSending = false;
     this.isImageSending = false;
@@ -36,24 +55,40 @@ export default class extends Controller {
         // サーバーから受信
         async received(data) {
           const chatId = data.chat_id;
+          if (data.type === "create") {
+            // チャット表示
+            await controller.fetchChatPartial(chatId);
 
-          // チャット表示
-          await controller.fetchChatPartial(chatId);
-
-          // Turbo Streamの描画が終わった後に実行
-          requestAnimationFrame(() => {
-            // 新着チャット処理
-            if (controller.isNearBottom()) {
-              // チャット画像の読み込み終了待ち
-              controller.waitFormImageLoaded(chatId).then(() => {
-                // bottom付近を見ていた場合、最下部へスクロール
-                controller.containerTarget.scrollTop = controller.containerTarget.scrollHeight;
+            // Turbo Streamの描画が終わった後に実行
+            requestAnimationFrame(() => {
+              // 新着チャット処理
+              if (controller.isNearBottom()) {
+                // チャット画像の読み込み終了待ち
+                controller.waitFormImageLoaded(chatId).then(() => {
+                  // bottom付近を見ていた場合、最下部へスクロール
+                  controller.containerTarget.scrollTop = controller.containerTarget.scrollHeight;
+                });
+              } else {
+                // Newアイコンを表示
+                controller.newIconTarget.classList.remove("hidden");
+              }
+            });
+          } else if (data.type === "destroy") {
+            if (Number(data.user_id) === Number(controller.userIdValue)) {
+              // 自分のチャットを消すのはTurbo Streamで行っている
+              requestAnimationFrame(() => {
+                controller.selectedChatButton = null;
               });
-            } else {
-              // Newアイコンを表示
-              controller.newIconTarget.classList.remove("hidden");
+              return;
             }
-          });
+
+            // 誰かがチャットを削除した場合、画面からチャットを消す
+            const chat = controller.chatAreaTarget.querySelector(`#${CSS.escape(`chat_${chatId}`)}`);
+            if (chat) {
+              chat.remove();
+              controller.selectedChatButton = null;
+            }
+          }
         }
       }
     );
@@ -66,6 +101,18 @@ export default class extends Controller {
       this.subscription.unsubscribe();
     }
     this.containerTarget.removeEventListener("scroll", this.hiddenNewIcon.bind(this));
+
+    // PCイベント解除
+    document.removeEventListener("mousedown", this.boundPressStart);
+    this.chatAreaTarget.removeEventListener("mousedown", this.boundPressStart);
+    this.chatAreaTarget.removeEventListener("mouseup", this.boundCancelPress);
+    this.chatAreaTarget.removeEventListener("mouseleave", this.boundCancelPress);
+
+    // モバイルイベント解除
+    document.removeEventListener("touchstart", this.boundPressStart);
+    this.chatAreaTarget.removeEventListener("touchstart", this.boundPressStart);
+    this.chatAreaTarget.removeEventListener("touchend", this.boundCancelPress);
+    this.chatAreaTarget.removeEventListener("touchcancel", this.boundCancelPress);
   }
 
   // 部分テンプレート取得によるチャット表示
@@ -180,7 +227,7 @@ export default class extends Controller {
   // チャット画像が表示されるまで待機
   waitFormImageLoaded(chatId) {
     return new Promise(resolve => {
-      const image = this.chatAreaTarget.querySelector(`[data-chat-id="${CSS.escape(chatId)}"] img`);
+      const image = this.chatAreaTarget.querySelector(`#${CSS.escape(`chat_${chatId}`)} img`);
       if (!image) {
         resolve();
         return;
@@ -222,5 +269,40 @@ export default class extends Controller {
     // bottomからどこまでをnearとするか
     const bottomOffset = 300;
     return container.scrollTop + container.clientHeight >= container.scrollHeight - bottomOffset;
+  }
+
+  // チャット長押しで削除ボタン表示
+  pressStart(event) {
+    clearTimeout(this.timeoutId);
+    const chat = event.target.closest(".chat");
+    // チャットではない場所または誰かのチャットでmousedownした場合、
+    // 表示されている削除ボタンがあれば隠す
+    if (!chat || chat.dataset.chatOwn === "others") {
+      if (this.selectedChatButton) {
+        this.selectedChatButton.closest(".chat").querySelector(".chat-contents-wrapper").classList.remove("shake");
+        this.selectedChatButton.classList.add("hidden");
+        this.selectedChatButton = null;
+      }
+      return;
+    }
+
+    const chatButton = chat.querySelector("button");
+    // ターゲット以外の削除ボタンが表示されていたら非表示にする
+    if (this.selectedChatButton && this.selectedChatButton !== chatButton) {
+      this.selectedChatButton.closest(".chat").querySelector(".chat-contents-wrapper").classList.remove("shake");
+      this.selectedChatButton.classList.add("hidden");
+      this.selectedChatButton = null;
+    }
+
+    this.timeoutId = setTimeout(() => {
+      this.selectedChatButton = chatButton;
+      this.selectedChatButton.classList.remove("hidden");
+      chat.querySelector(".chat-contents-wrapper").classList.add("shake");
+    }, 500);
+  }
+
+  // Timeoutクリア
+  cancelPress() {
+    clearTimeout(this.timeoutId);
   }
 }

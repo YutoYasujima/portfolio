@@ -20,46 +20,51 @@ export default class extends Controller {
   confirm(event) {
     event.preventDefault();
 
+    const form = event.target.closest("form");
+
     // 要素作成
-    const overlay = document.createElement('div');
-    const modal = document.createElement('div');
-    const text = document.createElement('p');
-    const buttonWrapper = document.createElement('div');
-    const okButton = document.createElement('button');
-    const cancelButton = document.createElement('button');
+    const overlay = document.createElement("div");
+    const modal = document.createElement("div");
+    const text = document.createElement("p");
+    const buttonWrapper = document.createElement("div");
+    const okButton = document.createElement("button");
+    const cancelButton = document.createElement("button");
 
     // class属性追加
-    overlay.classList.add('overlay');
-    modal.classList.add('modal');
-    text.classList.add('modal-text');
-    buttonWrapper.classList.add('modal-button-wrapper');
-    okButton.classList.add('modal-button', 'modal-ok');
-    cancelButton.classList.add('modal-button', 'modal-cancel');
+    overlay.classList.add("overlay");
+    modal.classList.add("modal");
+    text.classList.add("modal-text");
+    buttonWrapper.classList.add("modal-button-wrapper");
+    okButton.classList.add("modal-button", "modal-ok");
+    cancelButton.classList.add("modal-button", "modal-cancel");
 
     // 文字設定
     text.textContent = this.textValue;
-    okButton.textContent = 'OK';
-    cancelButton.textContent = 'キャンセル';
+    okButton.textContent = "OK";
+    cancelButton.textContent = "キャンセル";
 
     // button要素をただのボタンにする
-    okButton.type = 'button';
-    cancelButton.type = 'button';
+    okButton.type = "button";
+    cancelButton.type = "button";
 
     // イベントリスナー設定
-    okButton.addEventListener('click', () => {
+    okButton.addEventListener("click", () => {
       // 最も近いform要素のsubmitを行う
-      event.target.closest('form').requestSubmit();
+      form.requestSubmit();
+      overlay.remove();
+      this.overlay = null;
     });
 
-    cancelButton.addEventListener('click', () => {
+    cancelButton.addEventListener("click", () => {
       // モーダルウィンドウを消す
       overlay.remove();
       this.overlay = null;
     });
 
-    overlay.addEventListener('click', () => {
+    overlay.addEventListener("click", () => {
       // モーダルウィンドウを消す
       overlay.remove();
+      this.overlay = null;
     });
 
     // 要素を表示

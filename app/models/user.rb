@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_one :profile, dependent: :destroy
   accepts_nested_attributes_for :profile
   has_many :machi_repos, dependent: :destroy
+  has_many :chats, dependent: :destroy
 
   attr_accessor :agreement
 

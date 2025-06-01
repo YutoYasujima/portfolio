@@ -12,22 +12,20 @@ export default class extends Controller {
   };
 
   connect() {
-    // 画像の表示が終了してから初期設定を行う
+    this.loading = false;
+    this.currentPage = 1;
+
+    // 無限スクロールの要否判定
+    const lastPageMarker = document.getElementById("chat-last-page-marker");
+    const isLastPage = lastPageMarker?.dataset.lastPage === "true";
+    if (!isLastPage) {
+      this.containerTarget.addEventListener("scroll", this.onScroll);
+    }
+
+    // 画像の表示が終了してから初期表示を行う
     this.waitFormImagesLoaded().then(() => {
       // 最初は一番下へスクロール
       this.scrollToBottom();
-      this.chatAreaTarget.classList.remove("invisible");
-      this.chatAreaTarget.classList.add("visible");
-
-      this.loading = false;
-      this.currentPage = 1;
-
-      // 無限スクロールの要否判定
-      const lastPageMarker = document.getElementById("chat-last-page-marker");
-      const isLastPage = lastPageMarker?.dataset.lastPage === "true";
-      if (!isLastPage) {
-        this.containerTarget.addEventListener("scroll", this.onScroll);
-      }
     });
   }
 
