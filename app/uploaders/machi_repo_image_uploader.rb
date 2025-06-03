@@ -1,7 +1,7 @@
 class MachiRepoImageUploader < CarrierWave::Uploader::Base
   # Include RMagick or MiniMagick support:
   # include CarrierWave::RMagick
-  # include CarrierWave::MiniMagick
+  include CarrierWave::MiniMagick
 
   # Choose what kind of storage to use for this uploader:
   # storage :file
@@ -40,6 +40,20 @@ class MachiRepoImageUploader < CarrierWave::Uploader::Base
   #   process resize_to_fit: [50, 50]
   # end
 
+  # アップロード時に軽量化処理を実行
+  # アップロード時にフルHDにリサイズ + JPEG品質を指定して軽量化
+  process resize_to_limit: [ 1920, 1080 ]
+  process :set_jpeg_quality
+
+  def set_jpeg_quality
+    manipulate! do |img|
+      img.auto_orient   # 回転情報の自動補正（スマホ対応）
+      img.strip         # EXIFなど不要なメタデータを除去
+      img.quality("85") # 画質（70〜85が推奨）
+      img
+    end
+  end
+
   # Add an allowlist of extensions which are allowed to be uploaded.
   # For images you might use something like this:
   # アップロード可能な拡張子のリスト
@@ -49,7 +63,7 @@ class MachiRepoImageUploader < CarrierWave::Uploader::Base
 
   # アップロード可能なファイルサイズの制限
   def size_range
-    1.byte..2.megabytes
+    1.byte..10.megabytes
   end
 
   # Override the filename of the uploaded files:
