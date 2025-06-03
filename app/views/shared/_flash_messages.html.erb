@@ -3,9 +3,9 @@
     <div class="fixed bottom-15 left-0 w-full z-5 md:bottom-8">
       <ul>
         <% Array(flash[:notice]).each do |msg| %>
-          <li data-action="click->flash#close" class="flash-notice">
+          <li data-action="click->flash#close" class="flash flash-notice">
             <span class="flash-text"><%= msg %></span>
-            <span class="flex-shrink-0 w-5 aspect-square text-green-500">
+            <span class="flash-close-icon flash-close-icon-notice">
               <%= render "shared/icons/close_icon" %>
             </span>
           </li>
@@ -16,9 +16,9 @@
     <div class="fixed bottom-15 left-0 w-full z-5 md:bottom-8">
       <ul>
         <% Array(flash[:alert]).each do |msg| %>
-          <li data-action="click->flash#close" class="flash-alert">
+          <li data-action="click->flash#close" class="flash flash-alert">
             <span class="flash-text"><%= msg %></span>
-            <span class="flex-shrink-0 w-5 aspect-square text-red-500">
+            <span class="flash-close-icon flash-close-icon-alert">
               <%= render "shared/icons/close_icon" %>
             </span>
           </li>

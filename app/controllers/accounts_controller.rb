@@ -1,4 +1,4 @@
-class TestsController < ApplicationController
+class AccountsController < ApplicationController
   def index
     @user = current_user
     @profile = current_user.profile

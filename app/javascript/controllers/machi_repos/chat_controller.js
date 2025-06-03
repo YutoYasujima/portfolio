@@ -11,12 +11,17 @@ export default class extends Controller {
     "fileFieldForm",
     "fileField",
     "newIcon",
+    "spinner",
   ];
 
   static values = {
     machiRepoId: Number,
     userId: Number,
   };
+
+  static outlets = [
+    "textarea-resize",
+  ];
 
   connect() {
     // 選択中のチャットの削除ボタン
@@ -39,10 +44,9 @@ export default class extends Controller {
     this.chatAreaTarget.addEventListener("touchcancel", this.boundCancelPress);
 
     // 送信中フラグ
+    this.isSending = false;
     this.isMessageSending = false;
     this.isImageSending = false;
-    // stimulusコントローラーを保持する
-    const controller = this;
     // Newアイコンを非表示にする
     this.timeoutId = null;
     this.containerTarget.addEventListener("scroll", this.hiddenNewIcon.bind(this));
@@ -107,6 +111,7 @@ export default class extends Controller {
   disconnect() {
     // チャネル購読の破棄
     this.removeExistingSubscription();
+
     this.containerTarget.removeEventListener("scroll", this.hiddenNewIcon.bind(this));
 
     // PCイベント解除
@@ -153,22 +158,14 @@ export default class extends Controller {
     });
   }
 
-  // チャットにメッセージ投稿
-  async postMessage(event) {
-    event.preventDefault();
-    const message = this.textareaTarget.value.trim();
-    if (!message) {
+  // チャットデータ送信
+  async sendChatData({ formData, resetTarget }) {
+    if (this.isSending) {
       return;
     }
-
-    // 連打対応
-    if (this.isMessageSending) {
-      return;
-    }
-    this.isMessageSending = true;
-
-    const formData = new FormData();
-    formData.append("chat[message]", message);
+    this.isSending = true;
+    // 待機中表示
+    this.spinnerTarget.classList.remove("hidden");
 
     try {
       const response = await fetch(`/machi_repos/${this.machiRepoIdValue}/chats`, {
@@ -180,7 +177,8 @@ export default class extends Controller {
       });
 
       if (response.ok) {
-        this.textareaTarget.value = "";
+        resetTarget.value = "";
+        this.textareaResizeOutlet?.resize();
       } else {
         const errorData = await response.json();
         console.error("送信失敗", errorData.errors);
@@ -188,11 +186,31 @@ export default class extends Controller {
     } catch (error) {
       console.error("ネットワークエラー", error);
     } finally {
-      this.isMessageSending = false;
+      this.isSending = false;
+      // 待機中表示解除
+      this.spinnerTarget.classList.add("hidden");
     }
   }
 
-  // チャットに画像投稿
+  // メッセージ投稿
+  async postMessage(event) {
+    event.preventDefault();
+
+    const message = this.textareaTarget.value.trim();
+    if (!message) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("chat[message]", message);
+
+    await this.sendChatData({
+      formData,
+      resetTarget: this.textareaTarget,
+    });
+  }
+
+  // 画像投稿
   async uploadImage(event) {
     event.preventDefault();
 
@@ -201,36 +219,13 @@ export default class extends Controller {
       return;
     }
 
-    // 連打対応
-    if (this.isImageSending) {
-      return;
-    }
-    this.isImageSending = true;
-
-    const imageFile = fileInput.files[0];
     const formData = new FormData();
-    formData.append("chat[image]", imageFile);
+    formData.append("chat[image]", fileInput.files[0]);
 
-    try {
-      const response = await fetch(`/machi_repos/${this.machiRepoIdValue}/chats`, {
-        method: "POST",
-        headers: {
-          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
-        },
-        body: formData
-      });
-
-      if (response.ok) {
-        fileInput.value = "";
-      } else {
-        const errorData = await response.json();
-        console.error("送信失敗", errorData.errors);
-      }
-    } catch (error) {
-      console.error("ネットワークエラー", error);
-    } finally {
-      this.isImageSending = false;
-    }
+    await this.sendChatData({
+      formData,
+      resetTarget: fileInput,
+    });
   }
 
   // メッセージ or 画像用form表示切り替え

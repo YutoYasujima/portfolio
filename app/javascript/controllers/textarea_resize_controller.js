@@ -13,4 +13,9 @@ export default class extends Controller {
     textarea.style.height = "auto"
     textarea.style.height = `${textarea.scrollHeight}px`
   }
+
+  shrink() {
+    const textarea = this.textareaTarget
+    textarea.style.height = "auto"
+  }
 }

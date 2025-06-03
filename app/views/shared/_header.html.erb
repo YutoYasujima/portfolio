@@ -1,4 +1,4 @@
-<header class="flex justify-center items-center border-b-3 border-[#C2750A] h-24 bg-[#F6B355] md:justify-start">
+<header class="flex justify-center items-center border-b-3 border-[#C2750A] h-20 bg-[#F6B355] md:justify-start">
   <% if user_signed_in? %>
     <div class="flex-1 text-center md:text-left">
       <%= link_to "Machi Vigil", machi_repos_path, class: "text-white text-5xl md:ml-8" %>
@@ -6,43 +6,27 @@
     <div class="hidden md:block">
       <%= render "shared/navigation" %>
     </div>
-    <div data-controller="hamburger-menu" class="mr-4">
+    <div data-controller="hamburger-menu" class="mr-4 w-12 aspect-square text-white">
       <%# メニュー開くアイコン %>
-      <svg
-        data-action="click->hamburger-menu#toggleMenu"
-        xmlns="http://www.w3.org/2000/svg"
-        height="48px"
-        viewBox="0 -960 960 960"
-        width="48px"
-        fill="#FFFFFF"
-      >
-        <path d="M120-240v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"/>
-      </svg>
+      <div data-action="click->hamburger-menu#toggleMenu">
+        <%= render "shared/icons/menu_icon" %>
+      </div>
 
       <nav data-hamburger-menu-target="menu" class="hidden fixed top-0 right-0 bottom-0 w-full bg-black text-center text-white z-10 md:max-w-[400px]">
         <%# メニュー閉じるアイコン %>
-        <svg
-          data-action="click->hamburger-menu#toggleMenu"
-          xmlns="http://www.w3.org/2000/svg"
-          height="48px"
-          viewBox="0 -960 960 960"
-          width="48px"
-          fill="#FFFFFF"
-          class="mt-6 mr-4 ml-auto"
-        >
-          <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
-        </svg>
+        <div data-action="click->hamburger-menu#toggleMenu" class="flex justify-end mt-6 mr-4 ml-auto w-12 aspect-square text-white">
+          <%= render "shared/icons/close_icon" %>
+        </div>
         <h2 class="header1 mb-8 text-white">メニュー</h2>
         <ul class="text-2xl">
-          <li class="menu-list">アカウント管理</li>
-          <li class="menu-list">ヘルプ</li>
-          <li class="menu-list">利用規約</li>
-          <li class="menu-list">プライバシーポリシー</li>
+          <li class="menu-list text-gray-500">
+            <%= link_to "アカウント管理", accounts_path %>
+          </li>
+          <li class="menu-list text-gray-500">ヘルプ</li>
+          <li class="menu-list text-gray-500">利用規約</li>
+          <li class="menu-list text-gray-500">プライバシーポリシー</li>
           <li class="menu-list">
             <%= link_to "ログアウト", destroy_user_session_path, data: { turbo_method: :delete } %>
-          </li>
-          <li class="menu-list">
-            <%= link_to "テスト", tests_path %>
           </li>
         </ul>
         <div class="mt-auto">

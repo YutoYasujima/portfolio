@@ -69,7 +69,20 @@ export default class extends Controller {
       // Googleマップのzoomを保持
       localStorage.setItem("mapZoom", this.map.getZoom());
       // メモリへの影響を考慮し解放しておく
+      // マーカー解放
       this.clearMarkers();
+      // 表示中のInfoWindow解放
+      if (this.currentInfoWindow) {
+        this.currentInfoWindow.setMap(null);
+        this.currentInfoWindow = null;
+      }
+
+      // Googleマップのイベントリスナ－解放
+      if (this.mainMarkerDragendListener) {
+        this.mainMarkerDragendListener.remove();
+        this.mainMarkerDragendListener = null;
+      }
+
       this.map = null;
     }
 
@@ -104,6 +117,7 @@ export default class extends Controller {
         background: "hsl(35, 90%, 60%)", // 背景
         borderColor: "hsl(35, 100%, 20%)", // 枠線
         glyphColor: "white",
+        scale: 1.2,
       });
       this.mainMarker = new AdvancedMarkerElement({
         map: this.map,
@@ -114,7 +128,7 @@ export default class extends Controller {
         title: this.addressValue,
       });
       // マーカーのドラッグエンドイベントリスナー
-      this.mainMarker.addListener("dragend", () => this.onDragendMarker());
+      this.mainMarkerDragendListener = this.mainMarker.addListener("dragend", () => this.onDragendMarker());
       // disconnect時にクリアするためマーカーを保持する
       this.markers.push(this.mainMarker);
     }

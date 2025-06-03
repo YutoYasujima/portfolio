@@ -95,42 +95,45 @@ input:-webkit-autofill{
 }
 
 /* フラッシュメッセージ */
-.flash-notice {
+.flash {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   margin: 0 auto 0.5rem;
-  border: 1px solid #86efac;
+  border: 2px solid;
   border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
   width: 90%;
   max-width: 600px;
-  color: #065f46;
-  background-color: #d1fae5;
   text-align: left;
 }
+.flash-notice {
+  border-color: hsl(150, 80%, 50%);
+  color: hsl(150, 90%, 30%);
+  background-color: hsl(150, 80%, 85%);
+}
 .flash-alert {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  margin: 0 auto 0.5rem;
-  border: 1px solid #fca5a5;
-  border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  width: 90%;
-  max-width: 600px;
-  color: #991b1b;
-  background-color: #fee2e2;
-  text-align: left;
+  border-color: hsl(0, 80%, 50%);
+  color: hsl(0, 90%, 30%);
+  background-color: hsl(0, 80%, 85%);
 }
 .flash-text {
   flex: 1;
   flex-wrap: wrap;
   word-break: break-all;
+}
+.flash-close-icon {
+  flex-shrink: 0;
+  width: 1.5rem;
+  aspect-ratio: 1 / 1;
+}
+.flash-close-icon-notice {
+  color: hsl(150, 90%, 30%);
+}
+.flash-close-icon-alert {
+  color: hsl(0, 90%, 30%);
 }
 
 /* モーダル */
@@ -237,6 +240,9 @@ input:-webkit-autofill{
   justify-content: center;
   align-items: center;
 }
+.icon-circle-wrapper-current {
+  pointer-events: none;
+}
 .icon-circle {
   display: flex;
   justify-content: center;
@@ -246,10 +252,17 @@ input:-webkit-autofill{
   width: 3rem;
   height: 3rem;
   background-color: white;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 3px #777;
+}
+.icon-circle:active {
+  box-shadow: none;
+  translate: 0 3px;
 }
 .icon-circle-current {
+  border-color: hsl(36, 90%, 40%);
   background-color: #F5A83D;
+  box-shadow: none;
+  translate: 0 3px;
 }
 .icon-circle-text {
   font-weight: bold;

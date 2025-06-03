@@ -9,10 +9,11 @@
     data-chat-scroll-machi-repo-id-value="<%= @machi_repo.id %>"
     data-machi-repos--chat-machi-repo-id-value="<%= @machi_repo.id %>"
     data-machi-repos--chat-user-id-value="<%= current_user.id %>"
+    data-machi-repos--chat-textarea-resize-outlet=".textarea-resize"
   >
     <div
       id="chat-section"
-      class="hide-scrollbar px-2 h-[calc(100vh-460px)] overflow-y-auto transition-all duration-300 ease-in-out md:h-[calc(100vh-375px)]"
+      class="hide-scrollbar px-2 h-[calc(100vh-440px)] overflow-y-auto transition-all duration-300 ease-in-out md:h-[calc(100vh-355px)]"
       data-chat-scroll-target="container"
       data-machi-repos--chat-target="container"
     >
@@ -53,7 +54,7 @@
     <%= form_with url: "#", method: :post, local: true, class:"fixed bottom-[68px] left-1/2 -translate-x-1/2 shadow-lg w-full max-w-[480px] md:bottom-[105px]" do |form| %>
       <div data-machi-repos--chat-target="textareaForm">
         <div class="flex items-end p-1 bg-white">
-          <div data-action="click->machi-repos--chat#toggleChatForm" class="flex-shrink-0 w-8 aspect-square">
+          <div data-action="click->machi-repos--chat#toggleChatForm" class="flex-shrink-0 w-8 aspect-square text-green-600">
             <%= render "shared/icons/image_icon" %>
           </div>
 
@@ -61,12 +62,12 @@
             maxlength: 500,
             rows: 1,
             placeholder: "メッセージを入力してください",
-            class: "rounded-xl px-2 py-1 w-full resize-none overflow-hidden bg-gray-100",
+            class: "textarea-resize rounded-xl px-2 py-1 w-full resize-none overflow-hidden bg-gray-100",
             data: {
               controller: "textarea-resize",
               textarea_resize_target: "textarea",
               action: "input->textarea-resize#resize",
-              machi_repos__chat_target: "textarea"
+              machi_repos__chat_target: "textarea",
             }
           %>
 
@@ -80,7 +81,7 @@
 
       <div data-machi-repos--chat-target="fileFieldForm" class="hidden">
         <div class="flex items-end p-1 bg-white">
-          <div data-action="click->machi-repos--chat#toggleChatForm" class="flex-shrink-0 w-8 aspect-square">
+          <div data-action="click->machi-repos--chat#toggleChatForm" class="flex-shrink-0 w-8 aspect-square text-rose-600">
             <%= render "shared/icons/chat_add_on_icon" %>
           </div>
 
@@ -94,6 +95,13 @@
               <%= render "shared/icons/upload_icon" %>
             </div>
           <% end %>
+        </div>
+      </div>
+      <div
+        data-machi-repos--chat-target="spinner"
+        class="hidden absolute top-[0px] right-[0px] bottom-[0px] w-10 aspect-square bg-white z-1">
+        <div class="flex justify-center items-center w-full h-full">
+          <div class="w-6 aspect-square border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       </div>
     <% end %>
