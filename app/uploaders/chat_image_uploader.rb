@@ -41,7 +41,7 @@ class ChatImageUploader < CarrierWave::Uploader::Base
 
   # アップロード時に軽量化処理を実行
   # アップロード時にフルHDにリサイズ + JPEG品質を指定して軽量化
-  process resize_to_limit: [1920, 1080]
+  process resize_to_limit: [ 1920, 1080 ]
   process :set_jpeg_quality
 
   def set_jpeg_quality
