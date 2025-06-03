@@ -32,6 +32,27 @@ export default class extends Controller {
     loadGoogleMaps(this.apiKeyValue).then(() => this.initMap());
   }
 
+  disconnect() {
+     // マーカーのイベントリスナー削除
+    if (this.dragendListener) {
+      this.dragendListener.remove();
+      this.dragendListener = null;
+    }
+
+    // マーカーと円をマップから外す
+    if (this.mainMarker) {
+      this.mainMarker.setMap(null);
+      this.mainMarker = null;
+    }
+
+    if (this.areaCircle) {
+      this.areaCircle.setMap(null);
+      this.areaCircle = null;
+    }
+
+    this.map = null;
+  }
+
   // Googleマップの初期化
   async initMap() {
 		// 使用するライブラリのインポート
@@ -83,7 +104,7 @@ export default class extends Controller {
     }
 
     // マーカーのドラッグエンドイベントリスナー
-    this.mainMarker.addListener('dragend', () => this.dragendMarker());
+    this.dragendListener = this.mainMarker.addListener('dragend', () => this.dragendMarker());
   }
 
   // マーカードラッグ後の表示

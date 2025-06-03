@@ -51,8 +51,11 @@
     <div class="field flex">
       <%= f.check_box :agreement, required: true, class: "ml-2 scale-150" %>
       <%= f.label :agreement, class: "flex-1 ml-4 text-center" do %>
-        <%= link_to "利用規約","#", target: "_blank", class: "link text-xl" %> /
-        <%= link_to "プライバシーポリシー", "#", target: "_blank", class: "link text-xl" %>
+        <%# link_to "利用規約","#", target: "_blank", class: "link text-xl" %>
+        <span class="text-gray-400 text-xl">利用規約</span>
+        <span> / </span>
+        <%# link_to "プライバシーポリシー", "#", target: "_blank", class: "link text-xl" %>
+        <span class="text-gray-400 text-xl">プライバシーポリシー</span>
         <div><span>に同意します</span></div>
       <% end %>
     </div>
@@ -61,4 +64,7 @@
       <%= f.submit nil, class: "button" %>
     </div>
   <% end %>
+  <div>
+    <%= link_to "戻る", new_user_session_path, class: "link text-xl underline" %>
+  </div>
 </div>

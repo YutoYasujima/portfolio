@@ -40,8 +40,8 @@
   <h2 class="mb-4 text-center">
     <span class="header1">ホットスポット</span>
   </h2>
-  <div class="flex flex-col md:flex-row items-center">
-    <div id="about-hotspot-text" class="about-card-content md:flex-1">
+  <div class="flex flex-col items-center gap-4 md:flex-row">
+    <div id="about-hotspot-text" class="about-card-content mb-4 md:flex-1">
       <p class="text-center tracking-widest">
         "まちレポ"の発生場所を<br>
         “ホットスポット”と呼びます！<br>
@@ -58,11 +58,14 @@
       </p>
     </div>
     <div id="about-hotspot-image"  class="about-card-content md:flex-1">
-      <img src="">
+      <%= image_tag "top_map_image" %>
     </div>
   </div>
 </section>
 
+<%
+=begin
+%>
 <section id="about-community" class="about-card">
   <h2 class="mb-4">
     <span class="header1">コミュニティ</span>
@@ -78,3 +81,6 @@
     </p>
   </div>
 </section>
+<%
+=end
+%>

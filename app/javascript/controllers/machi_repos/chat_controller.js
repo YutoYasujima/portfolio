@@ -11,12 +11,17 @@ export default class extends Controller {
     "fileFieldForm",
     "fileField",
     "newIcon",
+    "spinner",
   ];
 
   static values = {
     machiRepoId: Number,
     userId: Number,
   };
+
+  static outlets = [
+    "textarea-resize",
+  ];
 
   connect() {
     // 選択中のチャットの削除ボタン
@@ -39,54 +44,62 @@ export default class extends Controller {
     this.chatAreaTarget.addEventListener("touchcancel", this.boundCancelPress);
 
     // 送信中フラグ
+    this.isSending = false;
     this.isMessageSending = false;
     this.isImageSending = false;
-    // stimulusコントローラーを保持する
-    const controller = this;
     // Newアイコンを非表示にする
     this.timeoutId = null;
     this.containerTarget.addEventListener("scroll", this.hiddenNewIcon.bind(this));
 
-    this.subscription = consumer.subscriptions.create(
-      // サーバーのチャネルクラスのsubscribedメソッド呼び出し
-      { channel: "MachiRepoChatChannel", machi_repo_id: this.machiRepoIdValue },
+    // Action CableによるWebSocket通信
+    // 接続情報設定
+    this.subscriptionInfo = {
+      channel: "MachiRepoChatChannel",
+      machi_repo_id: this.machiRepoIdValue,
+    };
+    // 二重チャネル購読防止
+    this.removeExistingSubscription();
+
+    // チャネルの購読開始
+    // サーバーのチャネルクラスのsubscribedメソッド呼び出し
+    this.subscription = consumer.subscriptions.create(this.subscriptionInfo,
       {
         // メソッド定義
-        // サーバーから受信
-        async received(data) {
+        // ブロードキャスト受信後の処理
+        received: async (data) => {
           const chatId = data.chat_id;
           if (data.type === "create") {
             // チャット表示
-            await controller.fetchChatPartial(chatId);
+            await this.fetchChatPartial(chatId);
 
             // Turbo Streamの描画が終わった後に実行
             requestAnimationFrame(() => {
               // 新着チャット処理
-              if (controller.isNearBottom()) {
+              if (this.isNearBottom()) {
                 // チャット画像の読み込み終了待ち
-                controller.waitFormImageLoaded(chatId).then(() => {
+                this.waitFormImageLoaded(chatId).then(() => {
                   // bottom付近を見ていた場合、最下部へスクロール
-                  controller.containerTarget.scrollTop = controller.containerTarget.scrollHeight;
+                  this.containerTarget.scrollTop = this.containerTarget.scrollHeight;
                 });
               } else {
                 // Newアイコンを表示
-                controller.newIconTarget.classList.remove("hidden");
+                this.newIconTarget.classList.remove("hidden");
               }
             });
           } else if (data.type === "destroy") {
-            if (Number(data.user_id) === Number(controller.userIdValue)) {
+            if (Number(data.user_id) === Number(this.userIdValue)) {
               // 自分のチャットを消すのはTurbo Streamで行っている
               requestAnimationFrame(() => {
-                controller.selectedChatButton = null;
+                this.selectedChatButton = null;
               });
               return;
             }
 
             // 誰かがチャットを削除した場合、画面からチャットを消す
-            const chat = controller.chatAreaTarget.querySelector(`#${CSS.escape(`chat_${chatId}`)}`);
+            const chat = this.chatAreaTarget.querySelector(`#${CSS.escape(`chat_${chatId}`)}`);
             if (chat) {
               chat.remove();
-              controller.selectedChatButton = null;
+              this.selectedChatButton = null;
             }
           }
         }
@@ -96,10 +109,9 @@ export default class extends Controller {
 
   // このdisconnectはstimulusのメソッド
   disconnect() {
-    if (this.subscription) {
-	    // 購読を破棄する
-      this.subscription.unsubscribe();
-    }
+    // チャネル購読の破棄
+    this.removeExistingSubscription();
+
     this.containerTarget.removeEventListener("scroll", this.hiddenNewIcon.bind(this));
 
     // PCイベント解除
@@ -113,6 +125,19 @@ export default class extends Controller {
     this.chatAreaTarget.removeEventListener("touchstart", this.boundPressStart);
     this.chatAreaTarget.removeEventListener("touchend", this.boundCancelPress);
     this.chatAreaTarget.removeEventListener("touchcancel", this.boundCancelPress);
+  }
+
+  // チャネル購読の破棄
+  removeExistingSubscription() {
+    const identifier = JSON.stringify(this.subscriptionInfo);
+
+    // チャネルの購読が存在する場合は削除
+    const existing = consumer.subscriptions.subscriptions.find(sub => sub.identifier === identifier);
+    if (existing) {
+      consumer.subscriptions.remove(existing);
+    }
+
+    this.subscription = null;
   }
 
   // 部分テンプレート取得によるチャット表示
@@ -133,22 +158,14 @@ export default class extends Controller {
     });
   }
 
-  // チャットにメッセージ投稿
-  async postMessage(event) {
-    event.preventDefault();
-    const message = this.textareaTarget.value.trim();
-    if (!message) {
+  // チャットデータ送信
+  async sendChatData({ formData, resetTarget }) {
+    if (this.isSending) {
       return;
     }
-
-    // 連打対応
-    if (this.isMessageSending) {
-      return;
-    }
-    this.isMessageSending = true;
-
-    const formData = new FormData();
-    formData.append("chat[message]", message);
+    this.isSending = true;
+    // 待機中表示
+    this.spinnerTarget.classList.remove("hidden");
 
     try {
       const response = await fetch(`/machi_repos/${this.machiRepoIdValue}/chats`, {
@@ -160,7 +177,8 @@ export default class extends Controller {
       });
 
       if (response.ok) {
-        this.textareaTarget.value = "";
+        resetTarget.value = "";
+        this.textareaResizeOutlet?.resize();
       } else {
         const errorData = await response.json();
         console.error("送信失敗", errorData.errors);
@@ -168,11 +186,31 @@ export default class extends Controller {
     } catch (error) {
       console.error("ネットワークエラー", error);
     } finally {
-      this.isMessageSending = false;
+      this.isSending = false;
+      // 待機中表示解除
+      this.spinnerTarget.classList.add("hidden");
     }
   }
 
-  // チャットに画像投稿
+  // メッセージ投稿
+  async postMessage(event) {
+    event.preventDefault();
+
+    const message = this.textareaTarget.value.trim();
+    if (!message) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("chat[message]", message);
+
+    await this.sendChatData({
+      formData,
+      resetTarget: this.textareaTarget,
+    });
+  }
+
+  // 画像投稿
   async uploadImage(event) {
     event.preventDefault();
 
@@ -181,36 +219,13 @@ export default class extends Controller {
       return;
     }
 
-    // 連打対応
-    if (this.isImageSending) {
-      return;
-    }
-    this.isImageSending = true;
-
-    const imageFile = fileInput.files[0];
     const formData = new FormData();
-    formData.append("chat[image]", imageFile);
+    formData.append("chat[image]", fileInput.files[0]);
 
-    try {
-      const response = await fetch(`/machi_repos/${this.machiRepoIdValue}/chats`, {
-        method: "POST",
-        headers: {
-          "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
-        },
-        body: formData
-      });
-
-      if (response.ok) {
-        fileInput.value = "";
-      } else {
-        const errorData = await response.json();
-        console.error("送信失敗", errorData.errors);
-      }
-    } catch (error) {
-      console.error("ネットワークエラー", error);
-    } finally {
-      this.isImageSending = false;
-    }
+    await this.sendChatData({
+      formData,
+      resetTarget: fileInput,
+    });
   }
 
   // メッセージ or 画像用form表示切り替え
