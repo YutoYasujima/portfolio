@@ -178,7 +178,6 @@ export default class extends Controller {
 
       if (response.ok) {
         resetTarget.value = "";
-        this.textareaResizeOutlet?.resize();
       } else {
         const errorData = await response.json();
         console.error("送信失敗", errorData.errors);
@@ -208,6 +207,8 @@ export default class extends Controller {
       formData,
       resetTarget: this.textareaTarget,
     });
+
+    this.textareaResizeOutlet?.resize();
   }
 
   // 画像投稿

@@ -19,7 +19,7 @@
     <div class="chat-contents-wrapper">
       <% if chat&.image? %>
         <div class="chat-image-wrapper">
-          <%= image_tag(chat.image.url, class: "chat-image") %>
+          <%= image_tag(chat.image.url, loading: "lazy", class: "chat-image") %>
         </div>
       <% elsif chat&.message.present? %>
         <div class="chat-message-wrapper">
