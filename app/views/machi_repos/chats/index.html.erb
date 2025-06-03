@@ -1,3 +1,8 @@
+<%# turboのキャッシュが残っていると画面やスクロールがちらつく %>
+<% content_for :head do %>
+  <meta name="turbo-cache-control" content="no-cache">
+<% end %>
+
 <div data-controller="disable-scroll"></div>
 
 <div class="flex flex-col">
@@ -13,7 +18,7 @@
   >
     <div
       id="chat-section"
-      class="px-2 h-[calc(100vh-440px)] overflow-y-auto transition-all duration-300 ease-in-out md:h-[calc(100vh-355px)]"
+      class="invisible px-2 h-[calc(100vh-440px)] overflow-y-auto transition-all duration-300 ease-in-out md:h-[calc(100vh-355px)]"
       data-chat-scroll-target="container"
       data-machi-repos--chat-target="container"
     >

@@ -26,6 +26,7 @@ export default class extends Controller {
     this.waitFormImagesLoaded().then(() => {
       // 最初は一番下へスクロール
       this.scrollToBottom();
+      this.containerTarget.classList.remove("invisible");
     });
   }
 
