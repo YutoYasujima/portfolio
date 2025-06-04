@@ -41,15 +41,15 @@ class MachiRepoImageUploader < CarrierWave::Uploader::Base
   # end
 
   # アップロード時に軽量化処理を実行
-  # アップロード時にフルHDにリサイズ + JPEG品質を指定して軽量化
-  process resize_to_limit: [ 1920, 1080 ]
-  process :set_jpeg_quality
+  # アップロード時に画像の解像度を下げる
+  process :optimize_image
 
-  def set_jpeg_quality
+  def optimize_image
     manipulate! do |img|
-      img.auto_orient   # 回転情報の自動補正（スマホ対応）
-      img.strip         # EXIFなど不要なメタデータを除去
-      img.quality("85") # 画質（70〜85が推奨）
+      img.auto_orient        # 回転情報の自動補正（スマホ対応）
+      img.strip              # EXIFなど不要なメタデータを除去
+      img.resize "1280x720>" # スマホ向けに設定
+      img.quality("80")      # 画質（70〜85が推奨）
       img
     end
   end
@@ -63,7 +63,7 @@ class MachiRepoImageUploader < CarrierWave::Uploader::Base
 
   # アップロード可能なファイルサイズの制限
   def size_range
-    1.byte..10.megabytes
+    1.byte..5.megabytes
   end
 
   # Override the filename of the uploaded files:
