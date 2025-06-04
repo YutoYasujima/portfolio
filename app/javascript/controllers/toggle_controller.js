@@ -6,6 +6,17 @@ export default class extends Controller {
     "content",
   ];
 
+  connect() {
+    this.chatSection = document.querySelector("#chat-section");
+    this.chatSectionHeight = this.chatSection.clientHeight;
+    console.log('chatSectionHeight: %s', this.chatSectionHeight);
+    window.addEventListener("resize", () => {
+    });
+  }
+
+  disconnect() {
+  }
+
   toggle(event) {
     const content = this.contentTarget;
     const button = event.currentTarget;

@@ -1,8 +1,3 @@
-<%# turboのキャッシュが残っていると画面やスクロールがちらつく %>
-<% content_for :head do %>
-  <meta name="turbo-cache-control" content="no-cache">
-<% end %>
-
 <div data-controller="disable-scroll"></div>
 
 <div class="flex flex-col">
@@ -56,7 +51,8 @@
       </div>
     </div>
 
-    <%= form_with url: "#", method: :post, local: true, class:"fixed bottom-[68px] left-1/2 -translate-x-1/2 shadow-lg w-full max-w-[480px] md:bottom-[105px]" do |form| %>
+    <%# form_with url: "#", method: :post, local: true, class:"fixed bottom-[68px] left-1/2 -translate-x-1/2 shadow-lg w-full max-w-[480px] md:bottom-[105px]" do |form| %>
+    <%= form_with url: "#", method: :post, local: true, class:"absolute bottom-[-40px] shadow-lg w-full max-w-[480px]" do |form| %>
       <div data-machi-repos--chat-target="textareaForm">
         <div class="flex items-end p-1 bg-white">
           <div data-action="click->machi-repos--chat#toggleChatForm" class="flex-shrink-0 w-8 aspect-square text-green-600">

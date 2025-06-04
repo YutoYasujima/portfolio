@@ -36,7 +36,7 @@ export default class extends Controller {
 
   // 無限スクロール用トリガー
   onScroll = () => {
-    if (this.containerTarget.scrollTop < 500) {
+    if (this.containerTarget.scrollTop < 300) {
       // ページ最上部に近づいたとき
       this.loadPreviousPage();
     }
