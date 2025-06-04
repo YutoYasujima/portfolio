@@ -35,9 +35,9 @@
   <div class="field flex mb-4">
     <%= tag.input type: "text", placeholder: "\"まち\"を入力してください", data: { machi_repos__index_target: "search" }, class: "map-search-field flex-1" %>
     <%= button_tag type: "button", data: { action: "click->machi-repos--index#onClickSearchLocationButtton" }, class: "flex justify-center items-center rounded-tr-sm rounded-br-sm bg-[#3586FF]" do %>
-      <div class="w-10 aspect-square">
+      <span class="w-10 aspect-square">
         <%= render "shared/icons/map_search_icon" %>
-      </div>
+      </span>
     <% end %>
   </div>
 
