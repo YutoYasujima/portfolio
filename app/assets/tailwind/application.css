@@ -273,6 +273,7 @@ input:-webkit-autofill{
   padding: 4px 12px;
   border: 1px solid #000;
   border-radius: 4px 0 0 4px;
+  width: 100%;
   background-color: white;
   font-size: 1.25rem;
 }
