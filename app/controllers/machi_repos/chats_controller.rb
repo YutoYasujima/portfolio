@@ -1,7 +1,7 @@
 class MachiRepos::ChatsController < ApplicationController
   before_action :set_machi_repo_and_chats, only: [ :index, :load_more ]
 
-  CHAT_PER_PAGE = 12
+  CHAT_PER_PAGE = 15
 
   def index; end
 
