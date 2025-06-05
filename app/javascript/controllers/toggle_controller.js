@@ -10,10 +10,17 @@ export default class extends Controller {
 
   connect() {
     this.chatSection = document.querySelector("#chat-section");
+    // ヘッダー + タイトル + ナビゲーション + 入力フォームの高さ合計
+    this.elseElementHeight = (80 + 36 + 60 + 45);
     if (this.chatSection) {
-      this.windowLastHeight = window.innerHeight;
       this.windowLastWidth = window.innerWidth;
-      this.chatSectionHeight = this.chatSection.clientHeight;
+      this.windowLastHeight = window.innerHeight;
+      if (window.innerWidth < this.BREAK_POINT) {
+        this.chatSectionHeight = window.innerHeight - (this.contentTarget.clientHeight + this.elseElementHeight);
+        this.chatSection.style.height = `${this.chatSectionHeight}px`;
+      } else {
+        this.chatSectionHeight = this.chatSection.clientHeight;
+      }
 
       window.addEventListener("resize", this.onResizeChatArea);
     }
@@ -43,9 +50,9 @@ export default class extends Controller {
       // 画面幅がモバイル版に変わったとき
       if (!this.contentTarget.classList.contains("open")) {
         this.contentTarget.classList.add("open");
-        this.chatSectionHeight -= this.contentTarget.clientHeight;
-        this.chatSection.style.height = `${this.chatSectionHeight}px`;
       }
+      this.chatSectionHeight = window.innerHeight - (this.contentTarget.clientHeight + this.elseElementHeight);
+      this.chatSection.style.height = `${this.chatSectionHeight}px`;
       this.windowLastWidth = window.innerWidth;
     } else if (window.innerWidth < this.BREAK_POINT) {
       this.chatSection.style.height = `${this.chatSectionHeight}px`;

@@ -5,6 +5,7 @@ export default class extends Controller {
   static targets = [
     "container",
     "chatArea",
+    "scrollableIcon",
   ];
 
   static values = {
@@ -20,6 +21,7 @@ export default class extends Controller {
     const isLastPage = lastPageMarker?.dataset.lastPage === "true";
     if (!isLastPage) {
       this.containerTarget.addEventListener("scroll", this.onScroll);
+      this.scrollableIconTarget.classList.remove("hidden");
     }
 
     // 画像の表示が終了してから初期表示を行う
@@ -86,6 +88,7 @@ export default class extends Controller {
         const isLastPage = lastPageMarker?.dataset.lastPage === "true";
         if (isLastPage) {
           this.containerTarget.removeEventListener("scroll", this.onScroll);
+          this.scrollableIconTarget.classList.add("hidden");
         }
         this.loading = false;
       });
