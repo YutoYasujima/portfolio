@@ -53,6 +53,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       # バリデーションエラー時の、最小パスワード長の値をビューで使えるようにする。
       # デフォルトは「6文字」
       set_minimum_password_length
+      flash[:alert] = resource.errors.full_messages
       # エラー付きのフォームをもう一度表示する。
       respond_with resource
     end

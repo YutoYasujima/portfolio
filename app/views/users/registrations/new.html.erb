@@ -7,8 +7,6 @@
   </h2>
 
   <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "form" }) do |f| %>
-    <%= render "users/shared/error_messages", resource: resource %>
-
     <%# ProfileモデルのデータをUserモデルのデータと同時に送信するする %>
     <%= f.fields_for :profile do |pf| %>
       <div class="field">
