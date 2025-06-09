@@ -62,14 +62,18 @@ class MachiReposController < ApplicationController
 
   private
 
+  # 検索
   def prepare_search_data
     form_params = search_params
 
     results = if form_params[:address].present?
+      # ジオコーディング
       Geocoder.search(form_params[:address])
     elsif form_params[:latitude].present? && form_params[:longitude].present?
+      # リバースジオコーディング
       Geocoder.search([ form_params[:latitude], form_params[:longitude] ])
     else
+      # ジオコーディング(マイタウン)
       Geocoder.search(current_user.mytown_address)
     end
 
@@ -84,22 +88,28 @@ class MachiReposController < ApplicationController
 
     @search_form = MachiRepoSearchForm.new(form_params)
 
+    # 検索時バリデーションエラーがあった場合、エラー項目を無視して検索
+    # エラーメッセージだけ表示する
     unless @search_form.valid?
       flash.now[:alert] = [ "検索条件を確認してください" ]
       flash.now[:alert] += @search_form.errors.full_messages
     end
 
+    # 周辺のホットスポット取得
     @near_hotspots = @search_form.search_near_hotspots
 
+    # "まち"のまちレポ取得
     search_result = @search_form.search_machi_repos
     @machi_repos_count = search_result.length
     @machi_repos = search_result.page(params[:page])
   end
 
+  # DB登録時のストロングパラメータ取得
   def machi_repo_params
     params.require(:machi_repo).permit(:title, :info_level, :category, :description, :hotspot_settings, :hotspot_area_radius, :address, :latitude, :longitude, :image, :image_cache, :tag_names)
   end
 
+  # 検索時のストロングパラメータ取得
   def search_params
     params.fetch(:search, {}).permit(:title, :info_level, :category, :tag_names, :tag_match_type, :display_range_radius, :display_hotspot_count, :start_date, :end_date, :latitude, :longitude, :address)
   end
