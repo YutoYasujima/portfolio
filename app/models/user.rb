@@ -12,6 +12,7 @@ class User < ApplicationRecord
 
   validates :agreement, acceptance: { accept: "1", message: "に同意してください" }
 
+  # マイタウンの「"都道府県""市区町村"」を取得
   def mytown_address
     profile.prefecture.name_kanji + profile.municipality.name_kanji
   end
