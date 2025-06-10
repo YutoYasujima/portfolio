@@ -48,6 +48,8 @@
   <div
     data-controller="machi-repos--form"
     data-machi-repos--form-machi-repo-value="<%= machi_repo.to_json %>"
+    data-machi-repos--form-mytown-latitude-value="<%= @mytown_latitude %>"
+    data-machi-repos--form-mytown-longitude-value="<%= @mytown_longitude %>"
     data-action="google-maps:google-maps-connected->machi-repos--form#initMap"
   >
     <!-- ホットスポット設定 -->
@@ -124,16 +126,18 @@
     </div>
 
     <!-- 住所 -->
-    <div class="mb-1">
-      <p>
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#EA3323" class="inline-block">
-          <path d="M200-120v-680h343l19 86h238v370H544l-19-85H260v309h-60Z"/>
-        </svg>
-        <span data-machi-repos--form-target="displayAddress" class="text-xl font-bold">
-          <%= machi_repo.address %>
-        </span>
-        <%= form.hidden_field :address, data: { machi_repos__form_target: "address" } %>
-      </p>
+    <div class="my-4 text-center">
+      <div class="inline-block px-2 border-b-2 border-[#DF3737] text-2xl">
+        <div class="flex items-center">
+          <div class="inline-block w-6 aspect-square text-[#DF3737]">
+            <%= render "shared/icons/flag_full_icon" %>
+          </div>
+          <span data-machi-repos--form-target="displayAddress" class="text-xl font-bold">
+            <%= machi_repo.address %>
+          </span>
+          <%= form.hidden_field :address, data: { machi_repos__form_target: "address" } %>
+        </div>
+      </div>
     </div>
 
     <!-- Google Map -->

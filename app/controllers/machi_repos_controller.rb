@@ -1,4 +1,6 @@
 class MachiReposController < ApplicationController
+  before_action :set_mytown_location, only: %i[ new edit ]
+
   def index
     prepare_search_data
     respond_to do |format|
@@ -19,9 +21,7 @@ class MachiReposController < ApplicationController
 
   def new
     # Googleマップにマイタウンを表示するための情報取得
-    address = current_user.mytown_address
-    geocoding = Geocoder.search(address).first.coordinates
-    @machi_repo = MachiRepo.new(address: address, latitude: geocoding[0], longitude: geocoding[1])
+    @machi_repo = MachiRepo.new(address: @mytown_address, latitude: @mytown_latitude, longitude: @mytown_longitude)
   end
 
   def create
@@ -102,6 +102,14 @@ class MachiReposController < ApplicationController
     search_result = @search_form.search_machi_repos
     @machi_repos_count = search_result.length
     @machi_repos = search_result.page(params[:page])
+  end
+
+  # マイタウンの座標取得
+  def set_mytown_location
+    @mytown_address = current_user.mytown_address
+    geocoding = Geocoder.search(@mytown_address).first.coordinates
+    @mytown_latitude = geocoding[0]
+    @mytown_longitude = geocoding[1]
   end
 
   # DB登録時のストロングパラメータ取得
