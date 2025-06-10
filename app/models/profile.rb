@@ -3,8 +3,28 @@ class Profile < ApplicationRecord
   belongs_to :prefecture
   belongs_to :municipality
 
+  before_validation :set_unique_identifier, on: :create
+
   validates :nickname, presence: true, length: { maximum: 20 }
   validates :identifier, presence: true, uniqueness: true, length: { maximum: 10 }, format: { with: /\A[a-zA-Z0-9_\-]+\z/, message: "は英数字、アンダースコア、ハイフンのみ使用できます" }
   validates :bio, length: { maximum: 500 }, allow_blank: true
   validates :avatar, length: { maximum: 255 }, allow_blank: true, format: { with: /\Ahttps?:\/\/.+\.(jpg|jpeg|png|gif)\z/, message: "は「.jpg, .jpeg, .png, .gif」形式でなければなりません" }
+
+  private
+
+  # ランダム文字列の定義
+  CHAR_SET = [ ("a".."z"), ("A".."Z"), ("0".."9"), [ "-", "_" ] ].map(&:to_a).flatten.freeze
+
+  # Profileモデルのidentifierカラムの文字数
+  IDENTIFIER_LENGTH = 10
+
+  # Profileモデルのidentifierカラムのデフォルト値を生成
+  def set_unique_identifier
+    loop do
+      # 10文字のランダムな文字列を生成
+      self.identifier = Array.new(IDENTIFIER_LENGTH) { CHAR_SET.sample }.join
+      # 生成された識別子がすでに存在しないかチェック
+      break identifier unless Profile.exists?(identifier: identifier)
+    end
+  end
 end

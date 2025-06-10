@@ -23,11 +23,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
     # Profileも一緒に保存される。
     build_resource(sign_up_params)
 
-    # Profile の初期値をここで設定
-    if resource.profile.present?
-      resource.profile.identifier = generate_unique_identifier
-    end
-
     resource.save
     # createメソッドがブロック付きで呼び出されたら、
     # そのブロックにresource(Userのデータ)を渡して実行する。
@@ -45,8 +40,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
         # 確認用メールを送ったというメッセージを表示。
         set_flash_message! :notice, :"signed_up_but_#{resource.inactive_message}"
         # Devise内部のメソッド。
-        # DeviseがSessionに一時的に保存していたデータをサインイン後に削除する。
-        # confirmableなユーザーのようにあとでログインする場合に使われる。
+        # DeviseがSessionに一時的に保存していたデータを削除する。
+        # Sessionをログイン前のクリーンな状態に保っておく
         expire_data_after_sign_in!
         # ログインしていなユーザー用のページに遷移。デフォルトはroot_path
         respond_with resource, location: after_inactive_sign_up_path_for(resource)
@@ -58,6 +53,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       # バリデーションエラー時の、最小パスワード長の値をビューで使えるようにする。
       # デフォルトは「6文字」
       set_minimum_password_length
+      flash[:alert] = resource.errors.full_messages
       # エラー付きのフォームをもう一度表示する。
       respond_with resource
     end
@@ -109,20 +105,4 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # def after_inactive_sign_up_path_for(resource)
   #   super(resource)
   # end
-
-  private
-
-  # Profileモデルのidentifierカラムのデフォルト値を生成
-  def generate_unique_identifier
-  # 使用する文字のセットを定義する
-  chars = [ ("a".."z"), ("A".."Z"), ("0".."9"), [ "-", "_" ] ].map(&:to_a).flatten
-
-  loop do
-    # 10文字のランダムな文字列を生成
-    identifier = Array.new(10) { chars.sample }.join
-
-    # 生成された識別子がすでに存在しないかチェック
-    break identifier unless Profile.exists?(identifier: identifier)
-  end
-end
 end

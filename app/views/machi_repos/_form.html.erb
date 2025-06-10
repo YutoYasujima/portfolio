@@ -46,26 +46,22 @@
 
   <!-- Google Map関連 -->
   <div
-    data-controller="machi-repos--new"
-    data-machi-repos--new-api-key-value="<%= ENV["GOOGLE_MAPS_API_KEY_CLIENT"] %>"
-    data-machi-repos--new-map-id-value="<%= ENV["GOOGLE_MAPS_MAP_ID"] %>"
-    data-machi-repos--new-machi-repo-value="<%= machi_repo.to_json %>"
-    data-machi-repos--new-latitude-value="<%= machi_repo.latitude %>"
-    data-machi-repos--new-longitude-value="<%= machi_repo.longitude %>"
-    data-machi-repos--new-address-value="<%= @address %>"
+    data-controller="machi-repos--form"
+    data-machi-repos--form-machi-repo-value="<%= machi_repo.to_json %>"
+    data-action="google-maps:google-maps-connected->machi-repos--form#initMap"
   >
     <!-- ホットスポット設定 -->
     <div class="field">
       <%= form.label :hotspot_settings %>
       <%= form.select :hotspot_settings, MachiRepo.hotspot_settings_i18n.map { |key, text| [text, key] }, {}, class: "text-field",
       data: {
-        action: "change->machi-repos--new#changeHotspotSettings"
+        action: "change->machi-repos--form#changeHotspotSettings"
       }%>
     </div>
 
     <!-- 半径（エリア指定時） -->
     <div
-      data-machi-repos--new-target="hotspotAreaRadius"
+      data-machi-repos--form-target="hotspotAreaRadius"
       class="field hidden"
     >
       <%= form.label :hotspot_area_radius %>
@@ -76,17 +72,17 @@
         ["500m",   500],
         ["1km",   1000],
         ["5km",   5000],
-        ["10km", 10000],
-      ]), {}, class: "text-field",
+        ["10km", 10000]
+      ], form.object.hotspot_area_radius.to_i), {}, class: "text-field",
       data: {
-        action: "change->machi-repos--new#changeHotspotAreaRadius",
-        machi_repos__new_target: "hotspotAreaRadiusSelect"
+        action: "change->machi-repos--form#changeHotspotAreaRadius",
+        machi_repos__form_target: "hotspotAreaRadiusSelect"
       } %>
     </div>
 
     <!-- 注意書き（ピンポイント指定時） -->
     <div
-      data-machi-repos--new-target="hotspotAttention"
+      data-machi-repos--form-target="hotspotAttention"
       class="field hidden"
     >
       <p class="text-red-500">
@@ -97,7 +93,7 @@
 
     <div class="field flex justify-center gap-12 mb-4">
       <!-- マイタウンアイコン -->
-      <div data-action="click->machi-repos--new#mytownShow" class="icon-circle-wrapper">
+      <div data-action="click->machi-repos--form#showMytown" class="icon-circle-wrapper">
         <div class="icon-circle">
           <div class="w-10 aspect-square">
             <%= render "shared/icons/home_pin_icon" %>
@@ -107,7 +103,7 @@
       </div>
 
       <!-- 現在地アイコン -->
-      <div data-action="click->machi-repos--new#currentLocationShow" class="icon-circle-wrapper">
+      <div data-action="click->machi-repos--form#showCurrentLocation" class="icon-circle-wrapper">
         <div class="icon-circle">
           <div class="w-10 aspect-square">
             <%= render "shared/icons/my_location_icon" %>
@@ -119,8 +115,8 @@
 
     <!-- 住所検索 -->
     <div class="field flex mb-4">
-      <%= tag.input type: "text", placeholder: "\"まち\"を入力してください", data: { machi_repos__new_target: "search" }, class: "map-search-field flex-1" %>
-      <%= button_tag type: "button", data: { action: "click->machi-repos--new#searchLocationShow" }, class: "flex justify-center items-center rounded-tr-sm rounded-br-sm w-10 aspect-square bg-[#3586FF]" do %>
+      <%= tag.input type: "text", placeholder: "\"まち\"を入力してください", data: { machi_repos__form_target: "search" }, class: "map-search-field flex-1" %>
+      <%= button_tag type: "button", data: { action: "click->machi-repos--form#showSearchLocation" }, class: "flex justify-center items-center rounded-tr-sm rounded-br-sm w-10 aspect-square bg-[#3586FF]" do %>
       <span class="w-8 aspect-square">
         <%= render "shared/icons/map_search_icon" %>
       </span>
@@ -133,21 +129,29 @@
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#EA3323" class="inline-block">
           <path d="M200-120v-680h343l19 86h238v370H544l-19-85H260v309h-60Z"/>
         </svg>
-        <span data-machi-repos--new-target="displayAddress" class="text-xl font-bold">
+        <span data-machi-repos--form-target="displayAddress" class="text-xl font-bold">
           <%= machi_repo.address %>
         </span>
-        <%= form.hidden_field :address, data: { machi_repos__new_target: "address" } %>
+        <%= form.hidden_field :address, data: { machi_repos__form_target: "address" } %>
       </p>
     </div>
 
     <!-- Google Map -->
-    <div id="map" data-machi-repos--new-target="map" class="mb-4 w-full aspect-square"></div>
+    <div id="map"
+      data-controller="google-maps"
+      data-google-maps-target="map"
+      data-google-maps-api-key-value="<%= ENV["GOOGLE_MAPS_API_KEY_CLIENT"] %>"
+      data-google-maps-map-id-value="<%= ENV["GOOGLE_MAPS_MAP_ID"] %>"
+      data-google-maps-latitude-value="<%= machi_repo.latitude %>"
+      data-google-maps-longitude-value="<%= machi_repo.longitude %>"
+      class="mb-4 w-full aspect-square"
+    ></div>
 
     <!-- 緯度 -->
-    <%= form.hidden_field :latitude, data: { machi_repos__new_target: "latitude" } %>
+    <%= form.hidden_field :latitude, data: { machi_repos__form_target: "latitude" } %>
 
     <!-- 経度 -->
-    <%= form.hidden_field :longitude, data: { machi_repos__new_target: "longitude" } %>
+    <%= form.hidden_field :longitude, data: { machi_repos__form_target: "longitude" } %>
   </div>
 
   <!-- 画像 -->

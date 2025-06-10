@@ -13,6 +13,9 @@ application.register("disable-scroll", DisableScrollController)
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
 
+import GoogleMapsController from "./google_maps_controller"
+application.register("google-maps", GoogleMapsController)
+
 import HamburgerMenuController from "./hamburger_menu_controller"
 application.register("hamburger-menu", HamburgerMenuController)
 
@@ -25,8 +28,8 @@ application.register("machi-repos--chat", MachiRepos__ChatController)
 import MachiRepos__IndexController from "./machi_repos/index_controller"
 application.register("machi-repos--index", MachiRepos__IndexController)
 
-import MachiRepos__NewController from "./machi_repos/new_controller"
-application.register("machi-repos--new", MachiRepos__NewController)
+import MachiRepos__FormController from "./machi_repos/form_controller"
+application.register("machi-repos--form", MachiRepos__FormController)
 
 import MachiRepos__ShowController from "./machi_repos/show_controller"
 application.register("machi-repos--show", MachiRepos__ShowController)
