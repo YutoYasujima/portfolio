@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
-import { loadGoogleMaps, geocoding, reverseGeocoding } from "../../lib/google_maps_utils";
+import { geocoding, reverseGeocoding } from "../../lib/google_maps_utils";
 
-// Connects to data-controller="machi-repos--new"
+// Connects to data-controller="machi-repos--form"
 export default class extends Controller {
   static targets = [
     "map",
@@ -26,10 +26,10 @@ export default class extends Controller {
   };
 
   connect() {
-    // マイタウンの緯度・経度を保持
-    this.mytownCoordinates = { lat: this.latitudeValue, lng: this.longitudeValue };
-    // Googleマップの導入
-    loadGoogleMaps(this.apiKeyValue).then(() => this.initMap());
+    // プロパティ
+    this.map = null; // マップ保持
+    this.mainMarker = null;  // メインマーカー保持
+    this.mytownCoordinates = null; // マイタウンの緯度・経度を保持
   }
 
   disconnect() {
@@ -54,35 +54,17 @@ export default class extends Controller {
   }
 
   // Googleマップの初期化
-  async initMap() {
-		// 使用するライブラリのインポート
-    const { Map } = await google.maps.importLibrary("maps");
-    const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+  // google_maps_controller.jsのconnect処理後に実行
+  async initMap({ detail: { mapInfo }}) {
+		// // Googleマップオブジェクト取得
+    this.map = mapInfo.map;
 
-		// Googleマップ初期表示
-    this.defaultZoom = 15;
-    this.map = new Map(this.mapTarget, {
-      center: this.mytownCoordinates, // マップの中心座標
-      zoom: this.defaultZoom, // マップの拡大
-      disableDefaultUI: true,
-      zoomControl: true,
-      mapId: this.mapIdValue,
-    });
+    // メインマーカー表示
+    this.mainMarker = mapInfo.mainMarker;
 
-    // メインメインマーカー表示
-    const pin = new PinElement({
-      background: "hsl(35, 90%, 60%)", // 背景
-      borderColor: "hsl(35, 100%, 20%)", // 枠線
-      glyphColor: "white",
-    });
-    this.mainMarker = new AdvancedMarkerElement({
-      map: this.map,
-      position: this.mytownCoordinates,
-      content: pin.element,
-      gmpClickable: true,
-      gmpDraggable: true,
-      title: this.addressValue,
-    });
+    // マイタウン座標取得
+    const mapCoordinates = this.map.getCenter();
+    this.mytownCoordinates = { lat: mapCoordinates.lat(), lng: mapCoordinates.lng() };
 
     // エリア指定の円作成
     this.areaCircle = new google.maps.Circle({
@@ -91,7 +73,6 @@ export default class extends Controller {
       strokeWeight: 2,
       fillColor: "#00FF00",
       fillOpacity: 0.35,
-      // map: this.map, // マップのインスタンス
       center: this.mytownCoordinates,
       radius: Number(this.hotspotAreaRadiusSelectTarget.value),
     });
@@ -104,7 +85,7 @@ export default class extends Controller {
     }
 
     // マーカーのドラッグエンドイベントリスナー
-    this.dragendListener = this.mainMarker.addListener('dragend', () => this.dragendMarker());
+    this.dragendListener = this.mainMarker.addListener("dragend", () => this.dragendMarker());
   }
 
   // マーカードラッグ後の表示
@@ -116,16 +97,16 @@ export default class extends Controller {
   }
 
   // マイタウン表示
-  async mytownShow() {
+  async showMytown() {
     const result = await reverseGeocoding(this.mytownCoordinates);
     this.updateView(result.address, { lat: result.lat, lng: result.lng });
   }
 
   // 現在位置表示
-  async currentLocationShow() {
+  async showCurrentLocation() {
     // ブラウザに現在地取得機能があるか確認
     if (!navigator.geolocation) {
-      alert('ブラウザに現在地取得機能がありません');
+      alert("ブラウザに現在地取得機能がありません");
       return;
     }
 
@@ -135,8 +116,8 @@ export default class extends Controller {
       const result = await reverseGeocoding(coordinates);
       this.updateView(result.address, { lat: result.lat, lng: result.lng });
     } catch (error) {
-      console.error('現在地取得エラー:', error);
-      alert('現在位置の取得が拒否されました');
+      console.error("現在地取得エラー:", error);
+      alert("現在位置の取得が拒否されました");
     }
   }
 
@@ -158,7 +139,7 @@ export default class extends Controller {
   }
 
   // 検索住所表示
-  async searchLocationShow() {
+  async showSearchLocation() {
     let address = this.searchTarget.value;
     const result = await geocoding(address);
     // 入力フォームを空にする
@@ -186,8 +167,8 @@ export default class extends Controller {
 
   // ホットスポット設定変更
   changeHotspotSettings(event) {
-    this.hotspotAreaRadiusTarget.classList.toggle('hidden');
-    this.hotspotAttentionTarget.classList.toggle('hidden');
+    this.hotspotAreaRadiusTarget.classList.toggle("hidden");
+    this.hotspotAttentionTarget.classList.toggle("hidden");
 
     if (event.target.value === "area") {
       // エリア指定
