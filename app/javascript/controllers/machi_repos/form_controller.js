@@ -17,19 +17,23 @@ export default class extends Controller {
   ];
 
   static values = {
-    apiKey: String,
-    mapId: String,
-    latitude: Number,
-    longitude: Number,
-    address: String,
     machiRepo: Object,
+    mytownLatitude: Number,
+    mytownLongitude: Number,
   };
 
   connect() {
-    // プロパティ
-    this.map = null; // マップ保持
-    this.mainMarker = null;  // メインマーカー保持
-    this.mytownCoordinates = null; // マイタウンの緯度・経度を保持
+    // マップ保持
+    this.map = null;
+    // メインマーカー保持
+    this.mainMarker = null;
+    // デフォルトの座標保持
+    this.defaultCoordinates = null;
+     // マイタウンの座標保持
+    this.mytownCoordinates = {
+      lat: this.mytownLatitudeValue,
+      lng: this.mytownLongitudeValue,
+    };
   }
 
   disconnect() {
@@ -64,7 +68,7 @@ export default class extends Controller {
 
     // マイタウン座標取得
     const mapCoordinates = this.map.getCenter();
-    this.mytownCoordinates = { lat: mapCoordinates.lat(), lng: mapCoordinates.lng() };
+    this.defaultCoordinates = { lat: mapCoordinates.lat(), lng: mapCoordinates.lng() };
 
     // エリア指定の円作成
     this.areaCircle = new google.maps.Circle({
@@ -73,7 +77,7 @@ export default class extends Controller {
       strokeWeight: 2,
       fillColor: "#00FF00",
       fillOpacity: 0.35,
-      center: this.mytownCoordinates,
+      center: this.defaultCoordinates,
       radius: Number(this.hotspotAreaRadiusSelectTarget.value),
     });
     // エリア指定orピンポイント指定
