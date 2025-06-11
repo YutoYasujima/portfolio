@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   resources :machi_repos do
     collection do
       get :search
+      get :load_more
     end
 
     resources :chats, only: %i[ index create destroy ], module: :machi_repos do

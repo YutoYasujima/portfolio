@@ -29,6 +29,8 @@ export default class extends Controller {
       "hiddenLatitude",
       "hiddenLongitude",
       "infoWindowWrapper",
+      "machiRepoCards",
+      "scrollableIcon",
     ];
 
     static values = {
@@ -61,8 +63,76 @@ export default class extends Controller {
         this.searchFormWrapperTarget.classList.add("invisible-element");
       }
       this.toggleSearchFormWindow();
+      // 無限スクロールフラグ
+      this.loading = false;
+      // 無限スクロールページ数
+      this.currentPage = 1;
+      // 無限スクロールの要否判定
+      const lastPageMarker = document.getElementById("machi-repo-last-page-marker");
+      const isLastPage = lastPageMarker?.dataset.lastPage === "true";
+      if (!isLastPage) {
+        window.addEventListener("scroll", this.onScroll);
+        this.scrollableIconTarget.classList.remove("hidden");
+      }
+
       // Googleマップの導入
       loadGoogleMaps(this.apiKeyValue).then(() => this.initMap());
+    }
+
+    // 無限スクロール用トリガー
+    onScroll = () => {
+      const rect = this.machiRepoCardsTarget.getBoundingClientRect();
+      if (rect.bottom <= window.innerHeight + 300) {
+        this.loadPreviousPage();
+      }
+    }
+
+    // 無限スクロール
+    loadPreviousPage() {
+      if (this.loading) {
+        return;
+      }
+      this.loading = true;
+      this.currentPage++;
+
+      // 検索フォームの各値を取得
+      const params = new URLSearchParams();
+      params.append("page", this.currentPage);
+      const topId = document.getElementById("machi-repos-top-id");
+      params.append("top_id", topId.dataset.topId);
+      params.append("search[title]", this.inputTitleTarget.value);
+      params.append("search[info_level]", this.inputInfoLevelTarget.value);
+      params.append("search[category]", this.inputCategoryTarget.value);
+      params.append("search[tag_names]", this.inputTagNamesTarget.value);
+      params.append("search[tag_match_type]", this.inputTagMatchTypeOrTarget.checked ? "or" : "and");
+      params.append("search[start_date]", this.inputStartDateTarget.value);
+      params.append("search[end_date]", this.inputEndDateTarget.value);
+      params.append("search[latitude]", this.hiddenLatitudeTarget.value);
+      params.append("search[longitude]", this.hiddenLongitudeTarget.value);
+      params.append("search[address]", this.hiddenAddressTarget.value);
+
+      const url = `/machi_repos/load_more?${params.toString()}`;
+      // 次のページ（上方向）を非同期で取得
+      fetch(url, {
+        headers: {
+          "Accept": "text/vnd.turbo-stream.html"
+        }
+      })
+      .then(response => response.text())
+      .then(html => {
+        // Turbo Streamの中身を表示する
+        Turbo.renderStreamMessage(html);
+        // Turbo StreamのHTMLが挿入された後にDOMを見る
+        requestAnimationFrame(() => {
+          const lastPageMarker = document.getElementById("machi-repos-last-page-marker");
+          const isLastPage = lastPageMarker?.dataset.lastPage === "true";
+          if (isLastPage) {
+            window.removeEventListener("scroll", this.onScroll);
+            this.scrollableIconTarget.classList.add("hidden");
+          }
+          this.loading = false;
+        });
+      });
     }
 
     disconnect() {
@@ -84,6 +154,8 @@ export default class extends Controller {
       }
 
       this.map = null;
+
+      window.removeEventListener("scroll", this.onScroll);
     }
 
     // マーカーをすべて解放する

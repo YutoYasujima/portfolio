@@ -72,18 +72,28 @@
         "まち"のまちレポ一覧（<%= machi_repos_count %>件）
       </h3>
       <!-- まちレポカード表示 -->
-      <div id="machi_repos">
-        <%# 今のページの`<turbo-frame>` %>
-        <%= turbo_frame_tag "machi_repos-page-#{machi_repos.current_page}", class: "machi-repo-cards" do %>
-          <%# 今のページで取得したまちレポ一覧 %>
-          <% machi_repos.each do |machi_repo| %>
-            <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
-          <% end %>
-
-          <%# 遅延読み込みで次ページを取得する`<turbo-frame>` %>
-          <% if machi_repos.next_page %>
-            <%= turbo_frame_tag "machi_repos-page-#{machi_repos.next_page}", loading: :lazy, src: path_to_next_page(machi_repos), class: "machi-repo-cards" %>
-          <% end %>
+      <div
+        id="machi-repos-last-page-marker"
+        data-last-page="<%= machi_repos.empty? || machi_repos.last_page? %>"
+        class="hidden"
+      ></div>
+      <div
+        id="machi-repos-top-id"
+        data-top-id="<%= machi_repos.empty? ? 0 : machi_repos.first.id %>"
+        class="hidden"
+      ></div>
+      <div id="machi_repos" data-machi-repos--index-target="machiRepoCards" class="machi-repo-cards relative">
+        <%# スクロール可能表示 %>
+        <div
+          data-machi-repos--index-target="scrollableIcon"
+          class="hidden absolute bottom-[8px] left-1/2 -translate-x-1/2 z-1"
+        >
+          <div class="bounce w-8 aspect-square border rounded-full bg-white rotate-180">
+            <%= render "shared/icons/arrow_upward_icon" %>
+          </div>
+        </div>
+        <% machi_repos.each do |machi_repo| %>
+          <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
         <% end %>
       </div>
     </section>

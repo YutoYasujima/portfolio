@@ -1,5 +1,7 @@
 class MachiReposController < ApplicationController
-  before_action :set_mytown_location, only: %i[ new edit ]
+  before_action :set_mytown_location, only: %i[new edit]
+
+  MACHI_REPO_PER_PAGE = 12
 
   def index
     prepare_search_data
@@ -15,13 +17,31 @@ class MachiReposController < ApplicationController
     end
   end
 
+  def load_more
+    form_params = enrich_search_params_with_coordinates(search_params)
+
+    @search_form = MachiRepoSearchForm.new(form_params)
+    search_result = @search_form.search_machi_repos
+
+    @machi_repos = search_result.where("id <= ?", params[:top_id])
+                                .page(params[:page])
+                                .per(MACHI_REPO_PER_PAGE)
+
+    respond_to do |format|
+      format.turbo_stream
+    end
+  end
+
   def show
     @machi_repo = MachiRepo.includes(user: :profile).find(params[:id])
   end
 
   def new
-    # Googleマップにマイタウンを表示するための情報取得
-    @machi_repo = MachiRepo.new(address: @mytown_address, latitude: @mytown_latitude, longitude: @mytown_longitude)
+    @machi_repo = MachiRepo.new(
+      address: @mytown_address,
+      latitude: @mytown_latitude,
+      longitude: @mytown_longitude
+    )
   end
 
   def create
@@ -29,10 +49,7 @@ class MachiReposController < ApplicationController
     if @machi_repo.save
       redirect_to @machi_repo, notice: "まちレポを作成しました"
     else
-      flash.now[:alert] = [ "まちレポの作成に失敗しました" ]
-      if @machi_repo.errors.any?
-        flash.now[:alert] += @machi_repo.errors.full_messages
-      end
+      append_errors_to_flash(@machi_repo, "作成")
       render :new, status: :unprocessable_entity
     end
   end
@@ -46,10 +63,7 @@ class MachiReposController < ApplicationController
     if @machi_repo.update(machi_repo_params)
       redirect_to machi_repo_path(@machi_repo), notice: "まちレポを更新しました"
     else
-      flash.now[:alert] = [ "まちレポの更新に失敗しました" ]
-      if @machi_repo.errors.any?
-        flash.now[:alert] += @machi_repo.errors.full_messages
-      end
+      append_errors_to_flash(@machi_repo, "更新")
       render :edit, status: :unprocessable_entity
     end
   end
@@ -62,20 +76,33 @@ class MachiReposController < ApplicationController
 
   private
 
-  # 検索
   def prepare_search_data
+    form_params = enrich_search_params_with_coordinates(search_params)
+
+    @search_form = MachiRepoSearchForm.new(form_params)
+
+    unless @search_form.valid?
+      flash.now[:alert] = [ "検索条件を確認してください" ] + @search_form.errors.full_messages
+    end
+
+    @near_hotspots = @search_form.search_near_hotspots
+
+    search_result = @search_form.search_machi_repos
+    @machi_repos_count = search_result.length
+    @machi_repos = search_result.page(params[:page]).per(MACHI_REPO_PER_PAGE)
+  end
+
+  def enrich_search_params_with_coordinates(search_params)
     form_params = search_params
 
-    results = if form_params[:address].present?
-      # ジオコーディング
-      Geocoder.search(form_params[:address])
-    elsif form_params[:latitude].present? && form_params[:longitude].present?
-      # リバースジオコーディング
-      Geocoder.search([ form_params[:latitude], form_params[:longitude] ])
-    else
-      # ジオコーディング(マイタウン)
-      Geocoder.search(current_user.mytown_address)
-    end
+    results =
+      if form_params[:address].present?
+        Geocoder.search(form_params[:address])
+      elsif form_params[:latitude].present? && form_params[:longitude].present?
+        Geocoder.search([ form_params[:latitude], form_params[:longitude] ])
+      else
+        Geocoder.search(current_user.mytown_address)
+      end
 
     result = results.first
     @address = result.state + result.city
@@ -86,25 +113,14 @@ class MachiReposController < ApplicationController
     form_params[:latitude] = @latitude
     form_params[:longitude] = @longitude
 
-    @search_form = MachiRepoSearchForm.new(form_params)
-
-    # 検索時バリデーションエラーがあった場合、エラー項目を無視して検索
-    # エラーメッセージだけ表示する
-    unless @search_form.valid?
-      flash.now[:alert] = [ "検索条件を確認してください" ]
-      flash.now[:alert] += @search_form.errors.full_messages
-    end
-
-    # 周辺のホットスポット取得
-    @near_hotspots = @search_form.search_near_hotspots
-
-    # "まち"のまちレポ取得
-    search_result = @search_form.search_machi_repos
-    @machi_repos_count = search_result.length
-    @machi_repos = search_result.page(params[:page])
+    form_params
   end
 
-  # マイタウンの座標取得
+  def append_errors_to_flash(record, action_name)
+    flash.now[:alert] = [ "まちレポの#{action_name}に失敗しました" ]
+    flash.now[:alert] += record.errors.full_messages if record.errors.any?
+  end
+
   def set_mytown_location
     @mytown_address = current_user.mytown_address
     geocoding = Geocoder.search(@mytown_address).first.coordinates
@@ -112,13 +128,20 @@ class MachiReposController < ApplicationController
     @mytown_longitude = geocoding[1]
   end
 
-  # DB登録時のストロングパラメータ取得
   def machi_repo_params
-    params.require(:machi_repo).permit(:title, :info_level, :category, :description, :hotspot_settings, :hotspot_area_radius, :address, :latitude, :longitude, :image, :image_cache, :tag_names)
+    params.require(:machi_repo).permit(
+      :title, :info_level, :category, :description,
+      :hotspot_settings, :hotspot_area_radius,
+      :address, :latitude, :longitude,
+      :image, :image_cache, :tag_names
+    )
   end
 
-  # 検索時のストロングパラメータ取得
   def search_params
-    params.fetch(:search, {}).permit(:title, :info_level, :category, :tag_names, :tag_match_type, :display_range_radius, :display_hotspot_count, :start_date, :end_date, :latitude, :longitude, :address)
+    params.fetch(:search, {}).permit(
+      :title, :info_level, :category, :tag_names, :tag_match_type,
+      :display_range_radius, :display_hotspot_count,
+      :start_date, :end_date, :latitude, :longitude, :address
+    )
   end
 end

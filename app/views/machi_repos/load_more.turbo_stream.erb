@@ -1,0 +1,13 @@
+<%= turbo_stream.append "machi_repos" do %>
+  <% @machi_repos.each do |machi_repo| %>
+    <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.replace "machi-repos-last-page-marker" do %>
+  <div
+    id="machi-repos-last-page-marker"
+    data-last-page="<%= @machi_repos.last_page? %>"
+    class="hidden"
+  ></div>
+<% end %>

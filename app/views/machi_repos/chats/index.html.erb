@@ -15,11 +15,12 @@
     data-machi-repos--chat-user-id-value="<%= current_user.id %>"
     data-machi-repos--chat-textarea-resize-outlet=".textarea-resize"
   >
+    <%# スクロール可能表示 %>
     <div
       data-chat-scroll-target="scrollableIcon"
-      class="hidden absolute top-[8px] left-1/2 -translate-x-1/2 text-blue-300 z-1"
+      class="hidden absolute top-[8px] left-1/2 -translate-x-1/2 z-1"
     >
-      <div class="bounce w-8 aspect-square">
+      <div class="bounce w-8 aspect-square  border rounded-full bg-white">
         <%= render "shared/icons/arrow_upward_icon" %>
       </div>
     </div>
@@ -64,7 +65,6 @@
       </div>
     </div>
 
-    <%# form_with url: "#", method: :post, local: true, class:"fixed bottom-[68px] left-1/2 -translate-x-1/2 shadow-lg w-full max-w-[480px] md:bottom-[105px]" do |form| %>
     <%= form_with url: "#", method: :post, local: true, class:"absolute bottom-[-40px] shadow-lg w-full max-w-[480px]" do |form| %>
       <div data-machi-repos--chat-target="textareaForm">
         <div class="flex items-end p-1 bg-white">
