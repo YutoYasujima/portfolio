@@ -1,11 +1,7 @@
 <div
     data-controller="machi-repos--index"
-    data-machi-repos--index-api-key-value="<%= ENV["GOOGLE_MAPS_API_KEY_CLIENT"] %>"
-    data-machi-repos--index-map-id-value="<%= ENV["GOOGLE_MAPS_MAP_ID"] %>"
-    data-machi-repos--index-address-value="<%= address %>"
-    data-machi-repos--index-latitude-value="<%= latitude %>"
-    data-machi-repos--index-longitude-value="<%= longitude %>"
     data-machi-repos--index-machi-repos-value="<%= near_hotspots.to_json(include: { user: { include: :profile } }) %>"
+    data-action="google-maps:google-maps-connected->machi-repos--index#initMap"
     id="map-wrapper"
     class="mx-auto mb-8 w-full max-w-[500px] md:max-w-175 xl:max-w-300"
 >
@@ -64,26 +60,47 @@
         周辺のホットスポット（<%= near_hotspots.length %>件）
       </h3>
       <!-- Google Map -->
-      <div id="map" data-machi-repos--index-target="map" class="mb-4 mx-auto w-full max-w-[400px] aspect-square"></div>
+      <div id="map"
+        data-controller="google-maps"
+        data-google-maps-target="map"
+        data-google-maps-api-key-value="<%= ENV["GOOGLE_MAPS_API_KEY_CLIENT"] %>"
+        data-google-maps-map-id-value="<%= ENV["GOOGLE_MAPS_MAP_ID"] %>"
+        data-google-maps-address-value="<%= address %>"
+        data-google-maps-latitude-value="<%= latitude %>"
+        data-google-maps-longitude-value="<%= longitude %>"
+        class="mb-4 mx-auto w-full max-w-[400px] aspect-square">
+      </div>
     </section>
 
     <section class="text-left xl:w-175">
       <h3 class="header2 mb-4 ">
-        "まち"のまちレポ一覧（<%= machi_repos_count %>件）
+        "まち"のまちレポ一覧（<span id="machi-repos-count"><%= machi_repos_count %></span>件）
       </h3>
-      <!-- まちレポカード表示 -->
-      <div id="machi_repos">
-        <%# 今のページの`<turbo-frame>` %>
-        <%= turbo_frame_tag "machi_repos-page-#{machi_repos.current_page}", class: "machi-repo-cards" do %>
-          <%# 今のページで取得したまちレポ一覧 %>
-          <% machi_repos.each do |machi_repo| %>
-            <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
-          <% end %>
-
-          <%# 遅延読み込みで次ページを取得する`<turbo-frame>` %>
-          <% if machi_repos.next_page %>
-            <%= turbo_frame_tag "machi_repos-page-#{machi_repos.next_page}", loading: :lazy, src: path_to_next_page(machi_repos), class: "machi-repo-cards" %>
-          <% end %>
+      <!-- まちレポカード表示(無限スクロール) -->
+      <div
+        id="machi-repos-last-page-marker"
+        data-last-page="<%= is_last_page %>"
+        class="hidden"
+      ></div>
+      <%# 取得データの最後の更新日時とまちレポIDを保持 %>
+      <div
+        id="machi-repos-previous-last-data"
+        data-previous-last-updated="<%= machi_repos.last&.updated_at&.to_i %>"
+        data-previous-last-id="<%= machi_repos.last&.id %>"
+        class="hidden"
+      ></div>
+      <div id="machi_repos" data-machi-repos--index-target="machiRepoCards" class="machi-repo-cards relative">
+        <%# スクロール可能表示 %>
+        <div
+          data-machi-repos--index-target="scrollableIcon"
+          class="hidden absolute bottom-[8px] left-1/2 -translate-x-1/2 z-1"
+        >
+          <div class="bounce w-8 aspect-square border rounded-full bg-white rotate-180">
+            <%= render "shared/icons/arrow_upward_icon" %>
+          </div>
+        </div>
+        <% machi_repos.each do |machi_repo| %>
+          <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
         <% end %>
       </div>
     </section>

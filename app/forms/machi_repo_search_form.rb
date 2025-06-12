@@ -30,7 +30,7 @@ class MachiRepoSearchForm
     scope = scope.limit(display_hotspot_count)
 
     # N+1問題対応(tagsテーブルはタグ条件でJOIN済み)
-    scope.preload(user: :profile).order(created_at: :desc)
+    scope.preload(user: :profile)
   end
 
   # "まち"のまちレポ検索
@@ -39,7 +39,7 @@ class MachiRepoSearchForm
     # 検索条件付与
     scope = filter_machi_repos(scope)
     # N+1問題対応(tagsテーブルはタグ条件でJOIN済み)
-    scope.preload(user: :profile).order(created_at: :desc)
+    scope.preload(user: :profile)
   end
 
   private
@@ -83,16 +83,16 @@ class MachiRepoSearchForm
       end
     end
 
-    # まちレポ作成日
+    # まちレポ投稿日
     if start_date.present? && end_date.present?
       # 検索開始日と終了日の前後関係が正しい
       if start_date <= end_date
-        scope = scope.where(created_at: start_date.beginning_of_day..end_date.end_of_day)
+        scope = scope.where(updated_at: start_date.beginning_of_day..end_date.end_of_day)
       end
     elsif start_date.present?
-      scope = scope.where("created_at >= ?", start_date.beginning_of_day)
+      scope = scope.where("updated_at >= ?", start_date.beginning_of_day)
     elsif end_date.present?
-      scope = scope.where("created_at <= ?", end_date.end_of_day)
+      scope = scope.where("updated_at <= ?", end_date.end_of_day)
     end
 
     scope
@@ -102,7 +102,7 @@ class MachiRepoSearchForm
   def start_date_should_be_before_end_date
     return if start_date.blank? || end_date.blank?
     if start_date > end_date
-      errors.add(:base, "まちレポ作成日は、終了日を開始日以降の日付にしてください")
+      errors.add(:base, "まちレポ投稿日は、終了日を開始日以降の日付にしてください")
     end
   end
 end
