@@ -1,11 +1,7 @@
 <div
     data-controller="machi-repos--index"
-    data-machi-repos--index-api-key-value="<%= ENV["GOOGLE_MAPS_API_KEY_CLIENT"] %>"
-    data-machi-repos--index-map-id-value="<%= ENV["GOOGLE_MAPS_MAP_ID"] %>"
-    data-machi-repos--index-address-value="<%= address %>"
-    data-machi-repos--index-latitude-value="<%= latitude %>"
-    data-machi-repos--index-longitude-value="<%= longitude %>"
     data-machi-repos--index-machi-repos-value="<%= near_hotspots.to_json(include: { user: { include: :profile } }) %>"
+    data-action="google-maps:google-maps-connected->machi-repos--index#initMap"
     id="map-wrapper"
     class="mx-auto mb-8 w-full max-w-[500px] md:max-w-175 xl:max-w-300"
 >
@@ -64,7 +60,16 @@
         周辺のホットスポット（<%= near_hotspots.length %>件）
       </h3>
       <!-- Google Map -->
-      <div id="map" data-machi-repos--index-target="map" class="mb-4 mx-auto w-full max-w-[400px] aspect-square"></div>
+      <div id="map"
+        data-controller="google-maps"
+        data-google-maps-target="map"
+        data-google-maps-api-key-value="<%= ENV["GOOGLE_MAPS_API_KEY_CLIENT"] %>"
+        data-google-maps-map-id-value="<%= ENV["GOOGLE_MAPS_MAP_ID"] %>"
+        data-google-maps-address-value="<%= address %>"
+        data-google-maps-latitude-value="<%= latitude %>"
+        data-google-maps-longitude-value="<%= longitude %>"
+        class="mb-4 mx-auto w-full max-w-[400px] aspect-square">
+      </div>
     </section>
 
     <section class="text-left xl:w-175">

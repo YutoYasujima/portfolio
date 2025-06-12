@@ -1,17 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
-import { loadGoogleMaps } from "../../lib/google_maps_utils";
 import { createCustomInfoWindowClass } from "../../lib/custom_info_window";
 
 // Connects to data-controller="machi-repo--index"
 export default class extends Controller {
   static targets = [
-      "map",
-      "mytown",
       "search",
-      "address",
-      "latitude",
-      "longitude",
-      "mapFrame",
       "addIcon",
       "removeIcon",
       "searchFormWrapper",
@@ -34,39 +27,23 @@ export default class extends Controller {
     ];
 
     static values = {
-      apiKey: String,
-      mapId: String,
-      latitude: Number,
-      longitude: Number,
-      address: String,
       machiRepos: Array,
     };
 
     connect() {
+      // マップ保持
+      this.map = null;
+      // メインマーカー保持
+      this.mainMarker = null;
+      // デフォルトの座標保持
+      this.defaultCoordinates = null;
       // マーカーをクリアするために保持
       this.markers = [];
       // 開かれているInfoWindowの管理
       this.currentInfoWindow = null;
-      // マイタウンの緯度・経度を保持
-      this.defaultCoordinates = { lat: this.latitudeValue, lng: this.longitudeValue };
-      // input[type="hidden"]に値を保持
-      this.hiddenAddressTarget.value = this.addressValue;
-      this.hiddenLatitudeTarget.value = this.latitudeValue;
-      this.hiddenLongitudeTarget.value = this.longitudeValue;
-      // Googleマップのzoomを取得
-      this.defaultZoom = Number(localStorage.getItem("mapZoom")) || 14;
-      // 検索フォームの開閉状態設定
-      if (localStorage.getItem("searchWindowOpen")) {
-        // 検索フォームを開く
-        this.searchFormWrapperTarget.classList.remove("invisible-element");
-      } else {
-        this.searchFormWrapperTarget.classList.add("invisible-element");
-      }
-      this.toggleSearchFormWindow();
       // 無限スクロールフラグ
       this.loading = false;
-      // 無限スクロールページ数
-      this.currentPage = 1;
+
       // 無限スクロールの要否判定
       const lastPageMarker = document.getElementById("machi-repos-last-page-marker");
       const isLastPage = lastPageMarker?.dataset.lastPage === "true";
@@ -75,8 +52,68 @@ export default class extends Controller {
         this.scrollableIconTarget.classList.remove("hidden");
       }
 
-      // Googleマップの導入
-      loadGoogleMaps(this.apiKeyValue).then(() => this.initMap());
+      // 検索フォームの開閉状態設定
+      if (localStorage.getItem("searchWindowOpen")) {
+        // 検索フォームを開く
+        this.searchFormWrapperTarget.classList.remove("invisible-element");
+      } else {
+        this.searchFormWrapperTarget.classList.add("invisible-element");
+      }
+      this.toggleSearchFormWindow();
+    }
+
+    disconnect() {
+      // Googleマップのzoomを保持
+      localStorage.setItem("mapZoom", this.map.getZoom());
+      // メモリへの影響を考慮し解放しておく
+      // メインマーカー解放
+      if (this.mainMarker) {
+        this.mainMarker.setMap(null);
+        this.mainMarker = null;
+      }
+      // ホットスポットマーカー解放
+      this.clearMarkers();
+      // 表示中のInfoWindow解放
+      if (this.currentInfoWindow) {
+        this.currentInfoWindow.setMap(null);
+        this.currentInfoWindow = null;
+      }
+
+      // Googleマップのイベントリスナ－解放
+      if (this.mainMarkerDragendListener) {
+        this.mainMarkerDragendListener.remove();
+        this.mainMarkerDragendListener = null;
+      }
+
+      this.map = null;
+
+      window.removeEventListener("scroll", this.onScroll);
+    }
+
+    // Googleマップの初期化
+    async initMap({ detail: { mapInfo }}) {
+      // Googleマップオブジェクト取得
+      this.map = mapInfo.map;
+      // マップのzoomを設定
+      const zoom = Number(localStorage.getItem("mapZoom")) || 14;
+      this.map.setZoom(zoom);
+
+      // メインマーカー取得
+      this.mainMarker = mapInfo.mainMarker;
+
+      // マイタウン座標取得
+      this.defaultCoordinates = { lat: mapInfo.latitude, lng: mapInfo.longitude };
+
+      // input[type="hidden"]にマップの情報を保持
+      this.hiddenAddressTarget.value = mapInfo.address;
+      this.hiddenLatitudeTarget.value = mapInfo.latitude;
+      this.hiddenLongitudeTarget.value = mapInfo.longitude;
+
+      // 周辺のまちレポマーカー表示
+      await this.createMachiRepoMarkers();
+
+      // マーカーのドラッグエンドイベントリスナー
+      this.mainMarkerDragendListener = this.mainMarker.addListener("dragend", () => this.onDragendMarker());
     }
 
     // 無限スクロール用トリガー
@@ -93,11 +130,9 @@ export default class extends Controller {
         return;
       }
       this.loading = true;
-      this.currentPage++;
 
       // 検索フォームの各値を取得
       const params = new URLSearchParams();
-      params.append("page", this.currentPage);
       const previousLastData = document.getElementById("machi-repos-previous-last-data");
       params.append("previous_last_updated", previousLastData.dataset.previousLastUpdated);
       params.append("previous_last_id", previousLastData.dataset.previousLastId);
@@ -136,74 +171,10 @@ export default class extends Controller {
       });
     }
 
-    disconnect() {
-      // Googleマップのzoomを保持
-      localStorage.setItem("mapZoom", this.map.getZoom());
-      // メモリへの影響を考慮し解放しておく
-      // マーカー解放
-      this.clearMarkers();
-      // 表示中のInfoWindow解放
-      if (this.currentInfoWindow) {
-        this.currentInfoWindow.setMap(null);
-        this.currentInfoWindow = null;
-      }
-
-      // Googleマップのイベントリスナ－解放
-      if (this.mainMarkerDragendListener) {
-        this.mainMarkerDragendListener.remove();
-        this.mainMarkerDragendListener = null;
-      }
-
-      this.map = null;
-
-      window.removeEventListener("scroll", this.onScroll);
-    }
-
     // マーカーをすべて解放する
     clearMarkers() {
       this.markers.forEach(marker => marker.setMap(null));
       this.markers = [];
-    }
-
-    // Googleマップの初期化
-    async initMap() {
-      // 使用するライブラリのインポート
-      // JSのMapと分けるため、別名(GoogleMap)を付けてインポート
-      const { Map: GoogleMap } = await google.maps.importLibrary("maps");
-      const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
-
-      // Googleマップ初期表示
-      this.map = new GoogleMap(this.mapTarget, {
-        center: this.defaultCoordinates, // マップの中心座標
-        zoom: this.defaultZoom, // マップの拡大
-        disableDefaultUI: true,
-        zoomControl: true,
-        mapId: this.mapIdValue,
-      });
-
-      // 周辺のまちレポマーカー表示
-      await this.createMachiRepoMarkers();
-
-      // メインメインマーカー表示
-      // 周辺のまちレポマーカーよりも上に表示させるため最後に表示する
-      const pin = new PinElement({
-        background: "hsl(35, 90%, 60%)", // 背景
-        borderColor: "hsl(35, 100%, 20%)", // 枠線
-        glyphColor: "white",
-        scale: 1.2,
-      });
-      this.mainMarker = new AdvancedMarkerElement({
-        map: this.map,
-        position: this.defaultCoordinates,
-        content: pin.element,
-        gmpClickable: true,
-        gmpDraggable: true,
-        title: this.addressValue,
-      });
-      // マーカーのドラッグエンドイベントリスナー
-      this.mainMarkerDragendListener = this.mainMarker.addListener("dragend", () => this.onDragendMarker());
-      // disconnect時にクリアするためマーカーを保持する
-      this.markers.push(this.mainMarker);
     }
 
     // 周辺のまちレポマーカー表示

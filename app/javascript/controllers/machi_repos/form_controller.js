@@ -60,15 +60,14 @@ export default class extends Controller {
   // Googleマップの初期化
   // google_maps_controller.jsのconnect処理後に実行
   async initMap({ detail: { mapInfo }}) {
-		// // Googleマップオブジェクト取得
+		// Googleマップオブジェクト取得
     this.map = mapInfo.map;
 
     // メインマーカー表示
     this.mainMarker = mapInfo.mainMarker;
 
-    // マイタウン座標取得
-    const mapCoordinates = this.map.getCenter();
-    this.defaultCoordinates = { lat: mapCoordinates.lat(), lng: mapCoordinates.lng() };
+    // デフォルトの座標取得
+    this.defaultCoordinates = { lat: mapInfo.latitude, lng: mapInfo.longitude };
 
     // エリア指定の円作成
     this.areaCircle = new google.maps.Circle({

@@ -26,6 +26,9 @@ export default class extends Controller {
     this.dispatch("google-maps-connected", { detail: { mapInfo: {
       map: this.map,
       mainMarker: this.mainMarker,
+      latitude: this.latitudeValue,
+      longitude: this.longitudeValue,
+      address: this.addressValue,
     } } });
   }
 
@@ -64,6 +67,7 @@ export default class extends Controller {
       content: pin.element,
       gmpClickable: true,
       gmpDraggable: true,
+      zIndex: 9999,
       title: this.addressValue,
     });
   }
