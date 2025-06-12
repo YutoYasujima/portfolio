@@ -68,7 +68,7 @@ export default class extends Controller {
       // 無限スクロールページ数
       this.currentPage = 1;
       // 無限スクロールの要否判定
-      const lastPageMarker = document.getElementById("machi-repo-last-page-marker");
+      const lastPageMarker = document.getElementById("machi-repos-last-page-marker");
       const isLastPage = lastPageMarker?.dataset.lastPage === "true";
       if (!isLastPage) {
         window.addEventListener("scroll", this.onScroll);
@@ -98,8 +98,9 @@ export default class extends Controller {
       // 検索フォームの各値を取得
       const params = new URLSearchParams();
       params.append("page", this.currentPage);
-      const topId = document.getElementById("machi-repos-top-id");
-      params.append("top_id", topId.dataset.topId);
+      const previousLastData = document.getElementById("machi-repos-previous-last-data");
+      params.append("previous_last_updated", previousLastData.dataset.previousLastUpdated);
+      params.append("previous_last_id", previousLastData.dataset.previousLastId);
       params.append("search[title]", this.inputTitleTarget.value);
       params.append("search[info_level]", this.inputInfoLevelTarget.value);
       params.append("search[category]", this.inputCategoryTarget.value);

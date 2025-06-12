@@ -69,17 +69,19 @@
 
     <section class="text-left xl:w-175">
       <h3 class="header2 mb-4 ">
-        "まち"のまちレポ一覧（<%= machi_repos_count %>件）
+        "まち"のまちレポ一覧（<span id="machi-repos-count"><%= machi_repos_count %></span>件）
       </h3>
-      <!-- まちレポカード表示 -->
+      <!-- まちレポカード表示(無限スクロール) -->
       <div
         id="machi-repos-last-page-marker"
-        data-last-page="<%= machi_repos.empty? || machi_repos.last_page? %>"
+        data-last-page="<%= is_last_page %>"
         class="hidden"
       ></div>
+      <%# 取得データの最後の更新日時とまちレポIDを保持 %>
       <div
-        id="machi-repos-top-id"
-        data-top-id="<%= machi_repos.empty? ? 0 : machi_repos.first.id %>"
+        id="machi-repos-previous-last-data"
+        data-previous-last-updated="<%= machi_repos.last&.updated_at&.to_i %>"
+        data-previous-last-id="<%= machi_repos.last&.id %>"
         class="hidden"
       ></div>
       <div id="machi_repos" data-machi-repos--index-target="machiRepoCards" class="machi-repo-cards relative">

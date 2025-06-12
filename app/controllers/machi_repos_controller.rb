@@ -17,15 +17,31 @@ class MachiReposController < ApplicationController
     end
   end
 
+  # "まち"のまちレポ無限スクロールデータ取得
   def load_more
+    # まちレポ全体表示時のスナップショット取得
+    snapshot_time = Time.at(session[:records_snapshot_time].to_i)
+    cursor_updated_at = Time.at(params[:previous_last_updated].to_i)
+    cursor_id = params[:previous_last_id].to_i
+
     form_params = enrich_search_params_with_coordinates(search_params)
 
     @search_form = MachiRepoSearchForm.new(form_params)
-    search_result = @search_form.search_machi_repos
+    search_result = @search_form.search_machi_repos.where("updated_at <= ?", snapshot_time)
 
-    @machi_repos = search_result.where("id <= ?", params[:top_id])
-                                .page(params[:page])
-                                .per(MACHI_REPO_PER_PAGE)
+    # データの総数を取得する
+    @machi_repos_count = search_result.size
+
+    # 最終ページ判定のため1件多く取得
+    raw_machi_repos = search_result
+                      .where("updated_at < ? OR (updated_at = ? AND id < ?)", cursor_updated_at, cursor_updated_at, cursor_id)
+                      .order(updated_at: :desc, id: :desc)
+                      .limit(MACHI_REPO_PER_PAGE + 1)
+    # 最終ページ判定
+    @is_last_page = raw_machi_repos.size <= MACHI_REPO_PER_PAGE
+
+    # 表示分切り出し
+    @machi_repos = raw_machi_repos.first(MACHI_REPO_PER_PAGE)
 
     respond_to do |format|
       format.turbo_stream
@@ -77,6 +93,10 @@ class MachiReposController < ApplicationController
   private
 
   def prepare_search_data
+    # 無限スクロール対策のため、UNIXタイムスタンプで保存
+    snapshot_time = Time.current
+    session[:records_snapshot_time] = snapshot_time.to_i
+
     form_params = enrich_search_params_with_coordinates(search_params)
 
     @search_form = MachiRepoSearchForm.new(form_params)
@@ -85,11 +105,17 @@ class MachiReposController < ApplicationController
       flash.now[:alert] = [ "検索条件を確認してください" ] + @search_form.errors.full_messages
     end
 
-    @near_hotspots = @search_form.search_near_hotspots
+    # 周辺のホットスポット取得
+    @near_hotspots = @search_form.search_near_hotspots.order(updated_at: :desc, id: :desc)
 
-    search_result = @search_form.search_machi_repos
-    @machi_repos_count = search_result.length
-    @machi_repos = search_result.page(params[:page]).per(MACHI_REPO_PER_PAGE)
+    # "まち"のまちレポ取得
+    search_result = @search_form.search_machi_repos.where("updated_at <= ?", snapshot_time)
+    # データ総数取得
+    @machi_repos_count = search_result.size
+    # 無限スクロール前のデータ取得
+    @machi_repos = search_result.order(updated_at: :desc, id: :desc).limit(MACHI_REPO_PER_PAGE)
+    # 最終ページのデータか判定
+    @is_last_page = @machi_repos_count <= MACHI_REPO_PER_PAGE
   end
 
   def enrich_search_params_with_coordinates(search_params)

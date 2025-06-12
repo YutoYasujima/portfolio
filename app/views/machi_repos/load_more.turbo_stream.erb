@@ -7,7 +7,22 @@
 <%= turbo_stream.replace "machi-repos-last-page-marker" do %>
   <div
     id="machi-repos-last-page-marker"
-    data-last-page="<%= @machi_repos.last_page? %>"
+    data-last-page="<%= @is_last_page %>"
     class="hidden"
   ></div>
+<% end %>
+
+<%= turbo_stream.replace "machi-repos-previous-last-data" do %>
+  <div
+    id="machi-repos-previous-last-data"
+    data-previous-last-updated="<%= @machi_repos.last&.updated_at&.to_i %>"
+    data-previous-last-id="<%= @machi_repos.last&.id %>"
+    class="hidden"
+  ></div>
+<% end %>
+
+<%= turbo_stream.replace "machi-repos-count" do %>
+  <span id="machi-repos-count">
+    <%= @machi_repos_count %>
+  </span>
 <% end %>
