@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { createCustomInfoWindowClass } from "../../lib/custom_info_window";
+import { MachiVigilStorage } from "../../lib/machi_vigil_storage";
 
 // Connects to data-controller="machi-repo--index"
 export default class extends Controller {
@@ -43,6 +44,8 @@ export default class extends Controller {
       this.currentInfoWindow = null;
       // 無限スクロールフラグ
       this.loading = false;
+      // ストレージ利用準備
+      this.storage = new MachiVigilStorage();
 
       // 無限スクロールの要否判定
       const lastPageMarker = document.getElementById("machi-repos-last-page-marker");
@@ -53,7 +56,7 @@ export default class extends Controller {
       }
 
       // 検索フォームの開閉状態設定
-      if (localStorage.getItem("searchWindowOpen")) {
+      if (this.storage.getItem("searchWindowOpen")) {
         // 検索フォームを開く
         this.searchFormWrapperTarget.classList.remove("invisible-element");
       } else {
@@ -63,8 +66,21 @@ export default class extends Controller {
     }
 
     disconnect() {
+      // 最後の状態をストレージに保持しておく
       // Googleマップのzoomを保持
-      localStorage.setItem("mapZoom", this.map.getZoom());
+      this.storage.setItem("mapZoom", this.map.getZoom());
+      // 検索ウィンドウの開閉状態保持
+      if (this.searchFormWrapperTarget.classList.contains("invisible-element")) {
+        // 検索フォームが閉じているときは削除しておく
+        // 次回取得時にundefined(falsy)になるため
+        this.storage.removeItem("searchWindowOpen");
+      } else {
+        // 検索フォームが開いているときは、値は何でも良いから保持しておく
+        this.storage.setItem("searchWindowOpen", true);
+      }
+      // ストレージに保存
+      this.storage.save();
+
       // メモリへの影響を考慮し解放しておく
       // メインマーカー解放
       if (this.mainMarker) {
@@ -87,6 +103,7 @@ export default class extends Controller {
 
       this.map = null;
 
+      // イベントリスナー削除
       window.removeEventListener("scroll", this.onScroll);
     }
 
@@ -95,7 +112,7 @@ export default class extends Controller {
       // Googleマップオブジェクト取得
       this.map = mapInfo.map;
       // マップのzoomを設定
-      const zoom = Number(localStorage.getItem("mapZoom")) || 14;
+      const zoom = Number(this.storage.getItem("mapZoom")) || 14;
       this.map.setZoom(zoom);
 
       // メインマーカー取得
@@ -301,7 +318,6 @@ export default class extends Controller {
       this.hiddenAddressTarget.value = null;
       this.hiddenLatitudeTarget.value = position.lat;
       this.hiddenLongitudeTarget.value = position.lng;
-      localStorage.setItem("mapZoom", this.map.getZoom());
       this.searchFormTarget.requestSubmit();
     }
 
@@ -312,7 +328,6 @@ export default class extends Controller {
       this.hiddenAddressTarget.value = null;
       this.hiddenLatitudeTarget.value = null;
       this.hiddenLongitudeTarget.value = null;
-      localStorage.setItem("mapZoom", this.map.getZoom());
       this.searchFormTarget.requestSubmit();
     }
 
@@ -331,7 +346,6 @@ export default class extends Controller {
         this.hiddenAddressTarget.value = null;
         this.hiddenLatitudeTarget.value = position.coords.latitude;
         this.hiddenLongitudeTarget.value = position.coords.longitude;
-        localStorage.setItem("mapZoom", this.map.getZoom());
         this.searchFormTarget.requestSubmit();
       }, (error) => {
         console.error("現在地位置情報の取得に失敗:", error)
@@ -351,7 +365,6 @@ export default class extends Controller {
       this.hiddenAddressTarget.value = address;
       this.hiddenLatitudeTarget.value = null;
       this.hiddenLongitudeTarget.value = null;
-      localStorage.setItem("mapZoom", this.map.getZoom());
       this.searchFormTarget.requestSubmit();
     }
 
@@ -359,7 +372,6 @@ export default class extends Controller {
     onClickSearchFormButton() {
       // リバースジオコーディングするため緯度・経度のみ送信
       this.hiddenAddressTarget.value = null;
-      localStorage.setItem("mapZoom", this.map.getZoom());
       this.searchFormTarget.requestSubmit();
     }
 
@@ -379,13 +391,13 @@ export default class extends Controller {
         this.removeIconTarget.classList.add("hidden");
         // 閉じているときは値を保持しない
         // 取得時にnull(falsy)になるため
-        localStorage.removeItem("searchWindowOpen");
+        this.storage.removeItem("searchWindowOpen");
       } else {
         // 検索フォームが開いているとき
         this.addIconTarget.classList.add("hidden");
         this.removeIconTarget.classList.remove("hidden");
         // 開いているときは保持する
-        localStorage.setItem("searchWindowOpen", true);
+        this.storage.setItem("searchWindowOpen", true);
       }
     }
 

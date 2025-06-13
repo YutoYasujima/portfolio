@@ -25,11 +25,11 @@ application.register("hello", HelloController)
 import MachiRepos__ChatController from "./machi_repos/chat_controller"
 application.register("machi-repos--chat", MachiRepos__ChatController)
 
-import MachiRepos__IndexController from "./machi_repos/index_controller"
-application.register("machi-repos--index", MachiRepos__IndexController)
-
 import MachiRepos__FormController from "./machi_repos/form_controller"
 application.register("machi-repos--form", MachiRepos__FormController)
+
+import MachiRepos__IndexController from "./machi_repos/index_controller"
+application.register("machi-repos--index", MachiRepos__IndexController)
 
 import MachiRepos__ShowController from "./machi_repos/show_controller"
 application.register("machi-repos--show", MachiRepos__ShowController)
@@ -48,3 +48,6 @@ application.register("textarea-resize", TextareaResizeController)
 
 import ToggleController from "./toggle_controller"
 application.register("toggle", ToggleController)
+
+import TopController from "./top_controller"
+application.register("top", TopController)
