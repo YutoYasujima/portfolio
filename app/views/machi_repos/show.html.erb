@@ -83,9 +83,14 @@
             <%= render "shared/icons/schedule_icon" %>
           </div>
           <div class="ml-1 text-xl font-bold">
-            <%= @machi_repo.created_at.strftime("%Y/%m/%d %H:%M") %>
+            <%= @machi_repo.updated_at.strftime("%Y/%m/%d %H:%M") %>
           </div>
         </div>
+        <% if (@machi_repo.updated_at - @machi_repo.created_at).abs >= 5 %>
+          <span class="ml-10">
+            （<%= @machi_repo.created_at.strftime("%Y/%m/%d %H:%M") %> 作成）
+          </span>
+        <% end %>
       </div>
       <!-- 状況説明 -->
       <div class="mb-4 px-2">
@@ -126,13 +131,21 @@
       <!-- Google Map -->
       <div
         data-controller="machi-repos--show"
-        data-machi-repos--show-api-key-value="<%= ENV["GOOGLE_MAPS_API_KEY_CLIENT"] %>"
-        data-machi-repos--show-map-id-value="<%= ENV["GOOGLE_MAPS_MAP_ID"] %>"
         data-machi-repos--show-machi-repo-value="<%= @machi_repo.to_json(include: { user: { include: :profile } }) %>"
+        data-action="google-maps:google-maps-connected->machi-repos--show#initMap"
         id="map-wrapper"
         class="mx-auto w-full max-w-[500px] md:max-w-175 xl:max-w-300"
       >
-        <div id="map" data-machi-repos--show-target="map" class="mb-4 mx-auto w-full max-w-[400px] aspect-square"></div>
+        <div id="map"
+          data-controller="google-maps"
+          data-google-maps-target="map"
+          data-google-maps-api-key-value="<%= ENV["GOOGLE_MAPS_API_KEY_CLIENT"] %>"
+          data-google-maps-map-id-value="<%= ENV["GOOGLE_MAPS_MAP_ID"] %>"
+          data-google-maps-address-value="<%= @machi_repo.address %>"
+          data-google-maps-latitude-value="<%= @machi_repo.latitude %>"
+          data-google-maps-longitude-value="<%= @machi_repo.longitude %>"
+          class="mb-4 mx-auto w-full max-w-[400px] aspect-square">
+        </div>
       </div>
 
       <!-- 画像 -->
