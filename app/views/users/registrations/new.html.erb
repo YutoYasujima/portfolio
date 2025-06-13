@@ -10,12 +10,12 @@
     <%# ProfileモデルのデータをUserモデルのデータと同時に送信するする %>
     <%= f.fields_for :profile do |pf| %>
       <div class="field">
-        <%= pf.label :nickname, "ニックネーム" %>
+        <%= pf.label :nickname, "ニックネーム", class: "require" %>
         <%= pf.text_field :nickname, autofocus: true, class: "text-field" %>
       </div>
 
       <div data-controller="prefecture-municipality" class="field">
-        <p>マイタウン</p>
+        <%= label_tag nil, "マイタウン", class: "require" %>
         <div class="mytown-selects">
           <%= pf.collection_select :prefecture_id, Prefecture.all, :id, :name_kanji, {}, { class: "select-field", data: { action: "change->prefecture-municipality#loadMunicipalities" }} %>
 
@@ -25,12 +25,12 @@
     <% end %>
 
     <div class="field">
-      <%= f.label :email %>
+      <%= f.label :email, class: "require" %>
       <%= f.email_field :email, autocomplete: "email", class: "text-field" %>
     </div>
 
     <div class="field">
-      <%= f.label :password %>
+      <%= f.label :password, class: "require" %>
 <%
 =begin
 %>
@@ -44,7 +44,7 @@
     </div>
 
     <div class="field">
-      <%= f.label :password_confirmation %>
+      <%= f.label :password_confirmation, class: "require" %>
       <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "text-field" %>
     </div>
 

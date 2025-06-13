@@ -1,19 +1,19 @@
 <%= form_with(model: machi_repo, class: "form") do |form| %>
   <!-- タイトル -->
   <div class="field">
-    <%= form.label :title %>
+    <%= form.label :title, class: "require" %>
     <%= form.text_field :title, placeholder: "例: 不審者を見かけました", class: "text-field", maxlength: 30 %>
   </div>
 
   <!-- 情報レベル -->
   <div class="field">
-    <%= form.label :info_level %>
+    <%= form.label :info_level, class: "require" %>
     <%= form.select :info_level, MachiRepo.info_levels_i18n.map { |key, text| [text, key] }, {}, class: "text-field" %>
   </div>
 
   <!-- カテゴリ -->
   <div class="field">
-    <%= form.label :category %>
+    <%= form.label :category, class: "require" %>
     <%= form.select :category, MachiRepo.categories_i18n.map { |key, text| [text, key] }, {}, class: "text-field" %>
   </div>
 
@@ -54,7 +54,7 @@
   >
     <!-- ホットスポット設定 -->
     <div class="field">
-      <%= form.label :hotspot_settings %>
+      <%= form.label :hotspot_settings, class: "require" %>
       <%= form.select :hotspot_settings, MachiRepo.hotspot_settings_i18n.map { |key, text| [text, key] }, {}, class: "text-field",
       data: {
         action: "change->machi-repos--form#changeHotspotSettings"
@@ -66,7 +66,7 @@
       data-machi-repos--form-target="hotspotAreaRadius"
       class="field hidden"
     >
-      <%= form.label :hotspot_area_radius %>
+      <%= form.label :hotspot_area_radius, class: "require" %>
       <%= form.select :hotspot_area_radius, options_for_select([
         ["50m",     50],
         ["100m",   100],
