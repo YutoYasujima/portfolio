@@ -26,6 +26,15 @@
   <% end %>
   <div class="xl:flex xl:justify-between xl:mx-auto">
     <div class="xl:w-100">
+      <!-- 閲覧数表示 -->
+      <div class="flex items-center justify-end gap-2">
+        <div class="w-6 aspect-square">
+          <%= render "shared/icons/visibility_full_icon" %>
+        </div>
+        <div class="mr-2">
+          <%= number_with_delimiter(@machi_repo.views_count) %>
+        </div>
+      </div>
       <!-- 投稿者 -->
       <div class="mb-4 px-2">
         <h3 class="mb-2">

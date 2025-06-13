@@ -6,5 +6,8 @@
     <p>投稿したまちレポを編集できます</p>
   </h2>
 
+  <div class="mx-auto mb-4 w-full max-w-[500px]">
+    <%= link_to "< 詳細へ戻る", machi_repo_path(@machi_repo), class: "link underline inline-block mx-auto w-full max-w-[300px] text-left"  %>
+  </div>
   <%= render "form", machi_repo: @machi_repo %>
 </div>

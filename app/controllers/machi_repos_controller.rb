@@ -50,6 +50,13 @@ class MachiReposController < ApplicationController
 
   def show
     @machi_repo = MachiRepo.includes(user: :profile).find(params[:id])
+
+    # ログイン済み & 投稿者本人でなければ、views_countをインクリメント
+    if user_signed_in? && current_user.id != @machi_repo.user_id
+      track_view_count(@machi_repo.id)
+      # インクリメントされたviews_countを取得
+      @machi_repo.reload
+    end
   end
 
   def new
@@ -118,6 +125,7 @@ class MachiReposController < ApplicationController
     @is_last_page = @machi_repos_count <= MACHI_REPO_PER_PAGE
   end
 
+  # search_paramsにマップ情報を追加する
   def enrich_search_params_with_coordinates(search_params)
     form_params = search_params
 
@@ -142,16 +150,30 @@ class MachiReposController < ApplicationController
     form_params
   end
 
+  # エラーメッセージを追加する
   def append_errors_to_flash(record, action_name)
     flash.now[:alert] = [ "まちレポの#{action_name}に失敗しました" ]
     flash.now[:alert] += record.errors.full_messages if record.errors.any?
   end
 
+  # マイタウン情報を設定する
   def set_mytown_location
     @mytown_address = current_user.mytown_address
     geocoding = Geocoder.search(@mytown_address).first.coordinates
     @mytown_latitude = geocoding[0]
     @mytown_longitude = geocoding[1]
+  end
+
+  # まちレポ詳細の閲覧数登録処理
+  def track_view_count(machi_repo_id)
+    cookie_key = "viewed_machi_repo_#{machi_repo_id}"
+
+    # 短時間に同じユーザーの閲覧で何度もインクリメントされないようにする
+    unless cookies[cookie_key]
+      MachiRepo.increment_counter(:views_count, machi_repo_id)
+      # 有効期限を24時間に設定
+      cookies[cookie_key] = { value: true, expires: 24.hours.from_now }
+    end
   end
 
   def machi_repo_params
