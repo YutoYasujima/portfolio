@@ -1,13 +1,42 @@
 class MachiRepos::ChatsController < ApplicationController
-  before_action :set_machi_repo_and_chats, only: [ :index, :load_more ]
+  before_action :set_machi_repo, only: %i[ index load_more ]
 
   CHAT_PER_PAGE = 15
 
-  def index; end
+  def index
+    # 無限スクロール対策のため、UNIXタイムスタンプで保存
+    snapshot_time = Time.current
+    session[:machi_repo_chats_snapshot_time] = snapshot_time.to_i
+
+    # 最終ページ判定のため1件多く取得
+    raw_chats = @machi_repo.chats.includes(:user).where("created_at <= ?", snapshot_time).order(created_at: :desc, id: :desc).limit(CHAT_PER_PAGE + 1)
+
+    # 最終ページ判定
+    @is_last_page = raw_chats.size <= CHAT_PER_PAGE
+
+    # 表示分切り出し
+    @chats = raw_chats.first(CHAT_PER_PAGE)
+  end
 
   # 無限スクロール用データ取得
   def load_more
+    # チャット初期表示時のスナップショット取得
+    snapshot_time = Time.at(session[:machi_repo_chats_snapshot_time].to_i)
+    cursor_created_at = Time.at(params[:previous_last_created].to_i)
+    cursor_id = params[:previous_last_id].to_i
+
+    # 最終ページ判定のため1件多く取得
+    raw_chats = @machi_repo.chats.includes(:user).where("created_at < ? OR (created_at = ? AND id < ?)", cursor_created_at, cursor_created_at, cursor_id).order(created_at: :desc, id: :desc).limit(CHAT_PER_PAGE + 1)
+
+    # 最終ページ判定
+    @is_last_page = raw_chats.size <= CHAT_PER_PAGE
+
+    # 表示分切り出し
+    @chats = raw_chats.first(CHAT_PER_PAGE)
+
+    # 取得データ中最も古い日付を取得
     @new_prev_date = @chats.last&.created_at&.to_date
+
     respond_to do |format|
       format.turbo_stream
     end
@@ -76,9 +105,8 @@ class MachiRepos::ChatsController < ApplicationController
 
   private
 
-  def set_machi_repo_and_chats
+  def set_machi_repo
     @machi_repo = MachiRepo.includes(user: :profile).find(params[:machi_repo_id])
-    @chats = @machi_repo.chats.includes(:user).order(created_at: :desc).page(params[:page]).per(CHAT_PER_PAGE)
   end
 
   def chat_params
