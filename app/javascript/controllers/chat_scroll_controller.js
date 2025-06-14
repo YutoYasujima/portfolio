@@ -14,7 +14,6 @@ export default class extends Controller {
 
   connect() {
     this.loading = false;
-    this.currentPage = 1;
 
     // 無限スクロールの要否判定
     const lastPageMarker = document.getElementById("chat-last-page-marker");
@@ -50,9 +49,14 @@ export default class extends Controller {
       return;
     }
     this.loading = true;
-    this.currentPage++;
 
-    const url = `/machi_repos/${this.machiRepoIdValue}/chats/load_more?page=${this.currentPage}`;
+    // URLのクエリパラメータ作成
+    const params = new URLSearchParams();
+    const previousLastData = document.getElementById("chats-previous-last-data");
+    params.append("previous_last_created", previousLastData.dataset.previousLastCreated);
+    params.append("previous_last_id", previousLastData.dataset.previousLastId);
+
+    const url = `/machi_repos/${this.machiRepoIdValue}/chats/load_more?${params.toString()}`;
     // 次のページ（上方向）を非同期で取得
     fetch(url, {
       headers: {

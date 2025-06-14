@@ -20,7 +20,7 @@ class MachiReposController < ApplicationController
   # "まち"のまちレポ無限スクロールデータ取得
   def load_more
     # まちレポ全体表示時のスナップショット取得
-    snapshot_time = Time.at(session[:records_snapshot_time].to_i)
+    snapshot_time = Time.at(session[:machi_repos_snapshot_time].to_i)
     cursor_updated_at = Time.at(params[:previous_last_updated].to_i)
     cursor_id = params[:previous_last_id].to_i
 
@@ -102,7 +102,7 @@ class MachiReposController < ApplicationController
   def prepare_search_data
     # 無限スクロール対策のため、UNIXタイムスタンプで保存
     snapshot_time = Time.current
-    session[:records_snapshot_time] = snapshot_time.to_i
+    session[:machi_repos_snapshot_time] = snapshot_time.to_i
 
     form_params = enrich_search_params_with_coordinates(search_params)
 

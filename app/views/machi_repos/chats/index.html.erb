@@ -39,7 +39,14 @@
       >
 
         <%# id="chat-last-page-marker"の後にturbo_frameでchatを追加(無限スクロール) %>
-        <div id="chat-last-page-marker" data-last-page="<%= @chats.empty? || @chats.last_page? %>" class="hidden"></div>
+        <div id="chat-last-page-marker" data-last-page="<%= @is_last_page %>" class="hidden"></div>
+        <%# 取得データの最後の更新日時とまちレポIDを保持 %>
+        <div
+          id="chats-previous-last-data"
+          data-previous-last-created="<%= @chats.last&.created_at&.to_i %>"
+          data-previous-last-id="<%= @chats.last&.id %>"
+          class="hidden"
+        ></div>
 
         <%# chatの初期表示 %>
         <%# 日付表示 %>
