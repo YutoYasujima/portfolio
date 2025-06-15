@@ -85,14 +85,13 @@ class MachiRepoSearchForm
 
     # まちレポ投稿日
     if start_date.present? && end_date.present?
-      # 検索開始日と終了日の前後関係が正しい
       if start_date <= end_date
-        scope = scope.where(updated_at: start_date.beginning_of_day..end_date.end_of_day)
+        scope = scope.where("machi_repos.updated_at BETWEEN ? AND ?", start_date.beginning_of_day, end_date.end_of_day)
       end
     elsif start_date.present?
-      scope = scope.where("updated_at >= ?", start_date.beginning_of_day)
+      scope = scope.where("machi_repos.updated_at >= ?", start_date.beginning_of_day)
     elsif end_date.present?
-      scope = scope.where("updated_at <= ?", end_date.end_of_day)
+      scope = scope.where("machi_repos.updated_at <= ?", end_date.end_of_day)
     end
 
     scope
