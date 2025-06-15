@@ -5,10 +5,13 @@ class MachiReposController < ApplicationController
 
   def index
     raw_search_params = {}
+    # 前回の表示結果があれば取得する
     if session[:machi_repos_home_display_status].present?
       raw_search_params = session[:machi_repos_home_display_status]
       raw_search_params["address"] = nil
     end
+
+    # 表示用データを取得する
     prepare_search_data(raw_search_params)
     respond_to do |format|
       format.html
@@ -16,6 +19,7 @@ class MachiReposController < ApplicationController
   end
 
   def search
+    # 表示用データを取得する
     prepare_search_data(search_params)
     respond_to do |format|
       format.turbo_stream
@@ -106,8 +110,8 @@ class MachiReposController < ApplicationController
 
   def prepare_search_data(raw_search_params)
     # 無限スクロール対策のため、UNIXタイムスタンプで保存
-    snapshot_time = Time.current
-    session[:machi_repos_snapshot_time] = snapshot_time.to_i
+    @snapshot_time = Time.current
+    session[:machi_repos_snapshot_time] = @snapshot_time.to_i
 
     # 検索用ストロングパラメータに値を追加
     form_params = enrich_search_params_with_coordinates(raw_search_params)
@@ -125,7 +129,7 @@ class MachiReposController < ApplicationController
     @near_hotspots = @search_form.search_near_hotspots.order("machi_repos.updated_at DESC, machi_repos.id DESC")
 
     # "まち"のまちレポ取得
-    search_result = @search_form.search_machi_repos.where("machi_repos.updated_at <= ?", snapshot_time)
+    search_result = @search_form.search_machi_repos.where("machi_repos.updated_at <= ?", @snapshot_time)
     # データ総数取得
     @machi_repos_count = search_result.size
     # 無限スクロール前のデータ取得
