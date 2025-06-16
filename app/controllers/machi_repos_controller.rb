@@ -1,17 +1,26 @@
 class MachiReposController < ApplicationController
-  before_action :set_mytown_location, only: %i[new edit]
+  before_action :set_mytown_location, only: %i[ new edit ]
 
   MACHI_REPO_PER_PAGE = 12
 
   def index
-    prepare_search_data
+    raw_search_params = {}
+    # 前回の表示結果があれば取得する
+    if session[:machi_repos_home_display_status].present?
+      raw_search_params = session[:machi_repos_home_display_status]
+      raw_search_params["address"] = nil
+    end
+
+    # 表示用データを取得する
+    prepare_search_data(raw_search_params)
     respond_to do |format|
       format.html
     end
   end
 
   def search
-    prepare_search_data
+    # 表示用データを取得する
+    prepare_search_data(search_params)
     respond_to do |format|
       format.turbo_stream
     end
@@ -27,15 +36,15 @@ class MachiReposController < ApplicationController
     form_params = enrich_search_params_with_coordinates(search_params)
 
     @search_form = MachiRepoSearchForm.new(form_params)
-    search_result = @search_form.search_machi_repos.where("updated_at <= ?", snapshot_time)
+    search_result = @search_form.search_machi_repos.where("machi_repos.updated_at <= ?", snapshot_time)
 
     # データの総数を取得する
     @machi_repos_count = search_result.size
 
     # 最終ページ判定のため1件多く取得
     raw_machi_repos = search_result
-                      .where("updated_at < ? OR (updated_at = ? AND id < ?)", cursor_updated_at, cursor_updated_at, cursor_id)
-                      .order(updated_at: :desc, id: :desc)
+                      .where("machi_repos.updated_at < ? OR (machi_repos.updated_at = ? AND id < ?)", cursor_updated_at, cursor_updated_at, cursor_id)
+                      .order("machi_repos.updated_at DESC, machi_repos.id DESC")
                       .limit(MACHI_REPO_PER_PAGE + 1)
     # 最終ページ判定
     @is_last_page = raw_machi_repos.size <= MACHI_REPO_PER_PAGE
@@ -49,7 +58,12 @@ class MachiReposController < ApplicationController
   end
 
   def show
-    @machi_repo = MachiRepo.includes(user: :profile).find(params[:id])
+    @machi_repo = MachiRepo.includes(user: :profile).find_by(id: params[:id])
+
+    unless @machi_repo
+      redirect_back fallback_location: machi_repos_path, alert: "指定されたまちレポが見つかりませんでした。"
+      return
+    end
 
     # ログイン済み & 投稿者本人でなければ、views_countをインクリメント
     if user_signed_in? && current_user.id != @machi_repo.user_id
@@ -99,12 +113,16 @@ class MachiReposController < ApplicationController
 
   private
 
-  def prepare_search_data
+  def prepare_search_data(raw_search_params)
     # 無限スクロール対策のため、UNIXタイムスタンプで保存
-    snapshot_time = Time.current
-    session[:machi_repos_snapshot_time] = snapshot_time.to_i
+    @snapshot_time = Time.current
+    session[:machi_repos_snapshot_time] = @snapshot_time.to_i
 
-    form_params = enrich_search_params_with_coordinates(search_params)
+    # 検索用ストロングパラメータに値を追加
+    form_params = enrich_search_params_with_coordinates(raw_search_params)
+
+    # sessionに画面表示の条件を保持しておく
+    session[:machi_repos_home_display_status] = form_params.to_h
 
     @search_form = MachiRepoSearchForm.new(form_params)
 
@@ -113,39 +131,39 @@ class MachiReposController < ApplicationController
     end
 
     # 周辺のホットスポット取得
-    @near_hotspots = @search_form.search_near_hotspots.order(updated_at: :desc, id: :desc)
+    @near_hotspots = @search_form.search_near_hotspots.order("machi_repos.updated_at DESC, machi_repos.id DESC")
 
     # "まち"のまちレポ取得
-    search_result = @search_form.search_machi_repos.where("updated_at <= ?", snapshot_time)
+    search_result = @search_form.search_machi_repos.where("machi_repos.updated_at <= ?", @snapshot_time)
     # データ総数取得
     @machi_repos_count = search_result.size
     # 無限スクロール前のデータ取得
-    @machi_repos = search_result.order(updated_at: :desc, id: :desc).limit(MACHI_REPO_PER_PAGE)
-    # 最終ページのデータか判定
+    @machi_repos = search_result.order("machi_repos.updated_at DESC, machi_repos.id DESC").limit(MACHI_REPO_PER_PAGE)
+    # 最終ページのデータか判定(初期表示のため下記でOK)
     @is_last_page = @machi_repos_count <= MACHI_REPO_PER_PAGE
   end
 
   # search_paramsにマップ情報を追加する
-  def enrich_search_params_with_coordinates(search_params)
-    form_params = search_params
+  def enrich_search_params_with_coordinates(raw_search_params)
+    form_params = raw_search_params
 
     results =
-      if form_params[:address].present?
-        Geocoder.search(form_params[:address])
-      elsif form_params[:latitude].present? && form_params[:longitude].present?
-        Geocoder.search([ form_params[:latitude], form_params[:longitude] ])
+      if form_params["address"].present?
+        Geocoder.search(form_params["address"])
+      elsif form_params["latitude"].present? && form_params["longitude"].present?
+        Geocoder.search([ form_params["latitude"], form_params["longitude"] ])
       else
         Geocoder.search(current_user.mytown_address)
       end
 
     result = results.first
     @address = result.state + result.city
-    @latitude = form_params[:latitude].presence || result.coordinates[0]
-    @longitude = form_params[:longitude].presence || result.coordinates[1]
+    @latitude = form_params["latitude"].presence || result.coordinates[0]
+    @longitude = form_params["longitude"].presence || result.coordinates[1]
 
-    form_params[:address] = @address
-    form_params[:latitude] = @latitude
-    form_params[:longitude] = @longitude
+    form_params["address"] = @address
+    form_params["latitude"] = @latitude
+    form_params["longitude"] = @longitude
 
     form_params
   end
@@ -176,6 +194,7 @@ class MachiReposController < ApplicationController
     end
   end
 
+  # DB登録時のストロングパラメータ取得
   def machi_repo_params
     params.require(:machi_repo).permit(
       :title, :info_level, :category, :description,
@@ -185,6 +204,7 @@ class MachiReposController < ApplicationController
     )
   end
 
+  # 検索時のストロングパラメータ取得
   def search_params
     params.fetch(:search, {}).permit(
       :title, :info_level, :category, :tag_names, :tag_match_type,

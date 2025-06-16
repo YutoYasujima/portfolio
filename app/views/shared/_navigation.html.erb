@@ -30,12 +30,15 @@
         <% end %>
       </li>
 
-      <%# TOPアイコン(モバイルのみ) %>
-      <li class="flex-1 text-black md:text-white md:hidden">
-        <%= link_to "#", class: "nav-icon" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px" fill="#000000">
-            <path d="M480-554 283-357l-43-43 240-240 240 240-43 43-197-197Z"/>
-          </svg>
+      <%# TOPアイコン %>
+      <li class="flex-1 text-black md:fixed md:bottom-[20px] md:right-[20px] md:border md:rounded-full md:w-18 md:aspect-square md:bg-white md:z-1">
+        <%= button_tag type: "button",
+          data: { controller: "scroll", action: "click->scroll#toTop" },
+          class: "nav-icon w-full" do
+        %>
+          <div class="w-10 aspect-square">
+            <%= render "shared/icons/keyboard_arrow_up_icon" %>
+          </div>
           <span class="nav-text">TOP</span>
         <% end %>
       </li>
