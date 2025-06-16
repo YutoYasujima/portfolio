@@ -43,6 +43,9 @@ application.register("prefecture-municipality", PrefectureMunicipalityController
 import ReloadController from "./reload_controller"
 application.register("reload", ReloadController)
 
+import ScrollController from "./scroll_controller"
+application.register("scroll", ScrollController)
+
 import TagController from "./tag_controller"
 application.register("tag", TagController)
 

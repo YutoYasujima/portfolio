@@ -58,7 +58,12 @@ class MachiReposController < ApplicationController
   end
 
   def show
-    @machi_repo = MachiRepo.includes(user: :profile).find(params[:id])
+    @machi_repo = MachiRepo.includes(user: :profile).find_by(id: params[:id])
+
+    unless @machi_repo
+      redirect_back fallback_location: machi_repos_path, alert: "指定されたまちレポが見つかりませんでした。"
+      return
+    end
 
     # ログイン済み & 投稿者本人でなければ、views_countをインクリメント
     if user_signed_in? && current_user.id != @machi_repo.user_id
