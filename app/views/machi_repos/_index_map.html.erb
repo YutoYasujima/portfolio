@@ -55,7 +55,7 @@
   <%= render "index_search_form", search_form: @search_form %>
 
   <!-- データ取得時間 -->
-  <div class="mb-4 mr-2">
+  <div class="mb-4 mr-2 xl:mr-12">
     <%= button_tag type: "button",
       data: { controller: "reload", action: "click->reload#reload" },
       id: "target-element",
