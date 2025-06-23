@@ -7,11 +7,13 @@ export default class extends Controller {
     "cover",
   ];
 
-  connect() {
+  toggleMenu() {
+    this.menuTarget.classList.toggle("hidden");
+    this.coverTarget.classList.toggle("hidden");
   }
 
-  toggleMenu() {
-    this.menuTarget.classList.toggle('hidden');
-    this.coverTarget.classList.toggle('hidden');
+  disconnect() {
+    this.menuTarget.classList.add("hidden");
+    this.coverTarget.classList.add("hidden");
   }
 }
