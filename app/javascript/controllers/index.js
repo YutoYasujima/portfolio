@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import AccordionController from "./accordion_controller"
+application.register("accordion", AccordionController)
+
 import ChatScrollController from "./chat_scroll_controller"
 application.register("chat-scroll", ChatScrollController)
 
@@ -21,6 +24,9 @@ application.register("hamburger-menu", HamburgerMenuController)
 
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
+
+import HelpController from "./help_controller"
+application.register("help", HelpController)
 
 import MachiRepos__ChatController from "./machi_repos/chat_controller"
 application.register("machi-repos--chat", MachiRepos__ChatController)

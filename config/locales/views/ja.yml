@@ -10,3 +10,6 @@ ja:
       failure: ユーザー登録に失敗しました
     edit:
       title: まちレポ編集
+  helps:
+    index:
+      title: ヘルプ

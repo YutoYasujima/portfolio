@@ -1,0 +1,25 @@
+<% content_for :title, "ヘルプ" %>
+<% content_for :head do %>
+  <meta name="turbo-cache-control" content="no-cache">
+<% end %>
+
+<div class="text-center">
+  <h2 class="mb-8">
+    <span class="header1"><%= t('.title') %></span>
+    <p>
+      "Machi Vigil ～ まちヴィジル ～"<br>
+      について説明します
+    </p>
+  </h2>
+
+  <section
+    data-controller="accordion"
+    class="mx-auto px-4 max-w-[900px]">
+    <!-- アコーディオンアイテム -->
+    <%= render "shared/helps/about_machi_vigil/item" %>
+    <%= render "shared/helps/about_hotspot/item" %>
+    <%= render "shared/helps/how_to_view_machi_repos/item" %>
+    <%= render "shared/helps/nearby_hotspots/item" %>
+    <%= render "shared/helps/towns_machi_repos/item" %>
+  </section>
+</div>

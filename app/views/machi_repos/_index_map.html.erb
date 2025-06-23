@@ -5,7 +5,7 @@
     id="map-wrapper"
     class="mx-auto mb-8 w-full max-w-[500px] md:max-w-175 xl:max-w-300"
 >
-  <div class="flex justify-center gap-12 mb-4">
+  <div class="relative flex justify-center gap-12 mb-4">
     <!-- マイタウンアイコン -->
     <div data-action="click->machi-repos--index#onClickMytownIcon" class="icon-circle-wrapper">
       <div class="icon-circle">
@@ -25,6 +25,8 @@
       </div>
       <span class="icon-circle-text">現在地</span>
     </div>
+    <!-- ヘルプ -->
+    <%= render "shared/help_item", title: "まちレポの閲覧方法", content: render("shared/helps/how_to_view_machi_repos/content") %>
   </div>
 
   <!-- 住所検索 -->
@@ -70,9 +72,13 @@
 
   <div class="xl:flex xl:justify-around">
     <section class="text-left xl:w-100">
-      <h3 class="header2 mb-4 ">
-        周辺のホットスポット（<%= near_hotspots.length %>件）
-      </h3>
+      <div class="relative">
+        <h3 class="header2 mb-4 ">
+          周辺のホットスポット（<%= near_hotspots.length %>件）
+        </h3>
+        <!-- ヘルプ -->
+        <%= render "shared/help_item", title: "周辺のホットスポット", content: render("shared/helps/nearby_hotspots/content") %>
+      </div>
       <!-- Google Map -->
       <div id="map"
         data-controller="google-maps"
@@ -87,9 +93,13 @@
     </section>
 
     <section class="text-left xl:w-175">
-      <h3 class="header2 mb-4 ">
-        "まち"のまちレポ一覧（<span id="machi-repos-count"><%= machi_repos_count %></span>件）
-      </h3>
+      <div class="relative">
+        <h3 class="header2 mb-4 ">
+          "まち"のまちレポ一覧（<span id="machi-repos-count"><%= machi_repos_count %></span>件）
+        </h3>
+        <!-- ヘルプ -->
+        <%= render "shared/help_item", title: "\"まち\"のまちレポ一覧", content: render("shared/helps/towns_machi_repos/content") %>
+      </div>
       <!-- まちレポカード表示(無限スクロール) -->
       <div
         id="machi-repos-last-page-marker"

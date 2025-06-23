@@ -18,53 +18,18 @@
   </div>
 </section>
 
-<section id="about-app" class="about-card">
+<section class="about-card">
   <h2 class="mb-4">
-    <span class="header1">Machi Vigilについて</span>
+    <span class="header1">Machi Vigil</span>
   </h2>
-  <div class="about-card-content">
-    <p class="tracking-widest">
-      "Machi Vigil"は、"まち"で起きている<br>
-      安心や安全に関わる様々な情報<br>
-      “まちレポ”を<br>
-      みんなで共有するためのサービスです！<br>
-      <br>
-      １つの情報がみんなの安心や安全に<br>
-      繋がります！<br>
-      <br>
-      "まちレポ"について<br>
-      チャットで話し合うことができます！<br>
-      <br>
-      みんなで"まち"を見守っていきましょう！
-    </p>
-  </div>
+  <%= render "shared/helps/about_machi_vigil/content" %>
 </section>
 
 <section id="about-hotspot" class="about-card">
   <h2 class="mb-4 text-center">
     <span class="header1">ホットスポット</span>
   </h2>
-  <div class="flex flex-col items-center gap-4 md:flex-row">
-    <div id="about-hotspot-text" class="about-card-content mb-4 md:flex-1">
-      <p class="text-center tracking-widest">
-        "まちレポ"の発生場所を<br>
-        “ホットスポット”と呼びます！<br>
-        <br>
-        “ホットスポット”は<br>
-        マップに表示されるので<br>
-        身近な"まちレポ"を確認しましょう！<br>
-        <br>
-        "まちレポ"は緊急度によって<br>
-        ”情報レベル”が設定されます。<br>
-        緊急度の高い順に<br>
-        赤 > 黄 > 緑<br>
-        で色分けされています。<br>
-      </p>
-    </div>
-    <div id="about-hotspot-image"  class="about-card-content md:flex-1">
-      <%= image_tag "top_map_image.png" %>
-    </div>
-  </div>
+  <%= render "shared/helps/about_hotspot/content" %>
 </section>
 
 <%

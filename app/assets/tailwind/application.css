@@ -16,7 +16,12 @@
   border-bottom: 1px solid #F5A83D;
   padding: 0 0.5rem;
   font-weight: 500;
-  font-size: 20px;
+  font-size: 1.25rem;
+}
+.header3 {
+  border-left: 4px solid #F5A83D;
+  padding: 0 0.25rem;
+  font-weight: 500;
 }
 
 /* リンク */
@@ -215,7 +220,7 @@ input:-webkit-autofill{
 }
 .about-card-content {
   margin: 0 auto;
-  max-width: 380px;
+  max-width: 320px;
 }
 
 /* マイタウンのセレクトボックス */
@@ -454,9 +459,37 @@ input:-webkit-autofill{
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }
-
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
+}
+
+/* アコーディオン */
+[data-accordion-target="content"].accordion-content-close {
+  opacity: 0;
+  border: none;
+  padding: 0;
+  height: 0;
+}
+
+/* ヘルプ */
+.help-wrapper {
+  margin-bottom: 1rem;
+  border-radius: 0.75rem;
+  background-color: white;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+}
+.help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  text-align: left;
+}
+.help-content {
+  border-top: 1px solid hsl(0, 10%, 75%);
+  padding: 1rem 0.5rem;
+  transition: all 0.3s ease-out;
 }
 
 /* アニメーション */
