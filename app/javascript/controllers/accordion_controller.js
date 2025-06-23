@@ -25,19 +25,19 @@ export default class extends Controller {
       content.classList.add("accordion-content-open");
       openIcon.classList.add("hidden");
       closeIcon.classList.remove("hidden");
+
+      // itemのトップにスクロールする
+      item.addEventListener("transitionend", () => {
+      item.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, { once: true });
     } else {
       // クリックしたitemを閉じる
       content.classList.add("accordion-content-close");
       openIcon.classList.remove("hidden");
       closeIcon.classList.add("hidden");
     }
-
-    item.addEventListener("transitionend", () => {
-      // itemのトップにスクロールする
-      item.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, { once: true });
   }
 }
