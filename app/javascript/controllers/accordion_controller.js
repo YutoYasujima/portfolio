@@ -31,5 +31,13 @@ export default class extends Controller {
       openIcon.classList.remove("hidden");
       closeIcon.classList.add("hidden");
     }
+
+    item.addEventListener("transitionend", () => {
+      // itemのトップにスクロールする
+      item.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, { once: true });
   }
 }
