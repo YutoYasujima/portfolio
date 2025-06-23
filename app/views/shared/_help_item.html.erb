@@ -1,0 +1,29 @@
+<div
+  data-controller="help"
+  class="absolute -top-3 right-2"
+>
+  <div
+    data-action="click->help#open"
+    class="w-6 aspect-square text-gray-500"
+  >
+    <%= render "shared/icons/help_full_icon" %>
+  </div>
+  <div
+    data-help-target="content"
+    class="hidden fixed inset-0 bg-black/70 z-20"
+  >
+    <div class="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-xl py-4 w-full max-w-[900px] bg-white">
+      <div class="flex justify-between mb-4 border-b border-gray-400 pb-2 px-2">
+        <h3 class="header2"><%= title %></h3>
+        <div
+          data-action="click->help#close"
+          class="w-8 aspect-square text-red-500">
+          <%= render "shared/icons/close_icon" %>
+        </div>
+      </div>
+      <div class="px-2">
+        <%= content.html_safe %>
+      </div>
+    </div>
+  </div>
+</div>

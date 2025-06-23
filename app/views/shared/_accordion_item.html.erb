@@ -1,0 +1,27 @@
+<!-- アコーディオンアイテム -->
+<dl data-accordion-target="item"
+  class="help-wrapper"
+>
+  <div
+    data-action="click->accordion#toggle"
+    class="help-header"
+  >
+    <dt class="header2">
+      <%= title %>
+    </dt>
+    <span class="mr-2 w-6 aspect-square">
+      <span data-accordion-target="openIcon">
+        <%= render "shared/icons/add_icon" %>
+      </span>
+      <span data-accordion-target="closeIcon"  class="hidden">
+        <%= render "shared/icons/remove_icon" %>
+      </span>
+    </span>
+  </div>
+  <dd
+    data-accordion-target="content"
+    class="help-content accordion-content-close"
+  >
+    <%= description.html_safe %>
+  </dd>
+</dl>

@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   }
 
   resources :municipalities, only: %i[ index ]
+
   resources :machi_repos do
     collection do
       get :search
@@ -24,6 +25,8 @@ Rails.application.routes.draw do
   end
 
   resources :accounts, only: %i[ index destroy ]
+
+  resources :helps, only: %i[ index ]
 
   root "tops#index"
 
