@@ -132,7 +132,7 @@ GEM
     enum_help (0.0.19)
       activesupport (>= 3.0.0)
     erubi (1.13.1)
-    excon (1.2.5)
+    excon (1.2.7)
       logger
     faraday (2.13.1)
       faraday-net_http (>= 2.0, < 3.5)
@@ -148,7 +148,7 @@ GEM
     ffi (1.17.2-x86_64-darwin)
     ffi (1.17.2-x86_64-linux-gnu)
     ffi (1.17.2-x86_64-linux-musl)
-    fog-aws (3.31.0)
+    fog-aws (3.32.0)
       base64 (~> 0.2.0)
       fog-core (~> 2.6)
       fog-json (~> 1.1)
@@ -229,7 +229,7 @@ GEM
     mime-types (3.7.0)
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
-    mime-types-data (3.2025.0514)
+    mime-types-data (3.2025.0624)
     mini_magick (5.2.0)
       benchmark
       logger
