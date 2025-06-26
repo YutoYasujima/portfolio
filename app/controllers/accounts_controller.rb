@@ -8,7 +8,10 @@ class AccountsController < ApplicationController
   end
 
   def destroy
-    current_user.destroy!
+    user = current_user
+    sign_out user
+    reset_session
+    user.destroy!
 
     respond_to do |format|
       format.html { redirect_to root_path, status: :see_other, notice: "ユーザーを削除しました" }

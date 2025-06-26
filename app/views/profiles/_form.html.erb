@@ -1,0 +1,19 @@
+<%= form_with model: profile, class: "form" do |f| %>
+  <div class="field">
+    <%= f.label :nickname, "ニックネーム", class: "require" %>
+    <%= f.text_field :nickname, autofocus: true, class: "text-field" %>
+  </div>
+
+  <div data-controller="prefecture-municipality" class="field">
+    <%= label_tag nil, "マイタウン", class: "require" %>
+    <div class="mytown-selects">
+      <%= f.collection_select :prefecture_id, Prefecture.all, :id, :name_kanji, {}, { class: "select-field", data: { action: "change->prefecture-municipality#loadMunicipalities" }} %>
+
+      <%= f.collection_select :municipality_id, Municipality.where(prefecture_id: f.object.prefecture_id || 1).order(:name_kana), :id, :name_kanji, {}, { class: "select-field", data: { prefecture_municipality_target: "municipality" }} %>
+    </div>
+  </div>
+
+  <div class="actions text-center">
+    <%= f.submit nil, class: "button" %>
+  </div>
+<% end %>

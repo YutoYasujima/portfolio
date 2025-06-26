@@ -43,7 +43,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         # DeviseがSessionに一時的に保存していたデータを削除する。
         # Sessionをログイン前のクリーンな状態に保っておく
         expire_data_after_sign_in!
-        # ログインしていなユーザー用のページに遷移。デフォルトはroot_path
+        # ログインしていないユーザー用のページに遷移。デフォルトはroot_path
         respond_with resource, location: after_inactive_sign_up_path_for(resource)
       end
     else
