@@ -29,8 +29,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       flash[:notice] = "ログインしました"
       sign_in_and_redirect @user, event: :authentication
     else
+      flash[:alert] = [ "Googleログインに失敗しました" ]
+      flash[:alert] += @user.errors.full_messages if @user.errors.any?
       session["devise.google_data"] = request.env["omniauth.auth"].except(:extra)
-      redirect_to new_user_session_path, alert: "Googleログインに失敗しました"
+      redirect_to new_user_session_path
     end
   end
 
