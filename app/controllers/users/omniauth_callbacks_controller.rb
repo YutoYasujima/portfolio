@@ -21,6 +21,25 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   #   super
   # end
 
+  def google_oauth2
+    @user = User.from_omniauth(request.env["omniauth.auth"])
+
+    if @user.persisted?
+      # ログイン後の遷移先はappclication_controllerのafter_sign_in_path_forメソッドで決まる
+      flash[:notice] = "ログインしました"
+      sign_in_and_redirect @user, event: :authentication
+    else
+      session["devise.google_data"] = request.env["omniauth.auth"].except(:extra)
+      redirect_to new_user_session_path, alert: "Googleログインに失敗しました"
+    end
+  end
+
+  # OmniAuth が自動的に失敗した場合（ユーザーがキャンセルした、認証が壊れた等）に呼ばれる
+  # トップページへリダイレクトして、失敗メッセージを表示
+  def failure
+    redirect_to new_user_session_path, alert: "Googleログインに失敗しました"
+  end
+
   # protected
 
   # The path used when OmniAuth fails

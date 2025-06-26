@@ -1,0 +1,15 @@
+<% content_for :title, "プロフィール登録" %>
+
+<div class="text-center">
+  <h2 class="mb-8">
+    <span class="header1"><%= t(".title") %></span>
+    <p>プロフィールを登録します</p>
+  </h2>
+
+  <%= render "form", profile: @profile %>
+
+  <div>
+    <%= link_to "ログアウト", destroy_user_session_path,
+            data: { turbo_method: :delete }, class: "link text-xl underline" %>
+  </div>
+</div>

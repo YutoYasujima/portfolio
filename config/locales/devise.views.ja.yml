@@ -116,6 +116,7 @@ ja:
       already_signed_out: 既にログアウト済みです。
       new:
         sign_in: ログイン
+        sign_in_with_provider: "%{provider}でログイン"
         sign_up: 新規登録
         forgot_your_password: パスワードを忘れましたか？
         didn_t_receive_confirmation_instructions: |
