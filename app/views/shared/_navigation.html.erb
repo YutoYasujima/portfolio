@@ -1,5 +1,5 @@
-<% if user_signed_in? %>
-  <nav class="fixed bottom-0 left-0 right-0 h-[60px] bg-white md:relative md:bg-transparent md:w-[320px] md:mr-2">
+<% if user_signed_in? && current_user.profile&.persisted? %>
+  <nav class="fixed bottom-0 left-0 right-0 border-t-1 border-gray-400 h-[60px] bg-white md:relative md:border-none md:bg-transparent md:w-[320px] md:mr-2">
     <ul class="flex">
       <%# まちレポアイコン %>
       <li class="flex-1 text-black md:text-white">
@@ -30,8 +30,8 @@
         <% end %>
       </li>
 
-      <%# TOPアイコン %>
-      <li class="flex-1 text-black md:fixed md:bottom-[20px] md:right-[20px] md:border md:rounded-full md:w-18 md:aspect-square md:bg-white md:z-10">
+      <%# TOPアイコン(モバイル版のみ) %>
+      <li class="flex-1 text-black md:hidden">
         <%= button_tag type: "button",
           data: { controller: "scroll", action: "click->scroll#toTop" },
           class: "nav-icon w-full" do

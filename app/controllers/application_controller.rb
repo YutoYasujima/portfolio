@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
     return if controller_path == "profiles" && %w[new create].include?(action_name)
 
     # Profileがないなら登録画面にリダイレクト
-    unless current_user.profile.present?
+    unless current_user.profile&.persisted?
       redirect_to new_profile_path, notice: "プロフィールを登録してください"
     end
   end

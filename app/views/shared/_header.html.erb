@@ -1,5 +1,5 @@
 <header class="flex justify-center items-center border-b-3 border-[#C2750A] h-20 bg-[#F6B355] md:justify-start">
-  <% if user_signed_in? %>
+  <% if user_signed_in? && current_user.profile&.persisted? %>
     <div class="flex-1 text-center md:text-left">
       <%= link_to "Machi Vigil", machi_repos_path, class: "text-white text-5xl md:ml-8" %>
     </div>
@@ -25,8 +25,12 @@
           <li class="menu-list">
             <%= link_to "ヘルプ", helps_path %>
           </li>
-          <li class="menu-list text-gray-500">利用規約</li>
-          <li class="menu-list text-gray-500">プライバシーポリシー</li>
+          <li class="menu-list">
+            <%= link_to "利用規約", terms_path %>
+          </li>
+          <li class="menu-list">
+            <%= link_to "プライバシーポリシー", privacy_path %>
+          </li>
           <li class="menu-list">
             <%= link_to "ログアウト", destroy_user_session_path, data: { turbo_method: :delete } %>
           </li>

@@ -48,14 +48,13 @@
       <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "text-field" %>
     </div>
 
+    <%# 同意チェック %>
     <div class="field flex">
-      <%= f.check_box :agreement, required: true, class: "ml-2 scale-150" %>
+      <%= f.check_box :agreement, class: "ml-2 scale-150" %>
       <%= f.label :agreement, class: "flex-1 ml-4 text-center" do %>
-        <%# link_to "利用規約","#", target: "_blank", class: "link text-xl" %>
-        <span class="text-gray-400 text-xl">利用規約</span>
+        <%= link_to "利用規約", terms_path, target: "_blank", class: "link text-xl" %>
         <span> / </span>
-        <%# link_to "プライバシーポリシー", "#", target: "_blank", class: "link text-xl" %>
-        <span class="text-gray-400 text-xl">プライバシーポリシー</span>
+        <%= link_to "プライバシーポリシー", privacy_path, target: "_blank", class: "link text-xl" %>
         <div><span>に同意します</span></div>
       <% end %>
     </div>

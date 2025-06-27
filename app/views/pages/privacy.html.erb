@@ -6,14 +6,14 @@
   </h2>
 </div>
 
-<section class="px-4 tracking-widest">
+<section class="px-4 pb-4 tracking-widest">
   <!-- ユーザーから取得する情報 -->
-  <section class="mb-4">
+  <section class="mb-8">
     <h3 class="header2 mb-2">ユーザーから取得する情報</h3>
     <p class="mb-2 indent-4">
       本アプリケーションは、ユーザーから以下の情報を取得します。
     </p>
-    <ul class="ml-6 mb-4 list-disc">
+    <ul class="ml-8 mb-4 list-disc">
       <li class="mb-2">
         氏名（ニックネームやペンネームも含む）
       </li>
@@ -41,12 +41,12 @@
     </ul>
   </section>
   <!-- ユーザー情報の利用目的 -->
-  <section class="mb-4">
+  <section class="mb-8">
     <h3 class="header2 mb-2">ユーザー情報の利用目的</h3>
     <p class="mb-2 indent-4">
       取得した情報は、以下の目的で利用します。
     </p>
-    <ul class="ml-6 mb-4 list-disc">
+    <ul class="ml-8 mb-4 list-disc">
       <li class="mb-2">
         本アプリケーションに関する登録の受付、本人確認・認証のため
       </li>
@@ -80,19 +80,19 @@
     </p>
   </section>
   <!-- 安全管理措置 -->
-  <section class="mb-4">
+  <section class="mb-8">
     <h3 class="header2 mb-2">安全管理措置</h3>
     <p class="indent-4">
       取得した情報に関しては、適切な安全管理措置を講じています。詳細については、末尾記載のお問い合わせ先までご連絡いただければ、法令に基づき個別にご案内いたします。
     </p>
   </section>
   <!-- 第三者提供について -->
-  <section class="mb-4">
+  <section class="mb-8">
     <h3 class="header2 mb-2">第三者提供について</h3>
     <p class="mb-2 indent-4">
       取得した情報のうち個人データ（個人情報保護法第16条第3項）に該当するものについては、以下の場合を除き、ユーザーの同意なしに第三者（国外含む）へ提供しません。
     </p>
-    <ul class="ml-6 mb-4 list-disc">
+    <ul class="ml-8 mb-4 list-disc">
       <li class="mb-2">
         個人データの取扱いを外部に委託する場合
       </li>
@@ -108,7 +108,7 @@
     </ul>
   </section>
   <!-- アクセス解析ツール -->
-  <section class="mb-4">
+  <section class="mb-8">
     <h3 class="header2 mb-2">アクセス解析ツール</h3>
     <p class="mb-2 indent-4">
       本アプリケーションはアクセス解析のために「Googleアナリティクス」を使用しています。GoogleアナリティクスはCookieを通じてトラフィックデータを収集するものであり、個人を特定するものではありません。Cookieの使用を希望されない場合は、ブラウザの設定で無効化してください。
@@ -119,7 +119,7 @@
     </div>
   </section>
   <!-- プライバシーポリシーの変更 -->
-  <section class="mb-4">
+  <section class="mb-8">
     <h3 class="header2 mb-2">プライバシーポリシーの変更</h3>
     <p class="mb-2 indent-4">
       本プライバシーポリシーは、法令の変更やサービス内容の見直しに応じて適宜更新されることがあります。変更があった場合は、本アプリケーション内に表示されるプライバシーポリシーに最新の内容と最終更新日を明記します。お知らせ機能やWebサイト、SNS等による通知は原則として行っておりませんので、随時本ポリシーをご確認ください。
@@ -147,16 +147,4 @@
       <span class="font-bold">最終更新日</span>：2025年6月27日
     </div>
   </section>
-  <!-- TOP -->
-  <div class="<%= "hidden" if user_signed_in? %> text-black fixed bottom-2 right-2 border rounded-full w-14 aspect-square bg-white z-10 md:block">
-    <%= button_tag type: "button",
-      data: { controller: "scroll", action: "click->scroll#toTop" },
-      class: "flex flex-col justify-center items-center w-full" do
-    %>
-      <div class="w-6 aspect-square">
-        <%= render "shared/icons/keyboard_arrow_up_icon" %>
-      </div>
-      <span class="text-[12px]">TOP</span>
-    <% end %>
-  </div>
 </section>

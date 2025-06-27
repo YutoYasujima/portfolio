@@ -1,0 +1,11 @@
+<div class="<%= "hidden" if user_signed_in? && current_user.profile&.persisted? %> text-black fixed bottom-2 right-2 border rounded-full w-14 aspect-square bg-white z-5  hover:cursor-pointer md:block md:bottom-4 md:right-4">
+  <%= button_tag type: "button",
+    data: { controller: "scroll", action: "click->scroll#toTop" },
+    class: "flex flex-col justify-center items-center w-full" do
+  %>
+    <span class="w-6 aspect-square">
+      <%= render "shared/icons/keyboard_arrow_up_icon" %>
+    </span>
+    <span class="text-[12px]">TOP</span>
+  <% end %>
+</div>
