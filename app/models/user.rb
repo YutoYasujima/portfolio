@@ -9,7 +9,6 @@ class User < ApplicationRecord
   has_many :chats, dependent: :destroy
 
   attr_accessor :agreement
-
   validates :agreement, acceptance: { accept: "1", message: "に同意してください" }
 
   # Googleログイン(OmniAuth)を通じて認証されたユーザー情報から、

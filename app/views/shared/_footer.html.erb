@@ -1,9 +1,7 @@
-<footer id="footer" class="hidden h-24 bg-[#D9D9D9] text-center md:block">
+<footer id="footer" class="<%= "hidden" if user_signed_in? && current_user.profile&.persisted? %> h-24 bg-[#D9D9D9] text-center md:block">
   <div class="mt-4 flex justify-center gap-8">
-    <%# link_to "利用規約", "#", class: "link underline" %>
-    <span class="text-gray-400 underline">利用規約</span>
-    <%# link_to "プライバシーポリシー", "#", class: "link underline" %>
-    <span class="text-gray-400 underline">プライバシーポリシー</span>
+    <%= link_to "利用規約", terms_path, class: "link underline" %>
+    <%= link_to "プライバシーポリシー", privacy_path, class: "link underline" %>
   </div>
   <div class="mt-4">
     <small>&copy; 2025 Machi Vigil</small>

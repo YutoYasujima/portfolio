@@ -1,0 +1,150 @@
+<% content_for :title, "プライバシーポリシー" %>
+
+<div class="">
+  <h2 class="mb-8 text-center">
+    <span class="header1"><%= t('.title') %></span>
+  </h2>
+</div>
+
+<section class="px-4 pb-4 tracking-widest">
+  <!-- ユーザーから取得する情報 -->
+  <section class="mb-8">
+    <h3 class="header2 mb-2">ユーザーから取得する情報</h3>
+    <p class="mb-2 indent-4">
+      本アプリケーションは、ユーザーから以下の情報を取得します。
+    </p>
+    <ul class="ml-8 mb-4 list-disc">
+      <li class="mb-2">
+        氏名（ニックネームやペンネームも含む）
+      </li>
+      <li class="mb-2">
+        メールアドレス
+      </li>
+      <li class="mb-2">
+        住所
+      </li>
+      <li class="mb-2">
+        写真や動画
+      </li>
+      <li class="mb-2">
+        Cookie(クッキー)を用いて生成された識別情報
+      </li>
+      <li class="mb-2">
+        本アプリケーションの滞在時間、入力履歴等の本アプリケーションにおけるユーザーの利用履歴
+      </li>
+      <li class="mb-2">
+        ユーザーの位置情報
+      </li>
+      <li class="mb-2">
+        外部サービス（Googleアカウント）から連携を許可した情報（プロフィール情報、メールアドレス、Google ID 等）
+      </li>
+    </ul>
+  </section>
+  <!-- ユーザー情報の利用目的 -->
+  <section class="mb-8">
+    <h3 class="header2 mb-2">ユーザー情報の利用目的</h3>
+    <p class="mb-2 indent-4">
+      取得した情報は、以下の目的で利用します。
+    </p>
+    <ul class="ml-8 mb-4 list-disc">
+      <li class="mb-2">
+        本アプリケーションに関する登録の受付、本人確認・認証のため
+      </li>
+      <li class="mb-2">
+        本アプリケーションの利用履歴の管理のため
+      </li>
+      <li class="mb-2">
+        行動履歴を分析し、本アプリケーションの改善に役立てるため
+      </li>
+      <li class="mb-2">
+        本アプリケーションに関するご案内のため
+      </li>
+      <li class="mb-2">
+        お問い合わせ対応のため
+      </li>
+      <li class="mb-2">
+        利用規約や法令違反行為への対応のため
+      </li>
+      <li class="mb-2">
+        本アプリケーションの変更、停止、終了、契約解除等のご連絡のため
+      </li>
+      <li class="mb-2">
+        利用規約変更等の通知のため
+      </li>
+      <li class="mb-2">
+        その他、本アプリケーションの提供・維持・保護・改善のため
+      </li>
+    </ul>
+    <p class="indent-4">
+      また、本アプリケーションは、Googleアカウントを用いたログイン認証（OAuth 2.0）を利用しており、ユーザーがGoogle認証を選択した場合、Googleアカウントに登録された情報のうち、同意いただいた範囲内で情報を取得・利用します。
+    </p>
+  </section>
+  <!-- 安全管理措置 -->
+  <section class="mb-8">
+    <h3 class="header2 mb-2">安全管理措置</h3>
+    <p class="indent-4">
+      取得した情報に関しては、適切な安全管理措置を講じています。詳細については、末尾記載のお問い合わせ先までご連絡いただければ、法令に基づき個別にご案内いたします。
+    </p>
+  </section>
+  <!-- 第三者提供について -->
+  <section class="mb-8">
+    <h3 class="header2 mb-2">第三者提供について</h3>
+    <p class="mb-2 indent-4">
+      取得した情報のうち個人データ（個人情報保護法第16条第3項）に該当するものについては、以下の場合を除き、ユーザーの同意なしに第三者（国外含む）へ提供しません。
+    </p>
+    <ul class="ml-8 mb-4 list-disc">
+      <li class="mb-2">
+        個人データの取扱いを外部に委託する場合
+      </li>
+      <li class="mb-2">
+        本アプリケーションが買収等された場合
+      </li>
+      <li class="mb-2">
+        事業パートナーと共同利用する場合（その際は別途公表）
+      </li>
+      <li class="mb-2">
+        その他、法令により許容されている場合
+      </li>
+    </ul>
+  </section>
+  <!-- アクセス解析ツール -->
+  <section class="mb-8">
+    <h3 class="header2 mb-2">アクセス解析ツール</h3>
+    <p class="mb-2 indent-4">
+      本アプリケーションはアクセス解析のために「Googleアナリティクス」を使用しています。GoogleアナリティクスはCookieを通じてトラフィックデータを収集するものであり、個人を特定するものではありません。Cookieの使用を希望されない場合は、ブラウザの設定で無効化してください。
+    </p>
+    <div>
+      <span>詳細：</span>
+      <%= link_to "Googleアナリティクス利用規約", "https://marketingplatform.google.com/about/analytics/terms/jp/", class: "link underline" %>
+    </div>
+  </section>
+  <!-- プライバシーポリシーの変更 -->
+  <section class="mb-8">
+    <h3 class="header2 mb-2">プライバシーポリシーの変更</h3>
+    <p class="mb-2 indent-4">
+      本プライバシーポリシーは、法令の変更やサービス内容の見直しに応じて適宜更新されることがあります。変更があった場合は、本アプリケーション内に表示されるプライバシーポリシーに最新の内容と最終更新日を明記します。お知らせ機能やWebサイト、SNS等による通知は原則として行っておりませんので、随時本ポリシーをご確認ください。
+    </p>
+    <p class="mb-2 indent-4">
+      なお、変更後に本アプリケーションをご利用された場合は、変更内容に同意されたものとみなします。内容に同意いただけない場合は、本アプリケーションのご利用を中止してください。
+    </p>
+  </section>
+  <!-- お問い合わせ窓口 -->
+  <section class="mb-8">
+    <h3 class="header2 mb-2">お問い合わせ窓口</h3>
+    <p class="mb-2 indent-4">
+      本アプリケーションは個人により開発・運営されています。プライバシーポリシーに関するお問い合わせは、下記メールアドレスまでご連絡ください。
+    </p>
+    <address>
+      メールアドレス：machi.vigil.app@gmail.com
+    </address>
+  </section>
+  <!-- プライバシーポリシー制定日 -->
+  <section>
+    <div>
+      <span class="font-bold">制定日</span>：2025年06月27日
+    </div>
+    <div>
+      <span class="font-bold">最終更新日</span>：2025年6月27日
+    </div>
+  </section>
+</section>

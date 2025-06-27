@@ -31,6 +31,9 @@ Rails.application.routes.draw do
 
   resources :helps, only: %i[ index ]
 
+  get "/terms", to: "pages#terms", as: :terms
+  get "/privacy", to: "pages#privacy", as: :privacy
+
   root "tops#index"
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?

@@ -7,6 +7,7 @@ class ProfilesController < ApplicationController
 
   def create
     @profile = current_user.build_profile(profile_params)
+
     if @profile.save
       redirect_to machi_repos_path, notice: "プロフィールを登録しました"
     else
@@ -24,6 +25,6 @@ class ProfilesController < ApplicationController
   end
 
   def profile_params
-    params.require(:profile).permit(:nickname, :prefecture_id, :municipality_id)
+    params.require(:profile).permit(:nickname, :prefecture_id, :municipality_id, :agreement)
   end
 end
