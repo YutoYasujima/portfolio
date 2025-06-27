@@ -16,3 +16,8 @@ ja:
   helps:
     index:
       title: ヘルプ
+  pages:
+    terms:
+      title: 利用規約
+    privacy:
+      title: プライバシーポリシー
