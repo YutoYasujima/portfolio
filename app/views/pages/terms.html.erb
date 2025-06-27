@@ -300,15 +300,15 @@
   </section>
   <div><span class="font-bold">以上</span></div>
   <!-- TOP -->
-  <div class="<%= "hidden" if user_signed_in? %> text-black fixed bottom-4 right-4 border rounded-full w-18 aspect-square bg-white z-10 md:block">
+  <div class="<%= "hidden" if user_signed_in? %> text-black fixed bottom-2 right-2 border rounded-full w-14 aspect-square bg-white z-10 md:block">
     <%= button_tag type: "button",
       data: { controller: "scroll", action: "click->scroll#toTop" },
-      class: "nav-icon w-full" do
+      class: "flex flex-col justify-center items-center w-full" do
     %>
-      <div class="w-10 aspect-square">
+      <div class="w-6 aspect-square">
         <%= render "shared/icons/keyboard_arrow_up_icon" %>
       </div>
-      <span class="nav-text">TOP</span>
+      <span class="text-[12px]">TOP</span>
     <% end %>
   </div>
 </section>
