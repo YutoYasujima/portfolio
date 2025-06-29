@@ -114,12 +114,16 @@ class MachiReposController < ApplicationController
   private
 
   def prepare_search_data(raw_search_params)
+    # 検索用ストロングパラメータに値を追加
+    form_params = enrich_search_params_with_coordinates(raw_search_params)
+    if form_params.blank?
+      @is_error = true
+      return
+    end
+
     # 無限スクロール対策のため、UNIXタイムスタンプで保存
     @snapshot_time = Time.current
     session[:machi_repos_snapshot_time] = @snapshot_time.to_i
-
-    # 検索用ストロングパラメータに値を追加
-    form_params = enrich_search_params_with_coordinates(raw_search_params)
 
     # sessionに画面表示の条件を保持しておく
     session[:machi_repos_home_display_status] = form_params.to_h
@@ -156,7 +160,23 @@ class MachiReposController < ApplicationController
         Geocoder.search(current_user.mytown_address)
       end
 
+    # ジオコーディング・リバースジオコーディング失敗
+    if results.blank? || results.first.blank?
+      flash.now[:alert] = ["住所が見つかりませんでした"]
+      return nil
+    end
+
     result = results.first
+    if result.country_code != "JP"
+      flash.now[:alert] = ["日本国内の住所を入力してください"]
+      return nil
+    end
+
+    if result.state.blank? || result.city.blank?
+      flash.now[:alert] = ["都道府県または市区町村が特定できませんでした"]
+      return nil
+    end
+
     @address = result.state + result.city
     @latitude = form_params["latitude"].presence || result.coordinates[0]
     @longitude = form_params["longitude"].presence || result.coordinates[1]
