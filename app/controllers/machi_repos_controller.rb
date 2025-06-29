@@ -162,18 +162,18 @@ class MachiReposController < ApplicationController
 
     # ジオコーディング・リバースジオコーディング失敗
     if results.blank? || results.first.blank?
-      flash.now[:alert] = ["住所が見つかりませんでした"]
+      flash.now[:alert] = [ "住所が見つかりませんでした" ]
       return nil
     end
 
     result = results.first
     if result.country_code != "JP"
-      flash.now[:alert] = ["日本国内の住所を入力してください"]
+      flash.now[:alert] = [ "日本国内の住所を入力してください" ]
       return nil
     end
 
     if result.state.blank? || result.city.blank?
-      flash.now[:alert] = ["都道府県または市区町村が特定できませんでした"]
+      flash.now[:alert] = [ "都道府県または市区町村が特定できませんでした" ]
       return nil
     end
 
