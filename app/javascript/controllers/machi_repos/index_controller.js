@@ -360,6 +360,9 @@ export default class extends Controller {
     // 検索住所表示
     onClickSearchLocationButtton() {
       const address = this.searchTarget.value;
+      if (!address.trim()) {
+        return;
+      }
       // 検索フォームの値を更新
       // ジオコーディングするため住所のみ送信
       this.hiddenAddressTarget.value = address;

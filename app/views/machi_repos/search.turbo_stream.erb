@@ -2,14 +2,16 @@
   <%= render "shared/flash_messages" %>
 <% end %>
 
-<%= turbo_stream.replace "map-wrapper" do %>
-  <%= render "index_map",
-    address: @address,
-    latitude: @latitude,
-    longitude: @longitude,
-    near_hotspots: @near_hotspots,
-    machi_repos: @machi_repos,
-    machi_repos_count: @machi_repos_count,
-    is_last_page: @is_last_page
-  %>
+<% unless @is_error %>
+  <%= turbo_stream.replace "map-wrapper" do %>
+    <%= render "index_map",
+      address: @address,
+      latitude: @latitude,
+      longitude: @longitude,
+      near_hotspots: @near_hotspots,
+      machi_repos: @machi_repos,
+      machi_repos_count: @machi_repos_count,
+      is_last_page: @is_last_page
+    %>
+  <% end %>
 <% end %>

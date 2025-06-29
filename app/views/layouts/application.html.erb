@@ -32,7 +32,11 @@
       <%= render "shared/header"%>
     <% end %>
 
-    <div id="flash_messages">
+    <div
+      id="flash_messages"
+      data-controller="flash"
+      data-action="machi-repos--form:flash-alert@window->flash#showAlertMessage machi-repos--form:flash-clear@window->flash#clear"
+    >
       <%= render "shared/flash_messages" %>
     </div>
 

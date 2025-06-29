@@ -144,11 +144,29 @@ export default class extends Controller {
   // 検索住所表示
   async showSearchLocation() {
     let address = this.searchTarget.value;
-    const result = await geocoding(address);
-    // 入力フォームを空にする
-    this.searchTarget.value = null;
-    // 画面表示更新
-    this.updateView(result.address, { lat: result.lat, lng: result.lng });
+    if (!address.trim()) {
+      return;
+    }
+    await geocoding(address)
+    .then(data => {
+      // 画面表示更新
+      this.updateView(data.address, { lat: data.lat, lng: data.lng });
+    })
+    .catch(error => {
+      const errorType = error?.error;
+      let message = "不明なエラーが発生しました";
+
+      if (errorType === "geocode_failed") {
+        message = "住所の検索に失敗しました";
+      } else if (errorType === "not_japan") {
+        message = "日本国内の住所を入力してください";
+      } else if (errorType === "missing_prefecture_or_city") {
+        message = "都道府県または市区町村を特定できませんでした";
+      }
+
+      // フラッシュメッセージ表示
+      this.callFlashAlert(message);
+    });
   }
 
   // 画面表示の更新
@@ -166,6 +184,10 @@ export default class extends Controller {
     this.addressTarget.value = address;
     this.latitudeTarget.value = coordinates.lat;
     this.longitudeTarget.value = coordinates.lng;
+    // 住所検索の入力フォームを空にする
+    this.searchTarget.value = null;
+    // フラッシュメッセージが表示されていたらクリアする
+    this.callFlashClear();
   }
 
   // ホットスポット設定変更
@@ -190,5 +212,14 @@ export default class extends Controller {
   // エリア半径変更
   changeHotspotAreaRadius(event) {
     this.areaCircle.setRadius(Number(event.target.value));
+  }
+
+  // flashコントローラーを利用してフラッシュメッセージをクリアする
+  callFlashClear() {
+    this.dispatch("flash-clear", { detail: { content: "" } });
+  }
+  // flashコントローラーを利用して、alertフラッシュメッセージを表示する
+  callFlashAlert(message) {
+    this.dispatch("flash-alert", { detail: { message } });
   }
 }
