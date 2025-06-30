@@ -1,0 +1,20 @@
+<!-- 防犯・治安 -->
+<div class="category flex items-start gap-2 mb-4">
+  <%= form.radio_button :category, value, class: "flex-shrink-0 mt-2 w-5 aspect-square" %>
+  <%= form.label :"category_#{value}", class: "w-full" do %>
+    <div class="rounded-lg bg-white">
+      <h4 class="border-b border-gray-400 p-2">
+        <span class="inline-block mb-2 border-b-2 border-orange-300 pr-2 text-xl font-medium"><%= title %></span>
+        <span class="block">~ <%= description %> ~</span>
+      </h4>
+      <div class="p-2">
+        <p class="mb-2">例えば、</p>
+        <ul class="ml-6 list-disc">
+          <% examples.each do |example| %>
+            <li><%= example %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+</div>

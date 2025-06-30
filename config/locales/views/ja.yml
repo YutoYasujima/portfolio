@@ -10,6 +10,9 @@ ja:
       failure: ユーザー登録に失敗しました
     edit:
       title: まちレポ編集
+  tutorials:
+    new:
+      title: チュートリアル
   profiles:
     new:
       title: プロフィール登録

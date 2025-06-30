@@ -1,0 +1,401 @@
+<% content_for :title, "チュートリアル" %>
+
+<div class="text-center">
+  <h2 class="mb-6">
+    <span class="header1"><%= t(".title") %></span>
+    <p>&quot;まちレポ&quot;を作成してみましょう！</p>
+  </h2>
+
+  <div class="flex justify-center border-b border-gray-500 mx-auto pb-2">
+    <% 6.times do %>
+      <div class="progress w-10 aspect-square">
+        <div><%= render "shared/icons/label_important_icon" %></div>
+        <div class="text-[#fad6a4]"><%# render "shared/icons/label_important_full_icon" %></div>
+        <div class="hidden text-[#F5A83D]"><%= render "shared/icons/label_important_full_icon" %></div>
+      </div>
+    <% end %>
+  </div>
+
+  <%= form_with(model: @machi_repo, url: tutorials_path(@machi_repo), method: :post, class: "form text-left py-4 px-2") do |form| %>
+    <section>
+      <!-- まちレポとは？ -->
+      <section>
+        <h3 class="header2">まちレポとは</h3>
+        <div class="content mb-4 p-2">
+          <p class="mb-4">
+            &quot;まち&quot;で起きている安心や安全に関わる様々な情報を&quot;まちレポ&quot;と呼びます。
+          </p>
+          <p class="mb-4">
+            日常で感じている「ふとした気づき」や「些細な心配」は、他の誰かも感じているものかもしれません。
+          </p>
+          <p class="mb-4">
+            そんな不安や不満を&quot;まちレポ&quot;として作成してみましょう！
+          </p>
+          <p class="mb-4">
+            情報を共有したり、みんなと意見を交わしたりすることで、&quot;まち&quot;の安心や安全に繋がるはずです！
+          </p>
+          <p class="mb-4">
+            何でもないと思っていた情報が、誰かにとってはとても助かる情報になるかもしれません。
+          </p>
+          <p>
+            &quot;まちレポ&quot;は簡単に作成できます！一緒に作成していきましょう！
+          </p>
+        </div>
+        <div class="flex justify-center gap-4">
+          <button type="button" class="rounded-lg py-1 bg-blue-500 w-30 text-white">次へ</button>
+        </div>
+      </section>
+      <!-- カテゴリー -->
+      <section>
+        <h3 class="header2">カテゴリー</h3>
+        <div class="content mb-4 p-2">
+          <p class="mb-4">
+            &quot;まちレポ&quot;のカテゴリーを選択します。身近でこんなことはありませんか？<br>
+            心当たりのある項目にチェックをお願いします！
+          </p>
+          <p class="mb-4">
+            チェックする場所に迷ったら、ここかな？と思う場所にチェックをしてもらえれば大丈夫です！
+          </p>
+          <!-- 防犯・治安 -->
+          <%= render "tutorials/category_list",
+            form: form, value: "crime",
+            title: "🚨 防犯・治安",
+            description: "街の安全を脅かす人や状況に関わる情報",
+            examples: [ "不審者があらわれる。",
+                        "騒いでいる人達がいる。",
+                        "この道は人通りが少なくて暗いから危ない。"
+                      ]
+          %>
+          <!-- 災害・気象 -->
+          <%= render "tutorials/category_list",
+            form: form, value: "disaster",
+            title: "🌀 災害・気象",
+            description: "自然災害や気象による影響に関わる情報",
+            examples: [ "雨が降るといつも氾濫しそう。",
+                        "強風の影響で木が倒れている。",
+                        "雪の影響で路面が凍結している。"
+                      ]
+          %>
+          <!-- 交通・道路環境 -->
+          <%= render "tutorials/category_list",
+            form: form, value: "traffic",
+            title: "🚦 交通・道路環境",
+            description: "交通安全や道路の利用に関わる情報",
+            examples: [ "車がよくスピード違反をしている。",
+                        "見通しが悪く事故がよく起こる。",
+                        "街灯がなく夜道が暗いため危険。"
+                      ]
+          %>
+          <!-- 子どもの安全 -->
+          <%= render "tutorials/category_list",
+            form: form, value: "children",
+            title: "🧒 子どもの安全",
+            description: "子ども達の安全に関わる情報",
+            examples: [ "公園の遊具が壊れかけている。",
+                        "通学路だけど交通量が多い。",
+                        "うちの子どもが不審者に声を掛けられた。"
+                      ]
+          %>
+          <!-- ペット・動物 -->
+          <%= render "tutorials/category_list",
+            form: form, value: "animal",
+            title: "🐶 ペット・動物",
+            description: "ペットや動物に関わる情報",
+            examples: [ "うちの犬が迷子になっている。",
+                        "クマが出没した。",
+                        "鳥が食べ物を狙って飛んでくる。"
+                      ]
+          %>
+          <!-- 生活環境 -->
+          <%= render "tutorials/category_list",
+            form: form, value: "environment",
+            title: "🏠 生活環境",
+            description: "普段の生活に関わる情報",
+            examples: [ "ずっとゴミが放置されている。",
+                        "あの施設の設備が壊れている。",
+                        "草が生い茂っていて歩道を通ることができない。"
+                      ]
+          %>
+          <!-- その他・気になること -->
+          <%= render "tutorials/category_list",
+            form: form, value: "other",
+            title: "🎈 その他・気になること",
+            description: "カテゴリーが分からない情報",
+            examples: [ "休日にイベントがあるため、周辺にお住まいの方は注意してください。",
+                        "怪しいドローンが飛んでいる。"
+                      ]
+          %>
+        </div>
+        <div class="flex justify-center gap-4">
+          <button type="button" class="rounded-lg py-1 bg-blue-500 w-30 text-white">前へ</button>
+          <button type="button" class="rounded-lg py-1 bg-blue-500 w-30 text-white">次へ</button>
+        </div>
+      </section>
+      <!-- 情報レベル -->
+      <section>
+        <h3 class="header2">情報レベル</h3>
+        <div class="content mb-4 p-2">
+          <p class="mb-4">
+            &quot;まちレポ&quot;は緊急度によって&quot;情報レベル&quot;を設定することができます。緊急度の低い順に次のようになっています！
+          </p>
+          <p class="mb-4 ml-4">
+            <span class="text-[#44D926] font-semibold">共有</span>
+            <span> &lt; </span>
+            <span class="text-[#DFA737] font-semibold">警告</span>
+            <span> &lt; </span>
+            <span class="text-[#DF3737] font-semibold">緊急</span>
+          </p>
+          <p class="mb-4">
+            情報レベルを設定するときは、次のような基準で設定します。
+          </p>
+          <p class="mb-4">
+            当てはまりそうな項目にチェックをお願いします！
+          </p>
+          <!-- 共有 -->
+          <%= render "tutorials/info_level_list",
+            form: form, value: "share",
+            color: "#44D926",
+            icon: "share_full_icon",
+            title: "共有",
+            examples: [ "みんなに知っておいてほしい。" ]
+          %>
+          <!-- 警告 -->
+          <%= render "tutorials/info_level_list",
+            form: form, value: "warn",
+            color: "#DFA737",
+            icon: "warn_full_icon",
+            title: "警告",
+            examples: [ "すぐにみんなに知ってほしい。",
+                        "みんなに気をつけてほしい。"
+                      ]
+          %>
+          <!-- 緊急 -->
+          <%= render "tutorials/info_level_list",
+            form: form, value: "emergency",
+            color: "#DF3737",
+            icon: "emergency_full_icon",
+            title: "緊急",
+            examples: [ "すぐにみんなに知ってほしい。",
+                        "すぐに反応がほしい。"
+                      ]
+          %>
+        </div>
+        <div class="flex justify-center gap-4">
+          <button type="button" class="rounded-lg py-1 bg-blue-500 w-30 text-white">前へ</button>
+          <button type="button" class="rounded-lg py-1 bg-blue-500 w-30 text-white">次へ</button>
+        </div>
+      </section>
+      <!-- 状況説明 -->
+      <section>
+        <h3 class="header2">状況説明</h3>
+        <div class="content mb-4 p-2">
+          <p class="mb-4">
+            状況を簡単に説明してください。入力せずに次へ進んでも大丈夫です！
+          </p>
+          <p class="mb-2">例えば、</p>
+          <ul class="mb-4 ml-6 list-disc">
+            <li>不審者が出没するので、皆さん気をつけてください。</li>
+            <li>
+              道路が冠水していて通行止めになっています。この道を通る人は別の道を使った方が良いと思います。
+            </li>
+            <li>うちの犬が迷子になっています。見かけた方は教えてほしいです！</li>
+          </ul>
+          <%= form.text_area :description, rows: 6, class: "rounded-lg p-2 w-full bg-white", placeholder: "入力してください。", maxlength: 500 %>
+        </div>
+        <div class="flex justify-center gap-4">
+          <button type="button" class="rounded-lg py-1 bg-blue-500 w-30 text-white">前へ</button>
+          <button type="button" class="rounded-lg py-1 bg-blue-500 w-30 text-white">次へ</button>
+        </div>
+      </section>
+      <!-- ホットスポット -->
+      <section>
+        <h3 class="header2">ホットスポット</h3>
+        <div class="content mb-4 p-2">
+          <p class="mb-4">
+            &quot;まちレポ&quot;の発生場所を&quot;ホットスポット&quot;と呼びます！
+          </p>
+          <p class="mb-4">
+            まずはホットスポットの指定方法を選択します。選択によってマップ上の表示が変わります。指定方法は次の２つです。
+          </p>
+          <dl class="mb-4 ml-2">
+            <dt class="header3 mb-2">エリア指定</dt>
+            <dd class="mb-4 ml-2">
+              指定したポイントを中心としたエリアを指定することができます。情報が広範囲のものであるときに指定します。
+            </dd>
+            <dt class="header3 mb-2">ピンポイント指定</dt>
+            <dd class="ml-2">
+              情報が特定の場所のものであるときに指定します。自宅や職場など、特定されると困る場所は指定しないでください。
+            </dd>
+          </dl>
+          <!-- Google Map関連 -->
+          <div
+            data-controller="machi-repos--form"
+            data-machi-repos--form-machi-repo-value="<%= @machi_repo.to_json %>"
+            data-machi-repos--form-mytown-latitude-value="<%= @mytown_latitude %>"
+            data-machi-repos--form-mytown-longitude-value="<%= @mytown_longitude %>"
+            data-action="google-maps:google-maps-connected->machi-repos--form#initMap"
+          >
+            <!-- ホットスポット設定 -->
+            <div class="field">
+              <%= form.label :hotspot_settings %>
+              <%= form.select :hotspot_settings, MachiRepo.hotspot_settings_i18n.map { |key, text| [text, key] }, {}, class: "text-field",
+              data: {
+                action: "change->machi-repos--form#changeHotspotSettings"
+              }%>
+            </div>
+
+            <!-- 半径（エリア指定時） -->
+            <div
+              data-machi-repos--form-target="hotspotAreaRadius"
+              class="field hidden"
+            >
+              <%= form.label :hotspot_area_radius %>
+              <%= form.select :hotspot_area_radius, options_for_select([
+                ["50m",     50],
+                ["100m",   100],
+                ["200m",   200],
+                ["500m",   500],
+                ["1km",   1000],
+                ["5km",   5000],
+                ["10km", 10000]
+              ], form.object.hotspot_area_radius.to_i), {}, class: "text-field",
+              data: {
+                action: "change->machi-repos--form#changeHotspotAreaRadius",
+                machi_repos__form_target: "hotspotAreaRadiusSelect"
+              } %>
+            </div>
+
+            <!-- 注意書き（ピンポイント指定時） -->
+            <div
+              data-machi-repos--form-target="hotspotAttention"
+              class="field hidden"
+            >
+              <p class="text-red-500">
+                注意：家や職場など、特定されると困る<br>
+                　　　場所は指定しないでください
+              </p>
+            </div>
+
+            <p class="mb-4">
+              次にホットスポットを指定します。マップ中心のマーカーを動かして、まちレポの発生場所を指定してください。
+            </p>
+            <p class="mb-4">
+              次の３つを利用して、おおまかな位置を表示することができます。
+            </p>
+            <dl class="mb-4 ml-2">
+              <dt class="header3 mb-2">マイタウン</dt>
+              <dd class="mb-4 ml-2">
+                ユーザー登録時に選択した&quot;マイタウン&quot;をマップ上に表示します。
+              </dd>
+              <dt class="header3 mb-2">現在地</dt>
+              <dd class="mb-4 ml-2">
+                ユーザーの現在地をマップ上に表示します。ただし、正確な位置を取得できない場合があります。
+              </dd>
+              <dt class="header3 mb-2">住所検索</dt>
+              <dd class="ml-2">
+                入力された住所をマップ上に表示します。
+              </dd>
+            </dl>
+            <p class="mb-4">
+              住所の表示がローマ字になってしまう場合は、マップ中心のマーカーをずらすと正しい住所が表示されます。
+            </p>
+
+            <div class="field flex justify-center gap-12 mb-4">
+              <!-- マイタウンアイコン -->
+              <div data-action="click->machi-repos--form#showMytown" class="icon-circle-wrapper">
+                <div class="icon-circle">
+                  <div class="w-10 aspect-square">
+                    <%= render "shared/icons/home_pin_icon" %>
+                  </div>
+                </div>
+                <span class="icon-circle-text">マイタウン</span>
+              </div>
+
+              <!-- 現在地アイコン -->
+              <div data-action="click->machi-repos--form#showCurrentLocation" class="icon-circle-wrapper">
+                <div class="icon-circle">
+                  <div class="w-10 aspect-square">
+                    <%= render "shared/icons/my_location_icon" %>
+                  </div>
+                </div>
+                <span class="icon-circle-text">現在地</span>
+              </div>
+            </div>
+
+            <!-- 住所検索 -->
+            <div class="field flex mb-4">
+              <%= tag.input type: "text", placeholder: "\"まち\"を入力してください", data: { machi_repos__form_target: "search" }, class: "map-search-field flex-1" %>
+              <%= button_tag type: "button", data: { action: "click->machi-repos--form#showSearchLocation" }, class: "flex justify-center items-center rounded-tr-sm rounded-br-sm w-10 aspect-square bg-[#3586FF]" do %>
+              <span class="w-8 aspect-square">
+                <%= render "shared/icons/map_search_icon" %>
+              </span>
+              <% end %>
+            </div>
+
+            <!-- 住所 -->
+            <div class="my-4 text-center">
+              <div class="inline-block px-2 border-b-2 border-[#DF3737] text-2xl">
+                <div class="flex items-center">
+                  <div class="inline-block w-6 aspect-square text-[#DF3737]">
+                    <%= render "shared/icons/flag_full_icon" %>
+                  </div>
+                  <span data-machi-repos--form-target="displayAddress" class="text-xl font-bold">
+                    <%= @machi_repo.address %>
+                  </span>
+                  <%= form.hidden_field :address, data: { machi_repos__form_target: "address" } %>
+                </div>
+              </div>
+            </div>
+
+            <!-- Google Map -->
+            <div id="map"
+              data-controller="google-maps"
+              data-google-maps-target="map"
+              data-google-maps-api-key-value="<%= ENV["GOOGLE_MAPS_API_KEY_CLIENT"] %>"
+              data-google-maps-map-id-value="<%= ENV["GOOGLE_MAPS_MAP_ID"] %>"
+              data-google-maps-latitude-value="<%= @machi_repo.latitude %>"
+              data-google-maps-longitude-value="<%= @machi_repo.longitude %>"
+              class="mb-4 w-full aspect-square"
+            ></div>
+
+            <!-- 緯度 -->
+            <%= form.hidden_field :latitude, data: { machi_repos__form_target: "latitude" } %>
+
+            <!-- 経度 -->
+            <%= form.hidden_field :longitude, data: { machi_repos__form_target: "longitude" } %>
+          </div>
+        </div>
+        <div class="flex justify-center gap-4">
+          <button type="button" class="rounded-lg py-1 bg-blue-500 w-30 text-white">前へ</button>
+          <button type="button" class="rounded-lg py-1 bg-blue-500 w-30 text-white">次へ</button>
+        </div>
+      </section>
+      <!-- タイトル -->
+      <section>
+        <h3 class="header2">タイトル</h3>
+        <div class="content mb-4 p-2">
+          <p class="mb-4">
+            最後にまちレポのタイトルを入力してください！
+          </p>
+          <p class="mb-2">例えば、</p>
+          <ul class="mb-4 ml-6 list-disc">
+            <li>不審者に注意してください！</li>
+            <li>道路が冠水しています。</li>
+            <li>迷い犬の情報求む！</li>
+          </ul>
+          <%= form.text_field :title, placeholder: "入力してください。", class: "mb-4 rounded-lg p-2 w-full bg-white", maxlength: 30 %>
+          <p class="mb-4">
+            まちレポにはタグをつけてより細かい分類を設定することや、画像をつけることもできます。
+          </p>
+          <p>
+            まちレポをどんどん作成して、もっと安心・安全な&quot;まち&quot;にできるように見守っていきましょう！
+          </p>
+        </div>
+        <div class="flex justify-center gap-4">
+          <%= form.submit nil, class: "rounded-lg py-1 bg-blue-500 w-30 text-white" %>
+        </div>
+      </section>
+    </section>
+  <% end %>
+
+</div>

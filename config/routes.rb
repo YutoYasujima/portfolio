@@ -6,11 +6,8 @@ Rails.application.routes.draw do
     confirmations: "users/confirmations",
     omniauth_callbacks: "users/omniauth_callbacks"
   }
-
   resources :profiles, only: %i[ new create ]
-
   resources :municipalities, only: %i[ index ]
-
   resources :machi_repos do
     collection do
       get :search
@@ -26,14 +23,11 @@ Rails.application.routes.draw do
       end
     end
   end
-
+  resources :tutorials, only: %i[ new create ]
   resources :accounts, only: %i[ index destroy ]
-
   resources :helps, only: %i[ index ]
-
   get "/terms", to: "pages#terms", as: :terms
   get "/privacy", to: "pages#privacy", as: :privacy
-
   root "tops#index"
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
