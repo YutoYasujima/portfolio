@@ -25,7 +25,7 @@ class MachiRepo < ApplicationRecord
     crime: 0,         # 防犯・治安
     disaster: 1,      # 災害・気象
     traffic: 2,       # 交通・道路環境
-    children: 3,      # 子ども
+    children: 3,      # 子どもの安全
     animal: 4,        # ペット・動物
     environment: 5,   # 生活環境
     other: 100        # その他・気になること

@@ -43,11 +43,17 @@ application.register("modal", ModalController)
 import PrefectureMunicipalityController from "./prefecture_municipality_controller"
 application.register("prefecture-municipality", PrefectureMunicipalityController)
 
+import PreventSubmitController from "./prevent_submit_controller"
+application.register("prevent-submit", PreventSubmitController)
+
 import ReloadController from "./reload_controller"
 application.register("reload", ReloadController)
 
 import ScrollController from "./scroll_controller"
 application.register("scroll", ScrollController)
+
+import TabController from "./tab_controller"
+application.register("tab", TabController)
 
 import TagController from "./tag_controller"
 application.register("tag", TagController)
