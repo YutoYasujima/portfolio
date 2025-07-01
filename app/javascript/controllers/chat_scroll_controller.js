@@ -23,12 +23,9 @@ export default class extends Controller {
       this.scrollableIconTarget.classList.remove("hidden");
     }
 
-    // 画像の表示が終了してから初期表示を行う
-    this.waitFormImagesLoaded().then(() => {
-      // 最初は一番下へスクロール
-      this.scrollToBottom();
-      this.containerTarget.classList.remove("invisible");
-    });
+    // 最初は一番下へスクロール
+    this.scrollToBottom();
+    this.containerTarget.classList.remove("invisible");
   }
 
   disconnect() {
@@ -37,7 +34,7 @@ export default class extends Controller {
 
   // 無限スクロール用トリガー
   onScroll = () => {
-    if (this.containerTarget.scrollTop < 300) {
+    if (this.containerTarget.scrollTop < 400) {
       // ページ最上部に近づいたとき
       this.loadPreviousPage();
     }
@@ -95,36 +92,6 @@ export default class extends Controller {
           this.scrollableIconTarget.classList.add("hidden");
         }
         this.loading = false;
-      });
-    });
-  }
-
-  // すべての画像が表示されるまで待つ
-  waitFormImagesLoaded() {
-    return new Promise(resolve => {
-      const images = this.element.querySelectorAll("img");
-      if (images.length === 0) {
-        resolve();
-        return;
-      }
-
-      let loadedCount = 0;
-      // stimulusコントローラー配下の画像読み込みをチェック
-      const checkLoaded = () => {
-        loadedCount++;
-        if (loadedCount === images.length) {
-          resolve();
-        }
-      };
-
-      images.forEach(img => {
-        if (img.complete && img.naturalHeight !== 0) {
-          // 既に読み込み済み
-          checkLoaded();
-        } else {
-          img.addEventListener("load", checkLoaded, { once: true });
-          img.addEventListener("error", checkLoaded, { once: true });
-        }
       });
     });
   }

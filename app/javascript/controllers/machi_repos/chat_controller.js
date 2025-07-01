@@ -76,11 +76,8 @@ export default class extends Controller {
             requestAnimationFrame(() => {
               // 新着チャット処理
               if (this.isNearBottom()) {
-                // チャット画像の読み込み終了待ち
-                this.waitFormImageLoaded(chatId).then(() => {
-                  // bottom付近を見ていた場合、最下部へスクロール
-                  this.containerTarget.scrollTop = this.containerTarget.scrollHeight;
-                });
+                // bottom付近を見ていた場合、最下部へスクロール
+                this.containerTarget.scrollTop = this.containerTarget.scrollHeight;
               } else {
                 // Newアイコンを表示
                 this.newIconTarget.classList.remove("hidden");
@@ -238,29 +235,6 @@ export default class extends Controller {
       this.fileFieldFormTarget.classList.remove("hidden");
       this.textareaFormTarget.classList.add("hidden");
     }
-  }
-
-  // チャット画像が表示されるまで待機
-  waitFormImageLoaded(chatId) {
-    return new Promise(resolve => {
-      const image = this.chatAreaTarget.querySelector(`#${CSS.escape(`chat_${chatId}`)} img`);
-      if (!image) {
-        resolve();
-        return;
-      }
-
-      // すでに読み込み済みなら即解決
-      if (image.complete) {
-        resolve();
-        return;
-      }
-
-      // stimulusコントローラー配下の画像読み込みをチェック
-      const checkLoaded = () => resolve();
-
-      image.addEventListener("load", checkLoaded, { once: true });
-      image.addEventListener("error", checkLoaded, { once: true });
-    });
   }
 
   // 新着チャット表示

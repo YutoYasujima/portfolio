@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_26_021002) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_01_115817) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -22,6 +22,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_26_021002) do
     t.bigint "chatable_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "image_width"
+    t.integer "image_height"
     t.index ["chatable_type", "chatable_id"], name: "index_chats_on_chatable"
     t.index ["user_id"], name: "index_chats_on_user_id"
   end
@@ -39,12 +41,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_26_021002) do
   create_table "machi_repos", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "title", limit: 30, null: false
-    t.integer "info_level", null: false
-    t.integer "category", null: false
+    t.integer "info_level", default: 0, null: false
+    t.integer "category", default: 0, null: false
     t.text "description"
-    t.integer "hotspot_settings", null: false
+    t.integer "hotspot_settings", default: 0, null: false
     t.integer "hotspot_area_radius"
-    t.float "ratitude", null: false
+    t.float "latitude", null: false
     t.float "longitude", null: false
     t.string "image"
     t.integer "views_count", default: 0, null: false
