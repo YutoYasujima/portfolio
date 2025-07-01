@@ -10,7 +10,7 @@ namespace :chats do
     skipped = 0
     failed  = 0
 
-    Chat.where.not(image: [nil, ""]).find_each do |chat|
+    Chat.where.not(image: [ nil, "" ]).find_each do |chat|
       if chat.image_width.present? && chat.image_height.present?
         skipped += 1
         next
