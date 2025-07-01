@@ -63,7 +63,7 @@ class MachiRepoImageUploader < CarrierWave::Uploader::Base
 
   # アップロード可能なファイルサイズの制限
   def size_range
-    1.byte..5.megabytes
+    1.byte..10.megabytes
   end
 
   # Override the filename of the uploaded files:
