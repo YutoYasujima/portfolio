@@ -18,6 +18,7 @@ class Chat < ApplicationRecord
     end
   end
 
+  # 画像サイズ用バリデーション
   def image_size_validation
     return unless image.present? && image.file.present?
 
@@ -26,6 +27,7 @@ class Chat < ApplicationRecord
     end
   end
 
+  # 画像の拡張子用バリデーション
   def image_extension_validation
     return unless image.present? && image.file.present?
 

@@ -43,6 +43,9 @@ class ChatImageUploader < CarrierWave::Uploader::Base
   # アップロード時に画像の解像度を下げる
   process :optimize_image
 
+  # ここでサイズ取得（optimize_image のあとに呼ばれる）
+  process :store_dimensions
+
   def optimize_image
     manipulate! do |img|
       img.auto_orient        # 回転情報の自動補正（スマホ対応）
@@ -51,6 +54,16 @@ class ChatImageUploader < CarrierWave::Uploader::Base
       img.quality("80")      # 画質（70〜85が推奨）
       img
     end
+  end
+
+  def store_dimensions
+    if file && model
+      image = MiniMagick::Image.open(file.file)
+      model.image_width  = image.width
+      model.image_height = image.height
+    end
+  rescue => e
+    Rails.logger.warn "画像サイズの取得に失敗: Chat##{model.id || 'new'} - #{e.message}"
   end
 
   # Add an allowlist of extensions which are allowed to be uploaded.
