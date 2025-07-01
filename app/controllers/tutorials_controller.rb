@@ -1,5 +1,6 @@
 class TutorialsController < ApplicationController
   before_action :set_mytown_location, only: %i[ new ]
+  before_action :set_is_error, only: %i[ new create ]
 
   def new
     @machi_repo = MachiRepo.new(
@@ -14,6 +15,7 @@ class TutorialsController < ApplicationController
     if @machi_repo.save
       redirect_to @machi_repo, notice: "まちレポを作成しました"
     else
+      @is_error = true
       append_errors_to_flash(@machi_repo, "作成")
       render :new, status: :unprocessable_entity
     end
@@ -42,5 +44,9 @@ class TutorialsController < ApplicationController
       :hotspot_settings, :hotspot_area_radius,
       :address, :latitude, :longitude
     )
+  end
+
+  def set_is_error
+    @is_error = false
   end
 end
