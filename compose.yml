@@ -14,6 +14,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  redis:
+    image: redis:7.0-alpine
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"] # 永続化も有効化
   web:
     build:
       context: .
@@ -27,12 +35,16 @@ services:
       - node_modules:/portfolio/node_modules
     environment:
       TZ: Asia/Tokyo
+      REDIS_URL: redis://redis:6379/1  # ここでRedisのホスト名(redis)を指定
     ports:
       - "3000:3000"
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
 volumes:
   bundle_data:
   postgresql_data:
   node_modules:
+  redis_data:
