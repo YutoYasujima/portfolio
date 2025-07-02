@@ -1,7 +1,8 @@
 <%# 親要素にclass="relative"などのposition設定が必要 %>
+<% position = local_assigns[:position_style] || "absolute -top-3 right-2" %>
 <div
   data-controller="help"
-  class="absolute -top-3 right-2"
+  class="<%= position %> z-3"
 >
   <div
     data-action="click->help#open"
