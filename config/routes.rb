@@ -30,5 +30,6 @@ Rails.application.routes.draw do
   get "/privacy", to: "pages#privacy", as: :privacy
   root "tops#index"
 
+  mount ActionCable.server => "/cable"
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 end
