@@ -40,23 +40,9 @@ class MachiRepo < ApplicationRecord
   validates :latitude, presence: true, numericality: { greater_than_or_equal_to: -90, less_than_or_equal_to: 90 }
   validates :longitude, presence: true, numericality: { greater_than_or_equal_to: -180, less_than_or_equal_to: 180 }
   validates :hotspot_area_radius, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
-  validate  :image_size_validation
-  validate  :image_extension_validation
   validate  :tag_names_validation
 
   private
-
-  def image_size_validation
-    if image.present? && image.file.size > 2.megabytes
-      errors.add(:image, "は2MB以下のファイルをアップロードしてください")
-    end
-  end
-
-  def image_extension_validation
-    if image.present? && !%w[jpg jpeg gif png].include?(image.file.extension.downcase)
-      errors.add(:image, "はJPG, JPEG, PNG, GIF形式のみアップロードできます")
-    end
-  end
 
   def tag_names_validation
     return unless tag_names.present?

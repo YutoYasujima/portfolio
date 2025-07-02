@@ -23,6 +23,8 @@ ja:
         longitude: 経度
         image: 画像
         views_count: 視聴数
+      chat:
+        image: 画像
   enums:
     machi_repo:
       category:

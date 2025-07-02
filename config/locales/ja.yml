@@ -110,6 +110,12 @@ ja:
       too_long: は%{count}文字以内で入力してください
       too_short: は%{count}文字以上で入力してください
       wrong_length: は%{count}文字で入力してください
+      max_size_error: サイズが大きすぎます（最大%{max_size}）
+      min_size_error: サイズが小さすぎます（最小%{min_size}）
+      extension_allowlist_error: に許可されていないファイル形式が設定されています（許可：%{allowed_types}）
+      content_type_allowlist_error: "に許可されていないMIMEタイプが設定されています（許可：%{allowed_types}）"
+      too_many_files: "のファイル数が多すぎます"
+      integrity_error: "ファイルに問題があります"
     template:
       body: 次の項目を確認してください
       header: "%{model}に%{count}個のエラーが発生しました"
