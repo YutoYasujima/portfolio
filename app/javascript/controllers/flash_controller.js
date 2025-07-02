@@ -31,9 +31,7 @@ export default class extends Controller {
     const ul = document.createElement("ul");
     const li = document.createElement("li");
     li.classList.add("flash", "flash-alert");
-    li.addEventListener("click", e => {
-      this.close(e);
-    }, { once: true });
+    li.dataset.action = "click->flash#close";
     const text = document.createElement("span");
     text.classList.add("flash-text");
     text.textContent = message;
@@ -41,7 +39,7 @@ export default class extends Controller {
     svgWrap.classList.add("flash-close-icon", "flash-close-icon-alert");
 
     // 要素の組み立て
-    svgWrap.appendChild(this.svgElement);
+    svgWrap.appendChild(this.svgElement.cloneNode(true));
     li.appendChild(text);
     li.appendChild(svgWrap);
     ul.appendChild(li);

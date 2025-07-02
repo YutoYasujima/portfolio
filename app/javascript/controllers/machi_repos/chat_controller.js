@@ -160,6 +160,8 @@ export default class extends Controller {
     if (this.isSending) {
       return;
     }
+    // 表示中のフラッシュメッセージがあれば削除
+    this.callFlashClear();
     this.isSending = true;
     // 待機中表示
     this.spinnerTarget.classList.remove("hidden");
@@ -178,6 +180,8 @@ export default class extends Controller {
       } else {
         const errorData = await response.json();
         console.error("送信失敗", errorData.errors);
+        // フラッシュメッセージ表示
+        this.callFlashAlert(errorData.errors);
       }
     } catch (error) {
       console.error("ネットワークエラー", error);
@@ -294,5 +298,14 @@ export default class extends Controller {
   // Timeoutクリア
   cancelPress() {
     clearTimeout(this.timeoutId);
+  }
+
+  // flashコントローラーを利用してフラッシュメッセージをクリアする
+  callFlashClear() {
+    this.dispatch("flash-clear", { detail: { content: "" } });
+  }
+  // flashコントローラーを利用して、alertフラッシュメッセージを表示する
+  callFlashAlert(message) {
+    this.dispatch("flash-alert", { detail: { message } });
   }
 }
