@@ -73,7 +73,7 @@ RSpec.describe Chat, type: :model do
 
     context "ファイルサイズの検証" do
       it "10MBを超えるファイルは無効" do
-        large_file = Tempfile.new(["large_test", ".jpeg"])
+        large_file = Tempfile.new([ "large_test", ".jpeg" ])
         large_file.binmode
         large_file.write("0" * (10.megabytes + 1))
         large_file.rewind
@@ -88,7 +88,7 @@ RSpec.describe Chat, type: :model do
       end
 
       it "10MB以下のファイルは有効" do
-        valid_file = Tempfile.new(["valid_test", ".jpeg"])
+        valid_file = Tempfile.new([ "valid_test", ".jpeg" ])
         valid_file.binmode
         valid_file.write("0" * 10.megabytes)
         valid_file.rewind

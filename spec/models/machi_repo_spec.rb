@@ -200,7 +200,7 @@ RSpec.describe MachiRepo, type: :model do
         # 一時ファイル作成
         # 拡張子が.jpegの偽の画像ファイルを作成する
         # 実体はテキストファイル
-        temp_file = Tempfile.new(["small_image", ".jpeg"])
+        temp_file = Tempfile.new([ "small_image", ".jpeg" ])
         temp_file.write("a" * 10.megabytes)
         temp_file.rewind
 
@@ -216,7 +216,7 @@ RSpec.describe MachiRepo, type: :model do
       end
 
       it "10MBを超えると無効" do
-        temp_file = Tempfile.new(["large_image", ".jpeg"])
+        temp_file = Tempfile.new([ "large_image", ".jpeg" ])
         temp_file.write("a" * (10.megabytes + 1))
         temp_file.rewind
 
