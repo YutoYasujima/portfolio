@@ -48,13 +48,11 @@ RSpec.describe MachiRepo, type: :model do
       end
 
       it "tags を中間テーブルを通じて持つ" do
-        tag = Tag.create!(name: "災害")
-        repo.tags << tag
-        # 上記で保存されているが念のため
-        repo.save!
-        # DBから最新のrepoを読み込み直す
-        repo.reload
-        expect(repo.tags).to include(tag)
+        tag = create(:tag)
+        machi_repo = create(:machi_repo)
+        create(:machi_repo_tag, tag: tag, machi_repo: machi_repo)
+
+        expect(tag.machi_repos).to include(machi_repo)
       end
     end
   end
