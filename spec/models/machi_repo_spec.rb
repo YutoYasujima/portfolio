@@ -89,14 +89,14 @@ RSpec.describe MachiRepo, type: :model do
       end
 
       it "緯度が-90〜90の範囲内は有効" do
-        [-90, 90].each do |value|
+        [ -90, 90 ].each do |value|
           machi_repo.latitude = value
           expect(machi_repo).to be_valid
         end
       end
 
       it "緯度が-90〜90の範囲外は無効" do
-        [-91, 91].each do |value|
+        [ -91, 91 ].each do |value|
           machi_repo.latitude = value
           expect(machi_repo).to be_invalid
           expect(machi_repo.errors[:latitude]).to be_present
@@ -112,14 +112,14 @@ RSpec.describe MachiRepo, type: :model do
       end
 
       it "経度が-180〜180の範囲内は有効" do
-        [-180, 180].each do |value|
+        [ -180, 180 ].each do |value|
           machi_repo.longitude = value
           expect(machi_repo).to be_valid
         end
       end
 
       it "経度が-180〜180の範囲外は無効" do
-        [-181, 181].each do |value|
+        [ -181, 181 ].each do |value|
           machi_repo.longitude = value
           expect(machi_repo).to be_invalid
           expect(machi_repo.errors[:longitude]).to be_present
@@ -152,7 +152,7 @@ RSpec.describe MachiRepo, type: :model do
       end
 
       it "hotspot_area_radiusが0以下なら無効" do
-        [0, -1].each do |value|
+        [ 0, -1 ].each do |value|
           machi_repo.hotspot_area_radius = value
           expect(machi_repo).to be_invalid
           expect(machi_repo.errors[:hotspot_area_radius]).to be_present
@@ -169,6 +169,65 @@ RSpec.describe MachiRepo, type: :model do
         machi_repo.hotspot_area_radius = "ten"
         expect(machi_repo).to be_invalid
         expect(machi_repo.errors[:hotspot_area_radius]).to be_present
+      end
+    end
+  end
+
+  describe "画像アップロード機能" do
+    it "imageカラムにMachiRepoImageUploaderがマウントされている" do
+      expect(MachiRepo.uploaders[:image]).to eq MachiRepoImageUploader
+    end
+
+    context "拡張子の許可" do
+      it "許可された拡張子のファイルなら有効" do
+        %w[jpg jpeg png gif].each do |ext|
+          file = Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/sample.#{ext}"), "image/#{ext}")
+          machi_repo.image = file
+          expect(machi_repo).to be_valid, "Expected .#{ext} to be valid"
+        end
+      end
+
+      it "許可されていない拡張子のファイルなら無効" do
+        file = Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/sample.txt"), "text/plain")
+        machi_repo.image = file
+        expect(machi_repo).to be_invalid
+        expect(machi_repo.errors[:image]).to be_present
+      end
+    end
+
+    context "ファイルサイズの制限" do
+      it "10MB以下なら有効" do
+        # 一時ファイル作成
+        # 拡張子が.jpegの偽の画像ファイルを作成する
+        # 実体はテキストファイル
+        temp_file = Tempfile.new(["small_image", ".jpeg"])
+        temp_file.write("a" * 10.megabytes)
+        temp_file.rewind
+
+        file = Rack::Test::UploadedFile.new(temp_file.path, "image/jpeg")
+        machi_repo.image = file
+
+        expect(machi_repo).to be_valid
+      ensure
+        # ファイルを閉じる
+        temp_file.close
+        # 一時ファイルを削除する
+        temp_file.unlink
+      end
+
+      it "10MBを超えると無効" do
+        temp_file = Tempfile.new(["large_image", ".jpeg"])
+        temp_file.write("a" * (10.megabytes + 1))
+        temp_file.rewind
+
+        file = Rack::Test::UploadedFile.new(temp_file.path, "image/jpeg")
+        machi_repo.image = file
+
+        expect(machi_repo).to be_invalid
+        expect(machi_repo.errors[:image]).to be_present
+      ensure
+        temp_file.close
+        temp_file.unlink
       end
     end
   end
@@ -223,7 +282,7 @@ RSpec.describe MachiRepo, type: :model do
       expect {
         machi_repo.save!
       }.to change { Tag.count }.by(2)
-      expect(machi_repo.tags.pluck(:name)).to match_array(["猫", "子ども"])
+      expect(machi_repo.tags.pluck(:name)).to match_array([ "猫", "子ども" ])
     end
 
     it "空白タグを無視する" do
@@ -231,7 +290,7 @@ RSpec.describe MachiRepo, type: :model do
       expect {
         machi_repo.save!
       }.to change { Tag.count }.by(2)
-      expect(machi_repo.tags.pluck(:name)).to match_array(["猫", "犬"])
+      expect(machi_repo.tags.pluck(:name)).to match_array([ "猫", "犬" ])
     end
   end
 end

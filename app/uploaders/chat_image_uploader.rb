@@ -50,13 +50,6 @@ class ChatImageUploader < CarrierWave::Uploader::Base
       img.strip              # EXIFなど不要なメタデータを除去
       img.resize "1280x720>" # スマホ向けに設定
       img.quality("80")      # 画質（70〜85が推奨）
-
-      # サイズ取得（img は MiniMagick::Image）
-      if model
-        model.image_width  = img.width
-        model.image_height = img.height
-      end
-
       img
     end
   end

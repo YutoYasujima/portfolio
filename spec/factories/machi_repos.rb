@@ -13,10 +13,11 @@ FactoryBot.define do
     longitude { 139.6917 }
     sequence(:address) { |n| "東京都千代田区#{n}" }
 
-    # CarrierWave用ダミー画像（必要な場合）
-    image { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/sample.png"), "image/png") }
-
     # traits で追加要素をオプションに
+    trait :with_image do
+      image { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/sample.png"), "image/png") }
+    end
+
     trait :with_tags do
       after(:create) do |repo|
         repo.tags << create_list(:tag, 2)

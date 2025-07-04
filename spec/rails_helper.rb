@@ -74,3 +74,11 @@ RSpec.configure do |config|
   # factory bot使用
   config.include FactoryBot::Syntax::Methods
 end
+
+# 追記: supportファイルを読み込む
+Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
+
+# 追記: ImageHelperをRSpecにinclude
+RSpec.configure do |config|
+  config.include ImageHelper
+end
