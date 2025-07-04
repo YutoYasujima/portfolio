@@ -81,7 +81,13 @@ class ChatImageUploader < CarrierWave::Uploader::Base
 
   # ファイル名のカスタマイズ
   def filename
-      "#{secure_token}.#{file.extension}" if original_filename.present?
+    return @filename if @filename.present?
+
+    if original_filename.present?
+      @filename = "#{secure_token}.#{file.extension}"
+    end
+
+    @filename
   end
 
   protected
