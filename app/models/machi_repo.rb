@@ -51,7 +51,7 @@ class MachiRepo < ApplicationRecord
 
     # タグ数上限チェック
     if tags_array.size > 3
-      errors.add(:tag_names, "は5個まで入力できます")
+      errors.add(:tag_names, "は3個まで入力できます")
     end
 
     # 各タグの文字数制限

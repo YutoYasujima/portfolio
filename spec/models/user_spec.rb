@@ -1,6 +1,50 @@
 require "rails_helper"
 
 RSpec.describe User, type: :model do
+  describe "アソシエーション" do
+    context "静的なアソシエーション定義" do
+      it "has one profile(dependent: :destroy)" do
+        assoc = User.reflect_on_association(:profile)
+        expect(assoc.macro).to eq(:has_one)
+        expect(assoc.options[:dependent]).to eq(:destroy)
+      end
+
+      it "has many machi_repos(dependent: :destroy)" do
+        assoc = User.reflect_on_association(:machi_repos)
+        expect(assoc.macro).to eq(:has_many)
+        expect(assoc.options[:dependent]).to eq(:destroy)
+      end
+
+      it "has many chats(dependent: :destroy)" do
+        assoc = User.reflect_on_association(:chats)
+        expect(assoc.macro).to eq(:has_many)
+        expect(assoc.options[:dependent]).to eq(:destroy)
+      end
+    end
+
+    context "動作によるアソシエーション確認" do
+      let!(:user) { create(:user, agreement: "1") }
+
+      it "ユーザー削除時にprofileも削除される" do
+        profile = create(:profile, user: user)
+        expect { user.destroy }.to change(Profile, :count).by(-1)
+        expect(Profile.where(id: profile.id)).to be_empty
+      end
+
+      it "ユーザー削除時にmachi_repoも削除される" do
+        machi_repo = create(:machi_repo, user: user)
+        expect { user.destroy }.to change(MachiRepo, :count).by(-1)
+        expect(MachiRepo.where(id: machi_repo.id)).to be_empty
+      end
+
+      it "ユーザー削除時にchatも削除される" do
+        chat = create(:chat, user: user)
+        expect { user.destroy }.to change(Chat, :count).by(-1)
+        expect(Chat.where(id: chat.id)).to be_empty
+      end
+    end
+  end
+
   describe "バリデーション" do
     subject(:user) { build(:user, agreement: "1") }
 

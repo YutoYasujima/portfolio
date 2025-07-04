@@ -4,10 +4,20 @@ RSpec.describe Prefecture, type: :model do
   subject(:prefecture) { build(:prefecture) }
 
   describe "アソシエーション" do
-    it "has many municipalities" do
-      assoc = Prefecture.reflect_on_association(:municipalities)
-      expect(assoc.macro).to eq(:has_many)
-      expect(assoc.options[:dependent]).to eq :destroy
+    context "静的なアソシエーション定義" do
+      it "has many municipalities(dependent: :destroy)" do
+        assoc = Prefecture.reflect_on_association(:municipalities)
+        expect(assoc.macro).to eq(:has_many)
+        expect(assoc.options[:dependent]).to eq :destroy
+      end
+    end
+
+    context "動作によるアソシエーション確認" do
+      it "prefectureが削除時にmunicipalitiesも削除される" do
+        municipality = create(:municipality, prefecture: prefecture)
+        expect { prefecture.destroy }.to change { Municipality.count }.by(-1)
+        expect(Municipality.where(id: municipality.id)).to be_empty
+      end
     end
   end
 
