@@ -4,9 +4,9 @@ RSpec.describe Prefecture, type: :model do
   subject(:prefecture) { build(:prefecture) }
 
   describe "アソシエーション" do
-    it "municipalitiesを複数持つ" do
+    it "has many municipalities" do
       assoc = Prefecture.reflect_on_association(:municipalities)
-      expect(assoc.macro).to eq :has_many
+      expect(assoc.macro).to eq(:has_many)
       expect(assoc.options[:dependent]).to eq :destroy
     end
   end
