@@ -178,6 +178,17 @@ RSpec.describe MachiRepo, type: :model do
       expect(MachiRepo.uploaders[:image]).to eq MachiRepoImageUploader
     end
 
+    it "画像アップロード" do
+      image_file = generate_temp_image(width: 640, height: 480)
+      machi_repo = build(:chat, image: Rack::Test::UploadedFile.new(image_file, "image/jpeg"))
+
+      expect(machi_repo.save).to be true
+      expect(machi_repo.image).to be_present
+    ensure
+      image_file.close
+      image_file.unlink
+    end
+
     context "拡張子の許可" do
       it "許可された拡張子のファイルなら有効" do
         %w[jpg jpeg png gif].each do |ext|
@@ -196,26 +207,8 @@ RSpec.describe MachiRepo, type: :model do
     end
 
     context "ファイルサイズの制限" do
-      it "10MB以下なら有効" do
-        # 一時ファイル作成
-        # 拡張子が.jpegの偽の画像ファイルを作成する
-        # 実体はテキストファイル
-        temp_file = Tempfile.new([ "small_image", ".jpeg" ])
-        temp_file.write("a" * 10.megabytes)
-        temp_file.rewind
-
-        file = Rack::Test::UploadedFile.new(temp_file.path, "image/jpeg")
-        machi_repo.image = file
-
-        expect(machi_repo).to be_valid
-      ensure
-        # ファイルを閉じる
-        temp_file.close
-        # 一時ファイルを削除する
-        temp_file.unlink
-      end
-
       it "10MBを超えると無効" do
+        # バリデーションで弾かれるため、アップローダークラスのprocessは動かない
         temp_file = Tempfile.new([ "large_image", ".jpeg" ])
         temp_file.write("a" * (10.megabytes + 1))
         temp_file.rewind

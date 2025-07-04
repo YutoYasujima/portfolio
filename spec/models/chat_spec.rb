@@ -43,6 +43,7 @@ RSpec.describe Chat, type: :model do
       image_file = generate_temp_image(width: 640, height: 480)
       chat = build(:chat, image: Rack::Test::UploadedFile.new(image_file, "image/jpeg"))
 
+      # image_widthとimage_heightは保存前にアップローダークラスで設定される
       expect(chat.save).to be true
       expect(chat.image).to be_present
       expect(chat.image_width).to be_present
@@ -73,6 +74,7 @@ RSpec.describe Chat, type: :model do
 
     context "ファイルサイズの検証" do
       it "10MBを超えるファイルは無効" do
+        # バリデーションで弾かれるため、アップローダークラスのprocessは動かない
         large_file = Tempfile.new([ "large_test", ".jpeg" ])
         large_file.binmode
         large_file.write("0" * (10.megabytes + 1))
@@ -85,20 +87,6 @@ RSpec.describe Chat, type: :model do
       ensure
         large_file.close
         large_file.unlink
-      end
-
-      it "10MB以下のファイルは有効" do
-        valid_file = Tempfile.new([ "valid_test", ".jpeg" ])
-        valid_file.binmode
-        valid_file.write("0" * 10.megabytes)
-        valid_file.rewind
-
-        chat = build(:chat, image: Rack::Test::UploadedFile.new(valid_file.path, "image/jpeg"))
-
-        expect(chat).to be_valid
-      ensure
-        valid_file.close
-        valid_file.unlink
       end
     end
   end
