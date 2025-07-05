@@ -78,7 +78,18 @@ end
 # 追記: supportファイルを読み込む
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
-# 追記: ImageHelperをRSpecにinclude
 RSpec.configure do |config|
+  # 追記: ImageHelperをRSpecにinclude
   config.include ImageHelper
+
+  # capybara等のファイル読み込み設定
+  # system test実行前にCapybaraのドライバやサーバ－の設定を行う
+  config.before(:each, type: :system) do
+    # remote_chromeは、spec/support/capybara.rbに定義されている
+    driven_by :remote_chrome
+    Capybara.server_host = IPSocket.getaddress(Socket.gethostname)
+    Capybara.server_port = 4444
+    Capybara.app_host = "http://#{Capybara.server_host}:#{Capybara.server_port}"
+    Capybara.ignore_hidden_elements = false
+  end
 end
