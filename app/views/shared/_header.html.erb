@@ -8,11 +8,11 @@
     </div>
     <div data-controller="hamburger-menu" class="mr-4 w-12 aspect-square text-white">
       <%# メニュー開くアイコン %>
-      <div data-action="click->hamburger-menu#toggleMenu">
+      <div data-action="click->hamburger-menu#toggleMenu" id="hamburger-menu-open">
         <%= render "shared/icons/menu_icon" %>
       </div>
 
-      <nav data-hamburger-menu-target="menu" class="hidden fixed top-0 right-0 bottom-0 w-full bg-black text-center text-white z-10 md:max-w-[400px]">
+      <nav data-hamburger-menu-target="menu" class="hidden fixed top-0 right-0 bottom-0 w-full bg-black text-center text-white z-40 md:max-w-[400px]">
         <%# メニュー閉じるアイコン %>
         <div data-action="click->hamburger-menu#toggleMenu" class="flex justify-end mt-6 mr-4 ml-auto w-12 aspect-square text-white">
           <%= render "shared/icons/close_icon" %>
@@ -42,7 +42,7 @@
       <div
         data-hamburger-menu-target="cover"
         data-action="click->hamburger-menu#toggleMenu"
-        class="hidden fixed top-0 right-0 bottom-0 left-0 bg-black/70 z-5"
+        class="hidden fixed top-0 right-0 bottom-0 left-0 bg-black/70 z-30"
       >
       </div>
     </div>

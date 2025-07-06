@@ -114,15 +114,23 @@ class MachiReposController < ApplicationController
   private
 
   def prepare_search_data(raw_search_params)
+    # インスタンス変数初期化
+    @snapshot_time = Time.current
+    @search_form = MachiRepoSearchForm.new
+    @near_hotspots = []
+    @machi_repos = []
+    @machi_repos_count = 0
+    @is_last_page = true
+
     # 検索用ストロングパラメータに値を追加
     form_params = enrich_search_params_with_coordinates(raw_search_params)
     if form_params.blank?
+      @search_form = MachiRepoSearchForm.new
       @is_error = true
       return
     end
 
     # 無限スクロール対策のため、UNIXタイムスタンプで保存
-    @snapshot_time = Time.current
     session[:machi_repos_snapshot_time] = @snapshot_time.to_i
 
     # sessionに画面表示の条件を保持しておく
