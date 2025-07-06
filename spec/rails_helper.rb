@@ -1,13 +1,13 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
-require 'spec_helper'
-ENV['RAILS_ENV'] ||= 'test'
-require_relative '../config/environment'
+require "spec_helper"
+ENV["RAILS_ENV"] ||= "test"
+require_relative "../config/environment"
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 # Uncomment the line below in case you have `--require rails_helper` in the `.rspec` file
 # that will avoid rails generators crashing because migrations haven't been run yet
 # return unless Rails.env.test?
-require 'rspec/rails'
+require "rspec/rails"
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -37,7 +37,7 @@ end
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
-    Rails.root.join('spec/fixtures')
+    Rails.root.join("spec/fixtures")
   ]
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
@@ -75,10 +75,27 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 end
 
+# 追記: OmniAuthをテストモードにする
+OmniAuth.config.test_mode = true
+
 # 追記: supportファイルを読み込む
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
-# 追記: ImageHelperをRSpecにinclude
 RSpec.configure do |config|
+  # 追記: ImageHelperをRSpecにinclude
   config.include ImageHelper
+
+  # 追記: systemテスト用モジュール
+  config.include SystemHelper
+
+  # capybara等のファイル読み込み設定
+  # system test実行前にCapybaraのドライバやサーバ－の設定を行う
+  config.before(:each, type: :system) do
+    # remote_chromeは、spec/support/capybara.rbに定義されている
+    driven_by :remote_chrome
+    Capybara.server_host = IPSocket.getaddress(Socket.gethostname)
+    Capybara.server_port = 4444
+    Capybara.app_host = "http://#{Capybara.server_host}:#{Capybara.server_port}"
+    Capybara.ignore_hidden_elements = false
+  end
 end

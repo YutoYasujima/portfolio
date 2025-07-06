@@ -19,9 +19,9 @@
 
   <!-- タグ関連 -->
   <div data-controller="tag" class="field">
-    <%= form.label :tag_names, "タグ（最大15文字 3つまで）" %>
+    <%= form.label :tag_input, "タグ（最大15文字 3つまで）" %>
     <div class="flex">
-      <%= tag.input type: "text", placeholder: "例: 子ども, 通学路, 朝", maxlength: 50, data: { tag_target: "inputTagName", action: "blur->tag#appendTag"  }, class: "text-field flex-1" %>
+      <%= form.text_field :tag_input, placeholder: "例: 子ども, 通学路, 朝", maxlength: 50, data: { tag_target: "inputTagName", action: "blur->tag#appendTag"  }, class: "text-field flex-1" %>
       <%= button_tag type: "button", data: { action: "click->tag#appendTag" }, class: "flex justify-center items-center rounded-tr-sm rounded-br-sm w-10 aspect-square bg-[#3586FF]" do %>
         <span class="w-8 aspect-square">
           <%= render "shared/icons/tag_icon" %>
