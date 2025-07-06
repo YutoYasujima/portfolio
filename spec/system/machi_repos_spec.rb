@@ -14,8 +14,8 @@ RSpec.describe "MachiRepos", type: :system do
   describe "まちレポ作成" do
     before do
       # Google Maps API用のスタブ
-      fake_result = instance_double(Geocoder::Result::Base, coordinates: [35.6812996, 139.7670658])
-      allow(Geocoder).to receive(:search).and_return([fake_result])
+      fake_result = instance_double(Geocoder::Result::Base, coordinates: [ 35.6812996, 139.7670658 ])
+      allow(Geocoder).to receive(:search).and_return([ fake_result ])
 
       visit new_machi_repo_path(user)
       expect(page).to have_current_path(new_machi_repo_path(user), ignore_query: true), "まちレポ作成画面に遷移できていません"
