@@ -177,7 +177,7 @@ RSpec.describe "MachiRepos", type: :system do
       it "編集画面へ遷移可能" do
         expect(page).to have_selector("#machi-repo-edit"), "編集ボタンが表示されていません"
         find("#machi-repo-edit").click
-        expect(page).to have_content(machi_repo.title), "まちレポ編集画面にタイトルが表示されていません"
+        expect(page).to have_content("まちレポ編集"), "まちレポ編集画面にタイトルが表示されていません"
         expect(page).to have_current_path(edit_machi_repo_path(machi_repo), ignore_query: true), "まちレポ編集画面に遷移できていません"
       end
 
@@ -206,6 +206,66 @@ RSpec.describe "MachiRepos", type: :system do
         expect(page).not_to have_selector("#machi-repo-edit"), "編集ボタンが表示されてしまっています"
         expect(page).not_to have_selector("#machi-repo-delete"), "削除ボタンが表示されてしまっています"
       end
+    end
+  end
+
+  describe "まちレポ編集" do
+    # 登録の処理はまちレポ作成と同じため簡単に行う
+    before do
+      # Google Maps API用のスタブ
+      # "Geocoder result"の部分は任意の名前を付けられる
+      fake_result = double("Geocoder result",
+        coordinates: [ 35.6812996, 139.7670658 ],
+        country_code: "JP",
+        city: "千代田区",
+        state: "東京都"
+        )
+      allow(Geocoder).to receive(:search).and_return([ fake_result ])
+      machi_repo
+      login_as(user)
+    end
+
+    it "編集可能" do
+      editable_machi_repo = create(:machi_repo, :with_image,
+        title: "編集テスト",
+        info_level: :emergency,
+        category: :other,
+        description: "これは編集テストです。",
+        hotspot_settings: :area,
+        hotspot_area_radius: 100,
+        address: "東京都千代田区",
+        user: user
+      )
+      tag = create(:tag, name: "テストタグ")
+      create(:machi_repo_tag, machi_repo: editable_machi_repo, tag: tag)
+      editable_machi_repo.tag_names = tag.name
+
+      visit edit_machi_repo_path(editable_machi_repo)
+      expect(page).to have_current_path(edit_machi_repo_path(editable_machi_repo), ignore_query: true), "まちレポ編集画面に遷移できていません"
+      # タイトル
+      expect(find_field("タイトル").value).to eq(editable_machi_repo.title)
+      # 情報レベル
+      expect(find_field("情報レベル").value).to eq(editable_machi_repo.info_level)
+      # カテゴリー
+      expect(find_field("カテゴリー").value).to eq(editable_machi_repo.category)
+      # タグ
+      expect(find("#machi_repo_tag_names", visible: :all).value).to eq(editable_machi_repo.tag_names)
+      # 状況説明
+      expect(find_field("状況説明").value).to eq(editable_machi_repo.description)
+      # ホットスポット設定
+      expect(find_field("ホットスポット設定").value).to eq(editable_machi_repo.hotspot_settings)
+      # エリア半径
+      expect(find_field("エリア半径").value).to eq("#{editable_machi_repo.hotspot_area_radius}")
+      # 住所
+      expect(find("#machi_repo_address").value).to eq(editable_machi_repo.address)
+      # 画像
+      expect(page).to have_selector("img[src*='#{editable_machi_repo.image.identifier}']"), "画像が表示されていません"
+
+      fill_in "タイトル", with: "編集済みタイトル"
+      click_button "更新"
+      expect(page).to have_content("編集済みタイトル"), "タイトルが更新されていません"
+      expect(page).to have_content("まちレポを更新しました"), "Flashメッセージが表示されていません"
+      expect(page).to have_current_path(machi_repo_path(editable_machi_repo), ignore_query: true), "まちレポ詳細画面に遷移できていません"
     end
   end
 end

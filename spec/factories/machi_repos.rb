@@ -15,7 +15,7 @@ FactoryBot.define do
 
     # traits で追加要素をオプションに
     trait :with_image do
-      image { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/sample.png"), "image/png") }
+      image { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/sample.jpeg"), "image/jpeg") }
     end
 
     trait :with_tags do
