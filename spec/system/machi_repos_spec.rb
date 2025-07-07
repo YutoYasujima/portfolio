@@ -46,6 +46,7 @@ RSpec.describe "MachiRepos", type: :system do
     context "まちレポ1件(自作)" do
       it "通常表示" do
         machi_repo
+        machi_repo.reload
         login_as(user)
         # チューリアルへのリンクなし
         expect(page).not_to have_content("\"まちレポ\"を作成してみませんか？"), "チュートリアルへのリンクが表示されています"
@@ -66,6 +67,7 @@ RSpec.describe "MachiRepos", type: :system do
     context "詳細画面へ遷移" do
       it "カードから詳細画面へ" do
         machi_repo
+        machi_repo.reload
         login_as(user)
         within("#machi_repos") do
           click_link machi_repo.title
@@ -95,7 +97,7 @@ RSpec.describe "MachiRepos", type: :system do
         select "エリア指定", from: "ホットスポット設定"
         select "50m", from: "エリア半径"
         click_button "登録"
-        expect(page).to have_content("まちレポを作成しました"), "Flashメッセージが表示されていません"
+        expect(page).to have_selector("#flash_messages", text: "まちレポを作成しました")
         machi_repo = MachiRepo.find_by(title: "テスト")
         expect(page).to have_current_path(machi_repo_path(machi_repo), ignore_query: true), "まちレポ詳細画面に遷移できていません"
       end
@@ -107,7 +109,7 @@ RSpec.describe "MachiRepos", type: :system do
         select "エリア指定", from: "ホットスポット設定"
         select "50m", from: "エリア半径"
         click_button "登録"
-        expect(page).to have_content("タイトルを入力してください"), "Flashメッセージが表示されていません"
+        expect(page).to have_selector("#flash_messages", text: "タイトルを入力してください")
         expect(page).to have_current_path(new_machi_repo_path(user), ignore_query: true), "まちレポ作成画面に留まっていません"
       end
     end
@@ -120,7 +122,7 @@ RSpec.describe "MachiRepos", type: :system do
         fill_in "タグ（最大15文字 3つまで）", with: "テスト, test, 123"
         select "ピンポイント指定", from: "ホットスポット設定"
         click_button "登録"
-        expect(page).to have_content("まちレポを作成しました"), "Flashメッセージが表示されていません"
+        expect(page).to have_selector("#flash_messages", text: "まちレポを作成しました")
         machi_repo = MachiRepo.find_by(title: "テスト")
         expect(page).to have_current_path(machi_repo_path(machi_repo), ignore_query: true), "まちレポ詳細画面に遷移できていません"
       end
@@ -132,7 +134,7 @@ RSpec.describe "MachiRepos", type: :system do
         fill_in "状況説明", with: "テストだよ。テストだよ。テストだよ。"
         select "ピンポイント指定", from: "ホットスポット設定"
         click_button "登録"
-        expect(page).to have_content("まちレポを作成しました"), "Flashメッセージが表示されていません"
+        expect(page).to have_selector("#flash_messages", text: "まちレポを作成しました")
         machi_repo = MachiRepo.find_by(title: "テスト")
         expect(page).to have_current_path(machi_repo_path(machi_repo), ignore_query: true), "まちレポ詳細画面に遷移できていません"
       end
@@ -144,7 +146,7 @@ RSpec.describe "MachiRepos", type: :system do
         select "ピンポイント指定", from: "ホットスポット設定"
         attach_file "画像", Rails.root.join("spec/fixtures/sample.jpeg")
         click_button "登録"
-        expect(page).to have_content("まちレポを作成しました"), "Flashメッセージが表示されていません"
+        expect(page).to have_selector("#flash_messages", text: "まちレポを作成しました")
         machi_repo = MachiRepo.find_by(title: "テスト")
         expect(page).to have_current_path(machi_repo_path(machi_repo), ignore_query: true), "まちレポ詳細画面に遷移できていません"
       end
@@ -163,7 +165,16 @@ RSpec.describe "MachiRepos", type: :system do
         )
       allow(Geocoder).to receive(:search).and_return([ fake_result ])
       machi_repo
+      machi_repo.reload
       login_as(user)
+    end
+
+    it "チャット画面へ" do
+      visit machi_repo_path(machi_repo)
+      expect(page).to have_content(machi_repo.title), "まちレポのタイトルが表示されていません"
+      expect(page).to have_current_path(machi_repo_path(machi_repo), ignore_query: true), "まちレポ詳細画面に遷移できていません"
+      click_link "チャット"
+      expect(page).to have_current_path(machi_repo_chats_path(machi_repo), ignore_query: true), "まちレポチャット画面に遷移できていません"
     end
 
     context "自作のまちレポ" do
@@ -222,6 +233,7 @@ RSpec.describe "MachiRepos", type: :system do
         )
       allow(Geocoder).to receive(:search).and_return([ fake_result ])
       machi_repo
+      machi_repo.reload
       login_as(user)
     end
 
@@ -264,7 +276,7 @@ RSpec.describe "MachiRepos", type: :system do
       fill_in "タイトル", with: "編集済みタイトル"
       click_button "更新"
       expect(page).to have_content("編集済みタイトル"), "タイトルが更新されていません"
-      expect(page).to have_content("まちレポを更新しました"), "Flashメッセージが表示されていません"
+      expect(page).to have_selector("#flash_messages", text: "まちレポを更新しました")
       expect(page).to have_current_path(machi_repo_path(editable_machi_repo), ignore_query: true), "まちレポ詳細画面に遷移できていません"
     end
   end

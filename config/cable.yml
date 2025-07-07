@@ -4,7 +4,7 @@ development:
   channel_prefix: machi_vigil_development
 
 test:
-  adapter: test
+  adapter: async
 
 production:
   adapter: redis
