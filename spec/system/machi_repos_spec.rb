@@ -6,6 +6,13 @@ RSpec.describe "MachiRepos", type: :system do
   let(:municipality) { create(:municipality, id: 634, name_kanji: "千代田区", prefecture: prefecture) }
   let(:user) { create(:user) }
   let!(:profile) { create(:profile, user: user, prefecture: prefecture, municipality: municipality) }
+  let(:machi_repo) { create(:machi_repo,
+        user: user,
+        title: "テスト自作",
+        latitude: 35.6812996,
+        longitude: 139.7670658,
+        address: "東京都千代田区"
+        )}
 
   describe "まちレポ" do
     before do
@@ -37,15 +44,8 @@ RSpec.describe "MachiRepos", type: :system do
     end
 
     context "まちレポ1件(自作)" do
-      let!(:machi_repo) { create(:machi_repo,
-        user: user,
-        title: "テスト自作",
-        latitude: 35.6812996,
-        longitude: 139.7670658,
-        address: "東京都千代田区"
-        ) }
-
       it "通常表示" do
+        machi_repo
         login_as(user)
         # チューリアルへのリンクなし
         expect(page).not_to have_content("\"まちレポ\"を作成してみませんか？"), "チュートリアルへのリンクが表示されています"
@@ -59,6 +59,18 @@ RSpec.describe "MachiRepos", type: :system do
         expect(page).to have_content("\"まち\"のまちレポ一覧（1件）"), "「\"まち\"のまちレポ一覧（1件）」が表示されていません"
         within("#machi_repos") do
           expect(page).to have_content("テスト自作"), "まちレポ一覧にカードが表示されていません"
+        end
+      end
+    end
+
+    context "詳細画面へ遷移" do
+      it "カードから詳細画面へ" do
+        machi_repo
+        login_as(user)
+        within("#machi_repos") do
+          click_link machi_repo.title
+          expect(page).to have_content(machi_repo.title), "まちレポのタイトルが表示されていません"
+          expect(page).to have_current_path(machi_repo_path(machi_repo), ignore_query: true), "まちレポ詳細画面に遷移できていません"
         end
       end
     end
@@ -135,6 +147,64 @@ RSpec.describe "MachiRepos", type: :system do
         expect(page).to have_content("まちレポを作成しました"), "Flashメッセージが表示されていません"
         machi_repo = MachiRepo.find_by(title: "テスト")
         expect(page).to have_current_path(machi_repo_path(machi_repo), ignore_query: true), "まちレポ詳細画面に遷移できていません"
+      end
+    end
+  end
+
+  describe "まちレポ詳細" do
+    before do
+      # Google Maps API用のスタブ
+      # "Geocoder result"の部分は任意の名前を付けられる
+      fake_result = double("Geocoder result",
+        coordinates: [ 35.6812996, 139.7670658 ],
+        country_code: "JP",
+        city: "千代田区",
+        state: "東京都"
+        )
+      allow(Geocoder).to receive(:search).and_return([ fake_result ])
+      machi_repo
+      login_as(user)
+    end
+
+    context "自作のまちレポ" do
+      before do
+        # 自作のまちレポ詳細画面へ遷移
+        visit machi_repo_path(machi_repo)
+        expect(page).to have_content(machi_repo.title), "まちレポのタイトルが表示されていません"
+        expect(page).to have_current_path(machi_repo_path(machi_repo), ignore_query: true), "まちレポ詳細画面に遷移できていません"
+      end
+
+      it "編集画面へ遷移可能" do
+        expect(page).to have_selector("#machi-repo-edit"), "編集ボタンが表示されていません"
+        find("#machi-repo-edit").click
+        expect(page).to have_content(machi_repo.title), "まちレポ編集画面にタイトルが表示されていません"
+        expect(page).to have_current_path(edit_machi_repo_path(machi_repo), ignore_query: true), "まちレポ編集画面に遷移できていません"
+      end
+
+      it "削除可能" do
+        expect(page).to have_selector("#machi-repo-delete"), "削除ボタンが表示されていません"
+        find("#machi-repo-delete").click
+        # 確認ダイアログ表示
+        expect(page).to have_selector(".modal-button.modal-ok"), "確認ダイアログのOKボタンが表示されていません"
+        find(".modal-button.modal-ok").click
+        expect(MachiRepo.find_by(id: machi_repo.id)).to be_nil, "まちレポが削除されていません"
+        expect(page).to have_current_path(machi_repos_path, ignore_query: true), "まちレポ画面に遷移できていません"
+      end
+    end
+
+    context "他作のまちレポ" do
+      before do
+        other_user = create(:user, :with_profile)
+        others_machi_repo = create(:machi_repo, user: other_user)
+
+        visit machi_repo_path(others_machi_repo)
+        expect(page).to have_content(others_machi_repo.title), "まちレポのタイトルが表示されていません"
+        expect(page).to have_current_path(machi_repo_path(others_machi_repo), ignore_query: true), "他作のまちレポ詳細画面に遷移できていません"
+      end
+
+      it "編集・削除非表示" do
+        expect(page).not_to have_selector("#machi-repo-edit"), "編集ボタンが表示されてしまっています"
+        expect(page).not_to have_selector("#machi-repo-delete"), "削除ボタンが表示されてしまっています"
       end
     end
   end
