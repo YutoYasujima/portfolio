@@ -1,18 +1,72 @@
 require "rails_helper"
 
 RSpec.describe "MachiRepos", type: :system do
+  # 東京駅：東京都千代田区 latitude: 35.6812996, longitude: 139.7670658
   let(:prefecture) { create(:prefecture, id: 13, name_kanji: "東京都") }
   let(:municipality) { create(:municipality, id: 634, name_kanji: "千代田区", prefecture: prefecture) }
   let(:user) { create(:user) }
   let!(:profile) { create(:profile, user: user, prefecture: prefecture, municipality: municipality) }
 
-  before do
-    login_as(user)
+  describe "まちレポ" do
+    before do
+      # Google Maps API用のスタブ
+      # "Geocoder result"の部分は任意の名前を付けられる
+      fake_result = double("Geocoder result",
+        coordinates: [ 35.6812996, 139.7670658 ],
+        country_code: "JP",
+        city: "千代田区",
+        state: "東京都"
+        )
+      allow(Geocoder).to receive(:search).and_return([ fake_result ])
+    end
+
+    context "まちレポ0件" do
+      it "0件用の表示" do
+        login_as(user)
+        # チューリアルへのリンク
+        expect(page).to have_content("\"まちレポ\"を作成してみませんか？"), "チュートリアルへのリンクが表示されていません"
+        # 住所
+        within("#display-address") do
+          expect(page).to have_content("東京都千代田区"), "住所が表示されていません"
+        end
+        # 周辺のホットスポット
+        expect(page).to have_content("周辺のホットスポット（0件）"), "「周辺のホットスポット（0件）」が表示されていません"
+        # "まち"のまちレポ一覧
+        expect(page).to have_content("\"まち\"のまちレポ一覧（0件）"), "「\"まち\"のまちレポ一覧（0件）」が表示されていません"
+      end
+    end
+
+    context "まちレポ1件(自作)" do
+      let!(:machi_repo) { create(:machi_repo,
+        user: user,
+        title: "テスト自作",
+        latitude: 35.6812996,
+        longitude: 139.7670658,
+        address: "東京都千代田区"
+        ) }
+
+      it "通常表示" do
+        login_as(user)
+        # チューリアルへのリンクなし
+        expect(page).not_to have_content("\"まちレポ\"を作成してみませんか？"), "チュートリアルへのリンクが表示されています"
+        # 住所
+        within("#display-address") do
+          expect(page).to have_content("東京都千代田区"), "住所が表示されていません"
+        end
+        # 周辺のホットスポット
+        expect(page).to have_content("周辺のホットスポット（1件）"), "「周辺のホットスポット（1件）」が表示されていません"
+        # "まち"のまちレポ一覧
+        expect(page).to have_content("\"まち\"のまちレポ一覧（1件）"), "「\"まち\"のまちレポ一覧（1件）」が表示されていません"
+        within("#machi_repos") do
+          expect(page).to have_content("テスト自作"), "まちレポ一覧にカードが表示されていません"
+        end
+      end
+    end
   end
 
-  # 東京駅：東京都千代田区 latitude: 35.6812996, longitude: 139.7670658
   describe "まちレポ作成" do
     before do
+      login_as(user)
       # Google Maps API用のスタブ
       fake_result = instance_double(Geocoder::Result::Base, coordinates: [ 35.6812996, 139.7670658 ])
       allow(Geocoder).to receive(:search).and_return([ fake_result ])
