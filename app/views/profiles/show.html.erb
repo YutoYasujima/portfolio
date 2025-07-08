@@ -1,0 +1,94 @@
+<% content_for :title, "マイページ" %>
+
+<div class="text-center">
+  <h2 class="mb-6">
+    <span class="header1"><%= t('.title') %></span>
+    <p>
+      登録したプロフィールを確認できます
+    </p>
+  </h2>
+</div>
+
+<%
+=begin
+%>
+<nav class="md:fixed md:top-[250px] md:left-[50px]">
+  <ul class="flex justify-center gap-12 mb-4 md:flex-col">
+    <% if controller_name == "profile" && action_name == "show"
+      current_page = "profile"
+    else
+      current_page = ""
+    end %>
+    <!-- プロフィールアイコン -->
+    <li>
+      <%= link_to machi_repo_path(machi_repo), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "profile"}", id: "detail-link" do %>
+        <div class="icon-circle <%= "icon-circle-current" if current_page == "detail" %>">
+          <div class="w-8 aspect-square">
+            <%= render "shared/icons/description_icon" %>
+          </div>
+        </div>
+        <span class="icon-circle-text">詳細</span>
+      <% end %>
+    </li>
+  </ul>
+</nav>
+
+<%
+=end
+%>
+
+<section class="mx-auto pt-4 pb-8 max-w-120">
+  <div class="flex justify-end gap-2 mb-4 pr-2 w-full">
+    <%# 編集 %>
+    <%= link_to edit_profile_path(@profile), class: "inline-block border-2 rounded px-2 bg-green-100 text-green-700 shadow", id: "machi-repo-edit" do %>
+      <div class="flex flex-col justify-center items-center">
+        <div class="w-8 aspect-square">
+          <%= render "shared/icons/edit_note_icon" %>
+        </div>
+        <span class="text-sm">編集</span>
+      </div>
+    <% end %>
+  </div>
+  <div class="">
+    <!-- ニックネーム -->
+    <div class="mb-4 px-2">
+      <h3 class="mb-2">
+        <span class="header2">ニックネーム</span>
+      </h3>
+      <div class="ml-8 text-xl font-bold">
+        <%= @profile.nickname %>
+      </div>
+    </div>
+    <!-- ユーザーID -->
+    <div class="mb-4 px-2">
+      <h3 class="mb-2">
+        <span class="header2">ユーザーID</span>
+      </h3>
+      <div class="ml-8 text-xl font-bold">
+        <%= @profile.identifier %>
+      </div>
+    </div>
+    <!-- マイタウン -->
+    <div class="mb-4 px-2">
+      <h3 class="mb-2">
+        <span class="header2">マイタウン</span>
+      </h3>
+      <div class="ml-8 text-xl font-bold">
+        <%= current_user.mytown_address %>
+      </div>
+    </div>
+    <!-- 自己紹介 -->
+    <div class="mb-4 px-2">
+      <h3 class="mb-2">
+        <span class="header2">自己紹介</span>
+      </h3>
+      <div class="ml-8 text-xl font-bold">
+        <% if @profile.bio.present? %>
+          <%= @profile.bio %>
+        <% else %>
+          <p>（未記入）</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

@@ -56,10 +56,14 @@
 
       <%# マイページアイコン %>
       <li class="flex-1 text-black md:text-white">
-        <%= link_to "#", class: "nav-icon" do %>
-          <div class="w-10 aspect-square text-gray-200">
-            <%# render "shared/icons/account_circle_icon" %>
-            <%= render "shared/icons/account_circle_full_icon" %>
+        <% profile = current_user.profile %>
+        <%= link_to profile_path(profile), class: "nav-icon #{"pointer-events-none" if current_page?(profile_path(profile))}" do %>
+          <div class="w-10 aspect-square">
+            <% if current_page?(profile_path(profile)) %>
+              <%= render "shared/icons/account_circle_full_icon" %>
+            <% else %>
+              <%= render "shared/icons/account_circle_icon" %>
+            <% end %>
           </div>
           <span class="nav-text">マイページ</span>
         <% end %>

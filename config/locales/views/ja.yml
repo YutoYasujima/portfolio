@@ -14,8 +14,12 @@ ja:
     new:
       title: チュートリアル
   profiles:
+    show:
+      title: マイページ
     new:
       title: プロフィール登録
+    edit:
+      title: プロフィール編集
   helps:
     index:
       title: ヘルプ
