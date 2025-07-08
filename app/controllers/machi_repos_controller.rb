@@ -125,7 +125,6 @@ class MachiReposController < ApplicationController
     # 検索用ストロングパラメータに値を追加
     form_params = enrich_search_params_with_coordinates(raw_search_params)
     if form_params.blank?
-      @search_form = MachiRepoSearchForm.new
       @is_error = true
       return
     end

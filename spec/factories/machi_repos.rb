@@ -8,14 +8,14 @@ FactoryBot.define do
     category { :disaster }
     hotspot_settings { :area }
     hotspot_area_radius { 100 }
-
-    latitude { 35.6895 }
-    longitude { 139.6917 }
-    sequence(:address) { |n| "東京都千代田区#{n}" }
+    # 東京駅：東京都千代田区 latitude: 35.6812996, longitude: 139.7670658
+    latitude { 35.6812996 }
+    longitude { 139.7670658 }
+    address { "東京都千代田区" }
 
     # traits で追加要素をオプションに
     trait :with_image do
-      image { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/sample.png"), "image/png") }
+      image { Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/sample.jpeg"), "image/jpeg") }
     end
 
     trait :with_tags do

@@ -44,7 +44,7 @@
         end %>
         <!-- 詳細アイコン -->
         <li>
-          <%= link_to machi_repo_path(machi_repo), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "detail"}" do %>
+          <%= link_to machi_repo_path(machi_repo), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "detail"}", id: "detail-link" do %>
             <div class="icon-circle <%= "icon-circle-current" if current_page == "detail" %>">
               <div class="w-8 aspect-square">
                 <%= render "shared/icons/description_icon" %>
@@ -55,7 +55,7 @@
         </li>
         <!-- チャットアイコン -->
         <li>
-          <%= link_to machi_repo_chats_path(machi_repo), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "chat"}" do %>
+          <%= link_to machi_repo_chats_path(machi_repo), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "chat"}", id: "chat-link" do %>
             <div class="icon-circle <%= "icon-circle-current" if current_page == "chat" %>">
               <div class="w-8 aspect-square">
                 <%= render "shared/icons/chat_icon" %>

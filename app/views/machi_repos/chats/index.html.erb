@@ -91,7 +91,7 @@
             }
           %>
 
-          <%= form.button id: "btn", type: "button", data: { action: "click->machi-repos--chat#postMessage"} do %>
+          <%= form.button id: "message-btn", type: "button", data: { action: "click->machi-repos--chat#postMessage"} do %>
             <div class="flex-shrink-0 w-8 aspect-square text-blue-500">
               <%= render "shared/icons/send_full_icon" %>
             </div>
@@ -110,7 +110,7 @@
             data: { machi_repos__chat_target: "fileField" }
           %>
 
-          <%= form.button id: "btn", type: "button", data: { action: "click->machi-repos--chat#uploadImage"} do %>
+          <%= form.button id: "image-btn", type: "button", data: { action: "click->machi-repos--chat#uploadImage"} do %>
             <div class="flex-shrink-0 w-8 aspect-square text-blue-500">
               <%= render "shared/icons/upload_icon" %>
             </div>
