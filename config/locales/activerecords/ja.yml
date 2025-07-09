@@ -11,6 +11,8 @@ ja:
       profile:
         nickname: ニックネーム
         identifier: ユーザーID
+        bio: 自己紹介
+        avatar: アイコン
         agreement: 利用規約とプライバシーポリシー
       machi_repo:
         title: タイトル

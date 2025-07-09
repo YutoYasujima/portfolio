@@ -9,6 +9,9 @@
   </h2>
 
   <section class="mx-auto px-4 max-w-[900px]">
-    
+    <div class="mx-auto mb-4 w-full max-w-[500px]">
+      <%= link_to "< 詳細へ戻る", profile_path(@profile), class: "link underline inline-block mx-auto w-full max-w-[300px] text-left"  %>
+    </div>
+    <%= render "form", profile: @profile %>
   </section>
 </div>
