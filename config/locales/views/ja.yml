@@ -15,7 +15,7 @@ ja:
       title: チュートリアル
   profiles:
     show:
-      title: マイページ
+      title: プロフィール
     new:
       title: プロフィール登録
     edit:

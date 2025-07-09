@@ -95,6 +95,16 @@
   opacity: 8%;
 }
 
+/* Google Material Symbols設定 */
+span.font-size-32 {
+  font-size: 32px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'OPSZ' 32;
+}
+span.font-size-64 {
+  font-size: 64px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'OPSZ' 64;
+}
+
 /* 共通見出し */
 .header1 {
   display: inline-block;

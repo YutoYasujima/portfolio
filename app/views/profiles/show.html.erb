@@ -1,41 +1,4 @@
-<% content_for :title, "マイページ" %>
-
-<div class="text-center">
-  <h2 class="mb-6">
-    <span class="header1"><%= t('.title') %></span>
-    <p>
-      登録したプロフィールを確認できます
-    </p>
-  </h2>
-</div>
-
-<%
-=begin
-%>
-<nav class="md:fixed md:top-[250px] md:left-[50px]">
-  <ul class="flex justify-center gap-12 mb-4 md:flex-col">
-    <% if controller_name == "profile" && action_name == "show"
-      current_page = "profile"
-    else
-      current_page = ""
-    end %>
-    <!-- プロフィールアイコン -->
-    <li>
-      <%= link_to machi_repo_path(machi_repo), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "profile"}", id: "detail-link" do %>
-        <div class="icon-circle <%= "icon-circle-current" if current_page == "detail" %>">
-          <div class="w-8 aspect-square">
-            <%= render "shared/icons/description_icon" %>
-          </div>
-        </div>
-        <span class="icon-circle-text">詳細</span>
-      <% end %>
-    </li>
-  </ul>
-</nav>
-
-<%
-=end
-%>
+<%= render "shared/mypage_info" %>
 
 <section class="mx-auto pt-4 pb-8 max-w-120">
   <div class="flex justify-end gap-2 mb-4 pr-2 w-full">
@@ -50,6 +13,16 @@
     <% end %>
   </div>
   <div class="">
+    <!-- アイコン -->
+    <div class="mb-4 px-2">
+      <div class="text-center">
+        <% if @profile.avatar? %>
+          <%= image_tag(@profile.avatar.url, class: "object-cover") %>
+        <% else %>
+          <span class="material-symbols-outlined font-size-64">face</span>
+        <% end %>
+      </div>
+    </div>
     <!-- ニックネーム -->
     <div class="mb-4 px-2">
       <h3 class="mb-2">
