@@ -14,12 +14,12 @@
   </div>
   <div class="">
     <!-- アイコン -->
-    <div class="mb-4 px-2">
-      <div class="text-center">
+    <div class="text-center">
+      <div class="inline-block w-24 aspect-square">
         <% if @profile.avatar? %>
-          <%= image_tag(@profile.avatar.url, class: "object-cover") %>
+          <%= image_tag(@profile.avatar.medium.url, class: "rounded-full object-cover") %>
         <% else %>
-          <span class="material-symbols-outlined font-size-64">face</span>
+          <span class="material-symbols-outlined font-size-96">face</span>
         <% end %>
       </div>
     </div>

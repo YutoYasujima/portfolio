@@ -15,7 +15,7 @@
   <% if is_edit %>
     <%# ユーザーID %>
     <div class="field">
-      <%= form.label :identifier %>
+      <%= form.label :identifier, class: "require" %>
       <%= form.text_field :identifier, class: "text-field", maxlength: 10 %>
     </div>
   <% end %>
@@ -55,7 +55,7 @@
       <%= form.file_field :avatar, class: "file-field" %>
       <% if profile.avatar? %>
         <p class="mt-2">現在の画像:</p>
-        <%= image_tag(profile.avatar.url, class: "w-32") %>
+        <%= image_tag(profile.avatar.medium.url, class: "rounded-full mx-auto object-cover") %>
       <% end %>
       <%= form.hidden_field :avatar_cache %>
     </div>

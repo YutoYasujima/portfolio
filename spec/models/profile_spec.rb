@@ -74,31 +74,61 @@ RSpec.describe Profile, type: :model do
         profile.avatar = ""
         expect(profile).to be_valid
       end
+    end
 
-      it "avatarが許可された形式なら有効" do
-        profile.avatar = "https://example.com/image.png"
-        expect(profile).to be_valid
+    describe "avatar画像アップロード機能" do
+    it "avatarカラムにMachiRepoImageUploaderがマウントされている" do
+      expect(Profile.uploaders[:avatar]).to eq ProfileAvatarUploader
+    end
+
+    it "画像アップロード" do
+      image_file = generate_temp_image(width: 640, height: 480)
+      profile = build(:profile, avatar: Rack::Test::UploadedFile.new(image_file, "image/jpeg"))
+
+      expect(profile.save).to be true
+      expect(profile.avatar).to be_present
+      expect(profile.avatar.medium).to be_present
+      expect(profile.avatar.thumb).to be_present
+    ensure
+      image_file.close
+      image_file.unlink
+    end
+
+    context "拡張子の許可" do
+      it "許可された拡張子のファイルなら有効" do
+        %w[jpg jpeg png gif].each do |ext|
+          file = Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/sample.#{ext}"), "image/#{ext}")
+          profile.avatar = file
+          expect(profile).to be_valid, "Expected .#{ext} to be valid"
+        end
       end
 
-      it "avatarが許可されていない形式なら無効" do
-        profile.avatar = "http://example.com/image.bmp"
-        expect(profile).not_to be_valid
-        expect(profile.errors[:avatar]).to be_present
-      end
-
-      it "avatarが255文字以下なら有効" do
-        url = "http://example.com/" + ("a" * 232) + ".jpg"
-        profile.avatar = url
-        expect(profile).to be_valid
-      end
-
-      it "avatarが256文字以上なら無効" do
-        url = "http://example.com/" + ("a" * 241) + ".jpg"
-        profile.avatar = url
-        expect(profile).not_to be_valid
+      it "許可されていない拡張子のファイルなら無効" do
+        file = Rack::Test::UploadedFile.new(Rails.root.join("spec/fixtures/sample.txt"), "text/plain")
+        profile.avatar = file
+        expect(profile).to be_invalid
         expect(profile.errors[:avatar]).to be_present
       end
     end
+
+    context "ファイルサイズの制限" do
+      it "10MBを超えると無効" do
+        # バリデーションで弾かれるため、アップローダークラスのprocessは動かない
+        temp_file = Tempfile.new([ "large_image", ".jpeg" ])
+        temp_file.write("a" * (10.megabytes + 1))
+        temp_file.rewind
+
+        file = Rack::Test::UploadedFile.new(temp_file.path, "image/jpeg")
+        profile.avatar = file
+
+        expect(profile).to be_invalid
+        expect(profile.errors[:avatar]).to be_present
+      ensure
+        temp_file.close
+        temp_file.unlink
+      end
+    end
+  end
 
     context "agreement" do
       it "agreementが'1'でなければ無効" do
