@@ -6,7 +6,7 @@ Rails.application.routes.draw do
     confirmations: "users/confirmations",
     omniauth_callbacks: "users/omniauth_callbacks"
   }
-  resources :profiles, only: %i[ new create ]
+  resources :profiles, only: %i[ show new create edit update ]
   resources :municipalities, only: %i[ index ]
   resources :machi_repos do
     collection do

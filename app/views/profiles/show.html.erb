@@ -1,0 +1,67 @@
+<%= render "shared/mypage_info" %>
+
+<section class="mx-auto pt-4 pb-8 max-w-120">
+  <div class="flex justify-end gap-2 mb-4 pr-2 w-full">
+    <%# 編集 %>
+    <%= link_to edit_profile_path(@profile), class: "inline-block border-2 rounded px-2 bg-green-100 text-green-700 shadow", id: "machi-repo-edit" do %>
+      <div class="flex flex-col justify-center items-center">
+        <div class="w-8 aspect-square">
+          <%= render "shared/icons/edit_note_icon" %>
+        </div>
+        <span class="text-sm">編集</span>
+      </div>
+    <% end %>
+  </div>
+  <div class="">
+    <!-- アイコン -->
+    <div class="mb-4 px-2">
+      <div class="text-center">
+        <% if @profile.avatar? %>
+          <%= image_tag(@profile.avatar.url, class: "object-cover") %>
+        <% else %>
+          <span class="material-symbols-outlined font-size-64">face</span>
+        <% end %>
+      </div>
+    </div>
+    <!-- ニックネーム -->
+    <div class="mb-4 px-2">
+      <h3 class="mb-2">
+        <span class="header2">ニックネーム</span>
+      </h3>
+      <div class="ml-8 text-xl font-bold">
+        <%= @profile.nickname %>
+      </div>
+    </div>
+    <!-- ユーザーID -->
+    <div class="mb-4 px-2">
+      <h3 class="mb-2">
+        <span class="header2">ユーザーID</span>
+      </h3>
+      <div class="ml-8 text-xl font-bold">
+        <%= @profile.identifier %>
+      </div>
+    </div>
+    <!-- マイタウン -->
+    <div class="mb-4 px-2">
+      <h3 class="mb-2">
+        <span class="header2">マイタウン</span>
+      </h3>
+      <div class="ml-8 text-xl font-bold">
+        <%= current_user.mytown_address %>
+      </div>
+    </div>
+    <!-- 自己紹介 -->
+    <div class="mb-4 px-2">
+      <h3 class="mb-2">
+        <span class="header2">自己紹介</span>
+      </h3>
+      <div class="ml-8 text-xl font-bold">
+        <% if @profile.bio.present? %>
+          <%= @profile.bio %>
+        <% else %>
+          <p>（未記入）</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

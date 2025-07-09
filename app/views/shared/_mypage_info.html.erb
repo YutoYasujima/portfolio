@@ -1,0 +1,65 @@
+<% content_for :title, "マイページ" %>
+
+<div class="border-b-2 border-gray-400 text-center">
+  <h2 class="mb-6">
+    <span class="header1">マイページ</span>
+    <p>
+      登録したプロフィールを確認できます
+    </p>
+  </h2>
+
+  <nav class="md:fixed md:top-[250px] md:left-[50px]">
+    <ul class="flex justify-around mb-4 mx-auto max-w-[500px] md:flex-col md:h-100">
+      <% if controller_name == "profiles" && action_name == "show"
+        current_page = "profile"
+      else
+        current_page = ""
+      end %>
+      <!-- プロフィール -->
+      <li>
+        <%= link_to profile_path(@profile), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "profile"}", id: "profile-link" do %>
+          <div class="icon-circle <%= "icon-circle-current" if current_page == "profile" %>">
+            <span class="material-symbols-outlined font-size-32">person</span>
+          </div>
+          <span class="icon-circle-text text-[13px]">プロフィール</span>
+        <% end %>
+      </li>
+      <!-- マイまちレポ -->
+      <li>
+        <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "my_machi_repo"}", id: "my-machi-repo-link" do %>
+          <div class="icon-circle <%= "icon-circle-current" if current_page == "my_machi_repo" %>">
+            <span class="material-symbols-outlined font-size-32">home_work</span>
+          </div>
+          <span class="icon-circle-text text-[13px]">マイまちレポ</span>
+        <% end %>
+      </li>
+      <!-- ブックマーク -->
+      <li>
+        <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "bookmark"}", id: "bookmark-link" do %>
+          <div class="icon-circle <%= "icon-circle-current" if current_page == "bookmark" %>">
+            <span class="material-symbols-outlined font-size-32">star</span>
+          </div>
+          <span class="icon-circle-text text-[13px]">ブックマーク</span>
+        <% end %>
+      </li>
+      <!-- フォロー -->
+      <li>
+        <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "follow"}", id: "follow-link" do %>
+          <div class="icon-circle <%= "icon-circle-current" if current_page == "follow" %>">
+            <span class="material-symbols-outlined font-size-32">owl</span>
+          </div>
+          <span class="icon-circle-text text-[13px]">フォロー</span>
+        <% end %>
+      </li>
+      <!-- コミュニティ -->
+      <li>
+        <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "community"}", id: "community-link" do %>
+          <div class="icon-circle <%= "icon-circle-current" if current_page == "community" %>">
+            <span class="material-symbols-outlined font-size-32">handshake</span>
+          </div>
+          <span class="icon-circle-text text-[13px]">コミュニティ</span>
+        <% end %>
+      </li>
+    </ul>
+  </nav>
+</div>
