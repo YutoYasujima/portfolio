@@ -2,13 +2,9 @@ class ProfilesController < ApplicationController
   skip_before_action :ensure_profile_created, only: %i[ new create ]
   before_action :set_profile, only: %i[ show edit ]
 
-  def show
+  def show; end
 
-  end
-
-  def edit
-
-  end
+  def edit; end
 
   def new
     @profile = Profile.new
