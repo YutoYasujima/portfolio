@@ -173,14 +173,19 @@ RSpec.describe MachiRepo, type: :model do
     end
   end
 
-  describe "画像アップロード機能" do
+  describe "image画像アップロード機能" do
+    it "imageは空でも有効" do
+      machi_repo.image = ""
+      expect(machi_repo).to be_valid
+    end
+
     it "imageカラムにMachiRepoImageUploaderがマウントされている" do
       expect(MachiRepo.uploaders[:image]).to eq MachiRepoImageUploader
     end
 
     it "画像アップロード" do
       image_file = generate_temp_image(width: 640, height: 480)
-      machi_repo = build(:chat, image: Rack::Test::UploadedFile.new(image_file, "image/jpeg"))
+      machi_repo = build(:machi_repo, image: Rack::Test::UploadedFile.new(image_file, "image/jpeg"))
 
       expect(machi_repo.save).to be true
       expect(machi_repo.image).to be_present

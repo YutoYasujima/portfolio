@@ -4,8 +4,6 @@ class ProfilesController < ApplicationController
 
   def show; end
 
-  def edit; end
-
   def new
     @profile = Profile.new
   end
@@ -18,6 +16,18 @@ class ProfilesController < ApplicationController
     else
       append_errors_to_flash(@profile, "登録")
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit; end
+
+  def update
+    @profile = current_user.profile
+    if @profile.update(profile_params)
+      redirect_to profile_path(@profile), notice: "プロフィールを更新しました"
+    else
+      append_errors_to_flash(@profile, "更新")
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -34,6 +44,6 @@ class ProfilesController < ApplicationController
   end
 
   def profile_params
-    params.require(:profile).permit(:nickname, :prefecture_id, :municipality_id, :agreement)
+    params.require(:profile).permit(:nickname, :identifier, :prefecture_id, :municipality_id, :bio, :avatar, :avatar_cache, :agreement)
   end
 end

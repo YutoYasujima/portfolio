@@ -8,10 +8,11 @@ class Profile < ApplicationRecord
   validates :nickname, presence: true, length: { maximum: 20 }
   validates :identifier, presence: true, uniqueness: true, length: { maximum: 10 }, format: { with: /\A[a-zA-Z0-9_\-]+\z/, message: "は英数字、アンダースコア、ハイフンのみ使用できます" }
   validates :bio, length: { maximum: 500 }, allow_blank: true
-  validates :avatar, length: { maximum: 255 }, allow_blank: true, format: { with: /\Ahttps?:\/\/.+\.(jpg|jpeg|png|gif)\z/, message: "は「.jpg, .jpeg, .png, .gif」形式でなければなりません" }
 
   attr_accessor :agreement
   validates :agreement, acceptance: { accept: "1", message: "に同意してください" }
+
+  mount_uploader :avatar, ProfileAvatarUploader
 
   private
 
