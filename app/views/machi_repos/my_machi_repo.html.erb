@@ -1,10 +1,12 @@
 <%= render "shared/mypage_info" %>
 
-<section class="machi-repo-cards mx-auto pt-4 pb-8 max-w-120">
+<section class="mx-auto pt-4 pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
   <h3 class="header2 mb-4 mr-auto">
     マイまちレポ一覧（<span id="machi-repos-count"><%= @machi_repos.size %></span>件）
   </h3>
-  <% @machi_repos.each do |machi_repo| %>
-    <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
-  <% end %>
+  <div class="machi-repo-cards">
+    <% @machi_repos.each do |machi_repo| %>
+      <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
+    <% end %>
+  </div>
 </section>
