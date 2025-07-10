@@ -12,12 +12,14 @@
     <ul class="flex justify-around mb-4 mx-auto max-w-[500px] md:flex-col md:h-100">
       <% if controller_name == "profiles" && action_name == "show"
         current_page = "profile"
+      elsif controller_name == "machi_repos" && action_name == "my_machi_repo"
+        current_page = "my_machi_repo"
       else
         current_page = ""
       end %>
       <!-- プロフィール -->
       <li>
-        <%= link_to profile_path(@profile), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "profile"}", id: "profile-link" do %>
+        <%= link_to profile_path(current_user.profile), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "profile"}", id: "profile-link" do %>
           <div class="icon-circle <%= "icon-circle-current" if current_page == "profile" %>">
             <div class="w-8 aspect-square">
               <%= render "shared/icons/person_icon" %>
@@ -28,7 +30,7 @@
       </li>
       <!-- マイまちレポ -->
       <li>
-        <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "my_machi_repo"}", id: "my-machi-repo-link" do %>
+        <%= link_to my_machi_repo_machi_repos_path, class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "my_machi_repo"}", id: "my-machi-repo-link" do %>
           <div class="icon-circle <%= "icon-circle-current" if current_page == "my_machi_repo" %>">
             <div class="w-8 aspect-square">
               <%= render "shared/icons/home_work_icon" %>

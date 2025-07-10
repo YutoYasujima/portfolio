@@ -111,6 +111,10 @@ class MachiReposController < ApplicationController
     redirect_to machi_repos_path, notice: "まちレポを削除しました", status: :see_other
   end
 
+  def my_machi_repo
+    @machi_repos = current_user.machi_repos.order(updated_at: :desc)
+  end
+
   private
 
   def prepare_search_data(raw_search_params)
