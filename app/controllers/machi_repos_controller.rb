@@ -112,7 +112,46 @@ class MachiReposController < ApplicationController
   end
 
   def my_machi_repo
-    @machi_repos = current_user.machi_repos.order(updated_at: :desc)
+    @snapshot_time = Time.current
+    # 無限スクロール対策のため、UNIXタイムスタンプで保存
+    session[:machi_repos_snapshot_time] = @snapshot_time.to_i
+
+    machi_repos = current_user.machi_repos.where("machi_repos.updated_at <= ?", @snapshot_time)
+
+    # データ総数取得
+    @machi_repos_count = machi_repos.size
+
+    @machi_repos = machi_repos.order("machi_repos.updated_at DESC, machi_repos.id DESC").limit(MACHI_REPO_PER_PAGE)
+
+    # 最終ページのデータか判定(初期表示のため下記でOK)
+    @is_last_page = @machi_repos_count <= MACHI_REPO_PER_PAGE
+  end
+
+  def load_more_my_machi_repo
+    # 初期表示時のスナップショット取得
+    snapshot_time = Time.at(session[:machi_repos_snapshot_time].to_i)
+    cursor_updated_at = Time.at(params[:previous_last_updated].to_i)
+    cursor_id = params[:previous_last_id].to_i
+
+    machi_repos = current_user.machi_repos.where("machi_repos.updated_at <= ?", snapshot_time)
+
+    # データの総数を取得する
+    @machi_repos_count = machi_repos.size
+
+    # 最終ページ判定のため1件多く取得
+    raw_machi_repos = machi_repos
+                      .where("machi_repos.updated_at < ? OR (machi_repos.updated_at = ? AND id < ?)", cursor_updated_at, cursor_updated_at, cursor_id)
+                      .order("machi_repos.updated_at DESC, machi_repos.id DESC")
+                      .limit(MACHI_REPO_PER_PAGE + 1)
+    # 最終ページ判定
+    @is_last_page = raw_machi_repos.size <= MACHI_REPO_PER_PAGE
+
+    # 表示分切り出し
+    @machi_repos = raw_machi_repos.first(MACHI_REPO_PER_PAGE)
+
+    respond_to do |format|
+      format.turbo_stream
+    end
   end
 
   private

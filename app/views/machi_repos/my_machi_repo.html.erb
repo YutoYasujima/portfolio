@@ -1,12 +1,51 @@
 <%= render "shared/mypage_info" %>
 
 <section class="mx-auto pt-4 pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
-  <h3 class="header2 mb-4 mr-auto">
-    マイまちレポ一覧（<span id="machi-repos-count"><%= @machi_repos.size %></span>件）
-  </h3>
-  <div class="machi-repo-cards">
-    <% @machi_repos.each do |machi_repo| %>
-      <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
-    <% end %>
+  <div data-controller="infinite-scroll"
+    data-infinite-scroll-controller-name-value="machi_repos"
+    data-infinite-scroll-action-name-value="load_more_my_machi_repo"
+  >
+    <h3 class="header2 mb-4 mr-auto">
+      マイまちレポ一覧（ <span id="machi-repos-count"><%= @machi_repos_count %></span> 件）
+    </h3>
+    <!-- まちレポカード表示(無限スクロール) -->
+    <%# 最終ページ判定 %>
+    <input type="hidden"
+      id="last-page-marker"
+      value="<%= @is_last_page %>"
+      data-infinite-scroll-target="lastPageMarker"
+    >
+    <%# 取得データの最後の更新日時を保持 %>
+    <input type="hidden"
+      id="previous-last-updated"
+      value="<%= @machi_repos.last&.updated_at&.to_i %>"
+      data-infinite-scroll-target="previousLastUpdated"
+    >
+    <%# 取得データの最後のIDを保持 %>
+    <input type="hidden"
+      id="previous-last-id"
+      value="<%= @machi_repos.last&.id %>"
+      data-infinite-scroll-target="previousLastId"
+    >
+
+    <div class="machi-repo-cards relative"
+      id="my-machi-repos"
+      data-infinite-scroll-target="container"
+    >
+      <%# スクロール可能表示 %>
+      <div
+        data-infinite-scroll-target="scrollableIcon"
+        class="hidden absolute bottom-[8px] left-1/2 -translate-x-1/2 z-1"
+      >
+        <div class="bounce w-8 aspect-square border rounded-full bg-white rotate-180">
+          <%= render "shared/icons/arrow_upward_icon" %>
+        </div>
+      </div>
+
+      <%# 一覧表示 %>
+      <% @machi_repos.each do |machi_repo| %>
+        <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
+      <% end %>
+    </div>
   </div>
 </section>
