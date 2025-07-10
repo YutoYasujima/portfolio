@@ -19,7 +19,9 @@
         <% if @profile.avatar? %>
           <%= image_tag(@profile.avatar.medium.url, class: "rounded-full object-cover") %>
         <% else %>
-          <span class="material-symbols-outlined font-size-96">face</span>
+          <div class="w-24 aspect-square">
+              <%= render "shared/icons/face_icon" %>
+            </div>
         <% end %>
       </div>
     </div>

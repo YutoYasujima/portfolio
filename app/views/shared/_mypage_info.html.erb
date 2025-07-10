@@ -19,7 +19,9 @@
       <li>
         <%= link_to profile_path(@profile), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "profile"}", id: "profile-link" do %>
           <div class="icon-circle <%= "icon-circle-current" if current_page == "profile" %>">
-            <span class="material-symbols-outlined font-size-32">person</span>
+            <div class="w-8 aspect-square">
+              <%= render "shared/icons/person_icon" %>
+            </div>
           </div>
           <span class="icon-circle-text text-[13px]">プロフィール</span>
         <% end %>
@@ -28,7 +30,9 @@
       <li>
         <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "my_machi_repo"}", id: "my-machi-repo-link" do %>
           <div class="icon-circle <%= "icon-circle-current" if current_page == "my_machi_repo" %>">
-            <span class="material-symbols-outlined font-size-32">home_work</span>
+            <div class="w-8 aspect-square">
+              <%= render "shared/icons/home_work_icon" %>
+            </div>
           </div>
           <span class="icon-circle-text text-[13px]">マイまちレポ</span>
         <% end %>
@@ -37,7 +41,9 @@
       <li>
         <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "bookmark"}", id: "bookmark-link" do %>
           <div class="icon-circle <%= "icon-circle-current" if current_page == "bookmark" %>">
-            <span class="material-symbols-outlined font-size-32">star</span>
+            <div class="w-8 aspect-square">
+              <%= render "shared/icons/star_icon" %>
+            </div>
           </div>
           <span class="icon-circle-text text-[13px]">ブックマーク</span>
         <% end %>
@@ -46,7 +52,9 @@
       <li>
         <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "follow"}", id: "follow-link" do %>
           <div class="icon-circle <%= "icon-circle-current" if current_page == "follow" %>">
-            <span class="material-symbols-outlined font-size-32">owl</span>
+            <div class="w-8 aspect-square">
+              <%= render "shared/icons/owl_icon" %>
+            </div>
           </div>
           <span class="icon-circle-text text-[13px]">フォロー</span>
         <% end %>
@@ -55,7 +63,9 @@
       <li>
         <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "community"}", id: "community-link" do %>
           <div class="icon-circle <%= "icon-circle-current" if current_page == "community" %>">
-            <span class="material-symbols-outlined font-size-32">handshake</span>
+            <div class="w-8 aspect-square">
+              <%= render "shared/icons/handshake_icon" %>
+            </div>
           </div>
           <span class="icon-circle-text text-[13px]">コミュニティ</span>
         <% end %>
