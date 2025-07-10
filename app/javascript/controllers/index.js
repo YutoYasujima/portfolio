@@ -25,6 +25,9 @@ application.register("hamburger-menu", HamburgerMenuController)
 import HelpController from "./help_controller"
 application.register("help", HelpController)
 
+import InfiniteScrollController from "./infinite_scroll_controller"
+application.register("infinite-scroll", InfiniteScrollController)
+
 import MachiRepos__ChatController from "./machi_repos/chat_controller"
 application.register("machi-repos--chat", MachiRepos__ChatController)
 
