@@ -1,0 +1,5 @@
+<% if current_user.bookmark?(machi_repo) %>
+  <%= render "machi_repos/bookmarks/unbookmark", machi_repo: machi_repo %>
+<% else %>
+  <%= render "machi_repos/bookmarks/bookmark", machi_repo: machi_repo %>
+<% end %>

@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "bookmark-button-for-machi-repo-#{@machi_repo.id}" do %>
+  <%= render "machi_repos/bookmarks/unbookmark", machi_repo: @machi_repo %>
+<% end %>

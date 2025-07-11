@@ -1,0 +1,5 @@
+<%= link_to bookmarks_path(machi_repo_id: machi_repo.id), id: "bookmark-button-for-machi-repo-#{machi_repo.id}", data: { turbo_method: :post } do %>
+  <span class="inline-block w-8 aspect-square">
+    <%= render "shared/icons/star_icon" %>
+  </span>
+<% end %>

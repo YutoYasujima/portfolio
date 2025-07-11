@@ -15,6 +15,8 @@ class MachiRepo < ApplicationRecord
   has_many :machi_repo_tags, dependent: :destroy
   has_many :tags, through: :machi_repo_tags
   has_many :chats, as: :chatable, dependent: :destroy
+  has_many :bookmarks, dependent: :destroy
+  has_many :bookmark_users, through: :bookmarks, source: :user
 
   enum :info_level, {
     share: 0,         # 共有
