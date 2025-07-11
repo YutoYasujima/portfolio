@@ -113,7 +113,8 @@ class MachiReposController < ApplicationController
 
   # マイまちレポ
   def my_machi_repos
-    total_records = current_user.machi_repos
+    @user = User.find(params[:user_id])
+    total_records = @user.machi_repos
     load_init_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
     @machi_repos = @records
     @machi_repos_count = @total_records_count
@@ -121,7 +122,8 @@ class MachiReposController < ApplicationController
 
   # マイまちレポの無限スクロール
   def load_more_my_machi_repos
-    total_records = current_user.machi_repos
+    user = User.find(params[:user_id])
+    total_records = user.machi_repos
     load_more_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
     respond_to do |format|
       format.turbo_stream

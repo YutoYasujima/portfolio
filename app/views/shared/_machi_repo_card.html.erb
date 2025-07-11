@@ -37,7 +37,11 @@ end %>
           <%= render "shared/icons/face_icon" %>
         </span>
         <span class="ml-1 truncate overflow-hidden whitespace-nowrap">
-          <%= machi_repo.user.profile.nickname %>
+          <% if current_user == machi_repo.user %>
+            <%= machi_repo.user.profile.nickname %>
+          <% else %>
+            <%= link_to machi_repo.user.profile.nickname, profile_path(machi_repo.user.profile), class: "link underline" %>
+          <% end %>
         </span>
         <!-- ブックマーク -->
         <% if current_user != machi_repo.user %>

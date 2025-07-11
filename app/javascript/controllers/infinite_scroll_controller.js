@@ -13,6 +13,7 @@ export default class extends Controller {
   static values = {
     controllerName: String,
     actionName: String,
+    userId: Number,
   };
 
   connect() {
@@ -53,6 +54,10 @@ export default class extends Controller {
     params.append("previous_last_updated", this.previousLastUpdatedTarget.value);
     // 最終データのID
     params.append("previous_last_id", this.previousLastIdTarget.value);
+    // ユーザーID
+    if (this.userIdValue) {
+      params.append("user_id", this.userIdValue);
+    }
 
     const url = `/${controller}/${action}?${params.toString()}`;
     // 次のページ（下方向）を非同期で取得

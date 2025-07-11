@@ -1,8 +1,10 @@
 class ProfilesController < ApplicationController
   skip_before_action :ensure_profile_created, only: %i[ new create ]
-  before_action :set_profile, only: %i[ show edit ]
 
-  def show; end
+  def show
+    @profile = Profile.find(params[:id])
+    @user = @profile.user
+  end
 
   def new
     @profile = Profile.new
@@ -19,7 +21,9 @@ class ProfilesController < ApplicationController
     end
   end
 
-  def edit; end
+  def edit
+    @profile = current_user.profile
+  end
 
   def update
     @profile = current_user.profile
@@ -32,10 +36,6 @@ class ProfilesController < ApplicationController
   end
 
   private
-
-  def set_profile
-    @profile = current_user.profile
-  end
 
   # エラーメッセージを追加する
   def append_errors_to_flash(record, action_name)

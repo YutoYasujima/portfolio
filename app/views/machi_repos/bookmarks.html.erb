@@ -4,6 +4,7 @@
   <%= render "shared/infinite_scroll_item",
     controller: "machi_repos",
     action: "load_more_bookmarks",
+    user_id: 0,
     title: "まちレポブックマーク一覧",
     objects_count: @machi_repos_count,
     snapshot_time: @snapshot_time,
