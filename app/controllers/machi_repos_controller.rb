@@ -111,50 +111,110 @@ class MachiReposController < ApplicationController
     redirect_to machi_repos_path, notice: "まちレポを削除しました", status: :see_other
   end
 
-  def my_machi_repo
-    @snapshot_time = Time.current
-    # 無限スクロール対策のため、UNIXタイムスタンプで保存
-    session[:machi_repos_snapshot_time] = @snapshot_time.to_i
-
-    machi_repos = current_user.machi_repos.where("machi_repos.updated_at <= ?", @snapshot_time)
-
-    # データ総数取得
-    @machi_repos_count = machi_repos.size
-
-    @machi_repos = machi_repos.order("machi_repos.updated_at DESC, machi_repos.id DESC").limit(MACHI_REPO_PER_PAGE)
-
-    # 最終ページのデータか判定(初期表示のため下記でOK)
-    @is_last_page = @machi_repos_count <= MACHI_REPO_PER_PAGE
+  # マイまちレポ
+  def my_machi_repos
+    total_records = current_user.machi_repos
+    load_init_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
+    @machi_repos = @records
+    @machi_repos_count = @total_records_count
   end
 
-  def load_more_my_machi_repo
-    # 初期表示時のスナップショット取得
-    snapshot_time = Time.at(session[:machi_repos_snapshot_time].to_i)
-    cursor_updated_at = Time.at(params[:previous_last_updated].to_i)
-    cursor_id = params[:previous_last_id].to_i
+  # マイまちレポの無限スクロール
+  def load_more_my_machi_repos
+    total_records = current_user.machi_repos
+    load_more_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
+    respond_to do |format|
+      format.turbo_stream
+    end
+  end
 
-    machi_repos = current_user.machi_repos.where("machi_repos.updated_at <= ?", snapshot_time)
+  # マイページのブックマーク
+  def bookmarks
+    total_records = current_user.bookmark_machi_repos
+    load_init_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
+    @machi_repos = @records
+    @machi_repos_count = @total_records_count
+  end
 
-    # データの総数を取得する
-    @machi_repos_count = machi_repos.size
-
-    # 最終ページ判定のため1件多く取得
-    raw_machi_repos = machi_repos
-                      .where("machi_repos.updated_at < ? OR (machi_repos.updated_at = ? AND id < ?)", cursor_updated_at, cursor_updated_at, cursor_id)
-                      .order("machi_repos.updated_at DESC, machi_repos.id DESC")
-                      .limit(MACHI_REPO_PER_PAGE + 1)
-    # 最終ページ判定
-    @is_last_page = raw_machi_repos.size <= MACHI_REPO_PER_PAGE
-
-    # 表示分切り出し
-    @machi_repos = raw_machi_repos.first(MACHI_REPO_PER_PAGE)
-
+  # マイページのブックマークの無限スクロール
+  def load_more_bookmarks
+    total_records = current_user.bookmark_machi_repos
+    load_more_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
     respond_to do |format|
       format.turbo_stream
     end
   end
 
   private
+
+  # 無限スクロールの初期表示
+  def load_init_data(table_name, total_records, per_page_num)
+    @snapshot_time = Time.current
+    # 無限スクロール対策のため、UNIXタイムスタンプで保存
+    session[:infinite_scroll_snapshot_time] = @snapshot_time.to_i
+
+    # 動的にモデルクラスを取得
+    model_class = table_name.classify.constantize
+    arel_table = model_class.arel_table
+
+    # データ取得
+    records_below_snapshot = total_records
+                              .where(
+                                arel_table[:updated_at].lteq(@snapshot_time)
+                              )
+
+    # データ総数取得
+    @total_records_count = records_below_snapshot.size
+
+    @records = records_below_snapshot
+                .order(
+                  arel_table[:updated_at].desc,
+                  arel_table[:id].desc
+                )
+                .limit(per_page_num)
+
+    # 最終ページのデータか判定(初期表示のため下記でOK)
+    @is_last_page = @total_records_count <= per_page_num
+  end
+
+  # 無限スクロールの追加読み込み
+  def load_more_data(table_name, total_records, per_page_num)
+    # 初期表示時のスナップショット取得
+    snapshot_time = Time.at(session[:infinite_scroll_snapshot_time].to_i)
+    cursor_updated_at = Time.at(params[:previous_last_updated].to_i)
+    cursor_id = params[:previous_last_id].to_i
+
+    # 動的にモデルクラスを取得
+    model_class = table_name.classify.constantize
+    arel_table = model_class.arel_table
+
+    # データ取得
+    records_below_snapshot = total_records
+                              .where(
+                                arel_table[:updated_at].lteq(snapshot_time)
+                              )
+
+    # データの総数を取得する
+    @total_records_count = records_below_snapshot.size
+
+    # 最終ページ判定のため1件多く取得
+    raw_records = records_below_snapshot
+                      .where(arel_table[:updated_at].lt(cursor_updated_at)
+                        .or(arel_table[:updated_at].eq(cursor_updated_at)
+                          .and(arel_table[:id].lt(cursor_id))
+                        )
+                      )
+                      .order(
+                        arel_table[:updated_at].desc,
+                        arel_table[:id].desc
+                      )
+                      .limit(per_page_num + 1)
+    # 最終ページ判定
+    @is_last_page = raw_records.size <= per_page_num
+
+    # 表示分切り出し
+    @records = raw_records.first(per_page_num)
+  end
 
   def prepare_search_data(raw_search_params)
     # インスタンス変数初期化
