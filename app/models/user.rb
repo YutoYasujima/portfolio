@@ -7,6 +7,8 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :profile
   has_many :machi_repos, dependent: :destroy
   has_many :chats, dependent: :destroy
+  has_many :bookmarks, dependent: :destroy
+  has_many :bookmark_machi_repos, through: :bookmarks, source: :machi_repo
 
   attr_accessor :agreement
   validates :agreement, acceptance: { accept: "1", message: "に同意してください" }
@@ -28,5 +30,17 @@ class User < ApplicationRecord
   # マイタウンの「"都道府県""市区町村"」を取得
   def mytown_address
     profile.prefecture.name_kanji + profile.municipality.name_kanji
+  end
+
+  def bookmark(machi_repo)
+    bookmark_machi_repos << machi_repo
+  end
+
+  def unbookmark(machi_repo)
+    bookmark_machi_repos.destroy(machi_repo)
+  end
+
+  def bookmark?(machi_repo)
+    bookmark_machi_repos.include?(machi_repo)
   end
 end

@@ -21,10 +21,11 @@
           </div>
           <span class="text-xl font-bold"><%= info_level_text %></span>
         </div>
-        <% if machi_repo.user != current_user %>
-          <div class="w-10 aspect-square">
-            <%= render "shared/icons/star_icon" %>
-          </div>
+        <!-- ブックマーク -->
+        <% if current_user != machi_repo.user %>
+          <span class="flex-shrink-0 ml-auto w-8 aspect-square">
+            <%= render "machi_repos/bookmarks/bookmark_buttons", machi_repo: machi_repo %>
+          </span>
         <% end %>
       </div>
       <div class="mx-auto w-[90%] md:w-full">

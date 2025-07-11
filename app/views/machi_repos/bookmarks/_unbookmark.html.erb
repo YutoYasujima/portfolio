@@ -1,0 +1,5 @@
+<%= link_to bookmark_path(current_user.bookmarks.find_by(machi_repo_id: machi_repo.id)), id: "unbookmark-button-for-machi-repo-#{machi_repo.id}", data: { turbo_method: :delete } do %>
+  <span class="inline-block w-8 aspect-square text-blue-600">
+    <%= render "shared/icons/star_full_icon" %>
+  </span>
+<% end %>

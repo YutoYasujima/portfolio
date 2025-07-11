@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       get :load_more
       get :my_machi_repo
       get :load_more_my_machi_repo
+      get :bookmarks
     end
 
     resources :chats, only: %i[ index create destroy ], module: :machi_repos do
@@ -25,6 +26,7 @@ Rails.application.routes.draw do
       end
     end
   end
+  resources :bookmarks, only: %i[ create destroy ]
   resources :tutorials, only: %i[ new create ]
   resources :accounts, only: %i[ index destroy ]
   resources :helps, only: %i[ index ]
