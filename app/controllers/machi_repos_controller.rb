@@ -153,12 +153,25 @@ class MachiReposController < ApplicationController
     # 無限スクロール対策のため、UNIXタイムスタンプで保存
     session[:infinite_scroll_snapshot_time] = @snapshot_time.to_i
 
-    records_below_snapshot = total_records.where("#{table_name}.updated_at <= ?", @snapshot_time)
+    # 動的にモデルクラスを取得
+    model_class = table_name.classify.constantize
+    arel_table = model_class.arel_table
+
+    # データ取得
+    records_below_snapshot = total_records
+                              .where(
+                                arel_table[:updated_at].lteq(@snapshot_time)
+                              )
 
     # データ総数取得
     @total_records_count = records_below_snapshot.size
 
-    @records = records_below_snapshot.order("#{table_name}.updated_at DESC, #{table_name}.id DESC").limit(per_page_num)
+    @records = records_below_snapshot
+                .order(
+                  arel_table[:updated_at].desc,
+                  arel_table[:id].desc
+                )
+                .limit(per_page_num)
 
     # 最終ページのデータか判定(初期表示のため下記でOK)
     @is_last_page = @total_records_count <= per_page_num
@@ -171,15 +184,30 @@ class MachiReposController < ApplicationController
     cursor_updated_at = Time.at(params[:previous_last_updated].to_i)
     cursor_id = params[:previous_last_id].to_i
 
-    records_below_snapshot  = total_records.where("#{table_name}.updated_at <= ?", snapshot_time)
+    # 動的にモデルクラスを取得
+    model_class = table_name.classify.constantize
+    arel_table = model_class.arel_table
+
+    # データ取得
+    records_below_snapshot = total_records
+                              .where(
+                                arel_table[:updated_at].lteq(snapshot_time)
+                              )
 
     # データの総数を取得する
     @total_records_count = records_below_snapshot.size
 
     # 最終ページ判定のため1件多く取得
     raw_records = records_below_snapshot
-                      .where("#{table_name}.updated_at < ? OR (#{table_name}.updated_at = ? AND #{table_name}.id < ?)", cursor_updated_at, cursor_updated_at, cursor_id)
-                      .order("#{table_name}.updated_at DESC, #{table_name}.id DESC")
+                      .where(arel_table[:updated_at].lt(cursor_updated_at)
+                        .or(arel_table[:updated_at].eq(cursor_updated_at)
+                          .and(arel_table[:id].lt(cursor_id))
+                        )
+                      )
+                      .order(
+                        arel_table[:updated_at].desc,
+                        arel_table[:id].desc
+                      )
                       .limit(per_page_num + 1)
     # 最終ページ判定
     @is_last_page = raw_records.size <= per_page_num
