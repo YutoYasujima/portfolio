@@ -111,44 +111,18 @@ class MachiReposController < ApplicationController
     redirect_to machi_repos_path, notice: "まちレポを削除しました", status: :see_other
   end
 
-  def my_machi_repo
-    @snapshot_time = Time.current
-    # 無限スクロール対策のため、UNIXタイムスタンプで保存
-    session[:machi_repos_snapshot_time] = @snapshot_time.to_i
-
-    machi_repos = current_user.machi_repos.where("machi_repos.updated_at <= ?", @snapshot_time)
-
-    # データ総数取得
-    @machi_repos_count = machi_repos.size
-
-    @machi_repos = machi_repos.order("machi_repos.updated_at DESC, machi_repos.id DESC").limit(MACHI_REPO_PER_PAGE)
-
-    # 最終ページのデータか判定(初期表示のため下記でOK)
-    @is_last_page = @machi_repos_count <= MACHI_REPO_PER_PAGE
+  # マイまちレポ
+  def my_machi_repos
+    total_records = current_user.machi_repos
+    load_init_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
+    @machi_repos = @records
+    @machi_repos_count = @total_records_count
   end
 
-  def load_more_my_machi_repo
-    # 初期表示時のスナップショット取得
-    snapshot_time = Time.at(session[:machi_repos_snapshot_time].to_i)
-    cursor_updated_at = Time.at(params[:previous_last_updated].to_i)
-    cursor_id = params[:previous_last_id].to_i
-
-    machi_repos = current_user.machi_repos.where("machi_repos.updated_at <= ?", snapshot_time)
-
-    # データの総数を取得する
-    @machi_repos_count = machi_repos.size
-
-    # 最終ページ判定のため1件多く取得
-    raw_machi_repos = machi_repos
-                      .where("machi_repos.updated_at < ? OR (machi_repos.updated_at = ? AND id < ?)", cursor_updated_at, cursor_updated_at, cursor_id)
-                      .order("machi_repos.updated_at DESC, machi_repos.id DESC")
-                      .limit(MACHI_REPO_PER_PAGE + 1)
-    # 最終ページ判定
-    @is_last_page = raw_machi_repos.size <= MACHI_REPO_PER_PAGE
-
-    # 表示分切り出し
-    @machi_repos = raw_machi_repos.first(MACHI_REPO_PER_PAGE)
-
+  # マイまちレポの無限スクロール
+  def load_more_my_machi_repos
+    total_records = current_user.machi_repos
+    load_more_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
     respond_to do |format|
       format.turbo_stream
     end

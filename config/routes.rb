@@ -12,8 +12,8 @@ Rails.application.routes.draw do
     collection do
       get :search
       get :load_more
-      get :my_machi_repo
-      get :load_more_my_machi_repo
+      get :my_machi_repos
+      get :load_more_my_machi_repos
       get :bookmarks
       get :load_more_bookmarks
     end

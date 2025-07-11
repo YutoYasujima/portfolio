@@ -12,8 +12,8 @@
     <ul class="flex justify-around mb-4 mx-auto max-w-[500px] md:flex-col md:h-100">
       <% if controller_name == "profiles" && action_name == "show"
         current_page = "profile"
-      elsif controller_name == "machi_repos" && action_name == "my_machi_repo"
-        current_page = "my_machi_repo"
+      elsif controller_name == "machi_repos" && action_name == "my_machi_repos"
+        current_page = "my_machi_repos"
       elsif controller_name == "machi_repos" && action_name == "bookmarks"
         current_page = "bookmark"
       else
@@ -32,8 +32,8 @@
       </li>
       <!-- マイまちレポ -->
       <li>
-        <%= link_to my_machi_repo_machi_repos_path, class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "my_machi_repo"}", id: "my-machi-repo-link" do %>
-          <div class="icon-circle <%= "icon-circle-current" if current_page == "my_machi_repo" %>">
+        <%= link_to my_machi_repos_machi_repos_path, class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "my_machi_repos"}", id: "my-machi-repo-link" do %>
+          <div class="icon-circle <%= "icon-circle-current" if current_page == "my_machi_repos" %>">
             <div class="w-8 aspect-square">
               <%= render "shared/icons/home_work_icon" %>
             </div>
