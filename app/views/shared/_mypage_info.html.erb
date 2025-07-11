@@ -14,6 +14,8 @@
         current_page = "profile"
       elsif controller_name == "machi_repos" && action_name == "my_machi_repo"
         current_page = "my_machi_repo"
+      elsif controller_name == "machi_repos" && action_name == "bookmarks"
+        current_page = "bookmark"
       else
         current_page = ""
       end %>
@@ -41,7 +43,7 @@
       </li>
       <!-- ブックマーク -->
       <li>
-        <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "bookmark"}", id: "bookmark-link" do %>
+        <%= link_to bookmarks_machi_repos_path, class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "bookmark"}", id: "bookmark-link" do %>
           <div class="icon-circle <%= "icon-circle-current" if current_page == "bookmark" %>">
             <div class="w-8 aspect-square">
               <%= render "shared/icons/star_icon" %>

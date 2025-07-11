@@ -154,7 +154,65 @@ class MachiReposController < ApplicationController
     end
   end
 
+  # マイページのブックマーク
+  def bookmarks
+    total_records = current_user.bookmark_machi_repos
+    load_init_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
+    @machi_repos = @records
+    @machi_repos_count = @total_records_count
+  end
+
+  # マイページのブックマークの無限スクロール
+  def load_more_bookmarks
+    total_records = current_user.bookmark_machi_repos
+    load_more_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
+    respond_to do |format|
+      format.turbo_stream
+    end
+  end
+
   private
+
+  # 無限スクロールの初期表示
+  def load_init_data(table_name, total_records, per_page_num)
+    @snapshot_time = Time.current
+    # 無限スクロール対策のため、UNIXタイムスタンプで保存
+    session[:infinite_scroll_snapshot_time] = @snapshot_time.to_i
+
+    records_below_snapshot = total_records.where("#{table_name}.updated_at <= ?", @snapshot_time)
+
+    # データ総数取得
+    @total_records_count = records_below_snapshot.size
+
+    @records = records_below_snapshot.order("#{table_name}.updated_at DESC, #{table_name}.id DESC").limit(per_page_num)
+
+    # 最終ページのデータか判定(初期表示のため下記でOK)
+    @is_last_page = @total_records_count <= per_page_num
+  end
+
+  # 無限スクロールの追加読み込み
+  def load_more_data(table_name, total_records, per_page_num)
+    # 初期表示時のスナップショット取得
+    snapshot_time = Time.at(session[:infinite_scroll_snapshot_time].to_i)
+    cursor_updated_at = Time.at(params[:previous_last_updated].to_i)
+    cursor_id = params[:previous_last_id].to_i
+
+    records_below_snapshot  = total_records.where("#{table_name}.updated_at <= ?", snapshot_time)
+
+    # データの総数を取得する
+    @total_records_count = records_below_snapshot.size
+
+    # 最終ページ判定のため1件多く取得
+    raw_records = records_below_snapshot
+                      .where("#{table_name}.updated_at < ? OR (#{table_name}.updated_at = ? AND #{table_name}.id < ?)", cursor_updated_at, cursor_updated_at, cursor_id)
+                      .order("#{table_name}.updated_at DESC, #{table_name}.id DESC")
+                      .limit(per_page_num + 1)
+    # 最終ページ判定
+    @is_last_page = raw_records.size <= per_page_num
+
+    # 表示分切り出し
+    @records = raw_records.first(per_page_num)
+  end
 
   def prepare_search_data(raw_search_params)
     # インスタンス変数初期化

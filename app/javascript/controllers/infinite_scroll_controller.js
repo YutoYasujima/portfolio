@@ -7,7 +7,7 @@ export default class extends Controller {
     "previousLastUpdated",
     "previousLastId",
     "container",
-    "scrollableIcon",
+    // "scrollableIcon",
   ];
 
   static values = {
@@ -23,7 +23,7 @@ export default class extends Controller {
     const isLastPage = this.lastPageMarkerTarget.value === "true";
     if (!isLastPage) {
       window.addEventListener("scroll", this.onScroll);
-      this.scrollableIconTarget.classList.remove("hidden");
+      // this.scrollableIconTarget.classList.remove("hidden");
     }
   }
 
@@ -70,7 +70,7 @@ export default class extends Controller {
         const isLastPage = this.lastPageMarkerTarget.value === "true";
         if (isLastPage) {
           window.removeEventListener("scroll", this.onScroll);
-          this.scrollableIconTarget.classList.add("hidden");
+          // this.scrollableIconTarget.classList.add("hidden");
         }
         this.loading = false;
       });

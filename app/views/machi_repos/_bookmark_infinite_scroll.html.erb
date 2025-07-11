@@ -1,0 +1,8 @@
+<div class="machi-repo-cards relative"
+      id="my-machi-repos"
+>
+  <%# 一覧表示 %>
+  <% machi_repos.each do |machi_repo| %>
+    <%= render "shared/machi_repo_card", machi_repo: machi_repo %>
+  <% end %>
+</div>
