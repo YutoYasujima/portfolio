@@ -9,6 +9,16 @@ class User < ApplicationRecord
   has_many :chats, dependent: :destroy
   has_many :bookmarks, dependent: :destroy
   has_many :bookmark_machi_repos, through: :bookmarks, source: :machi_repo
+  # 自分がフォローしている関係
+  has_many :active_follows, class_name: "Follow",
+                            foreign_key: "follower_id",
+                            dependent: :destroy
+  has_many :followings, through: :active_follows, source: :followed
+  # 自分をフォローしている関係
+  has_many :passive_follows, class_name: "Follow",
+                              foreign_key: "followed_id",
+                              dependent: :destroy
+  has_many :followers, through: :passive_follows, source: :follower
 
   attr_accessor :agreement
   validates :agreement, acceptance: { accept: "1", message: "に同意してください" }
@@ -32,15 +42,33 @@ class User < ApplicationRecord
     profile.prefecture.name_kanji + profile.municipality.name_kanji
   end
 
+  # ブックマークに追加する
   def bookmark(machi_repo)
     bookmark_machi_repos << machi_repo
   end
 
+  # ブックマークを解除する
   def unbookmark(machi_repo)
     bookmark_machi_repos.destroy(machi_repo)
   end
 
+  # ブックマークリストに存在するか確認する
   def bookmark?(machi_repo)
     bookmark_machi_repos.include?(machi_repo)
+  end
+
+  # フォローする
+  def follow(user)
+    followings << user
+  end
+
+  # フォロー解除する
+  def unfollow(user)
+    followings.destroy(user)
+  end
+
+  # フォロー中のユーザーか確認する
+  def follow?(user)
+    followings.include?(user)
   end
 end

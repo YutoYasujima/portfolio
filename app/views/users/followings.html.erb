@@ -1,0 +1,7 @@
+<%= render "shared/mypage_info" %>
+
+<section class="mx-auto pt-4 pb-8 max-w-120">
+  <% @followings.each do |user| %>
+    <%= render "shared/user_card", user: user %>
+  <% end %>
+</section>

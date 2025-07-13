@@ -6,6 +6,12 @@ Rails.application.routes.draw do
     confirmations: "users/confirmations",
     omniauth_callbacks: "users/omniauth_callbacks"
   }
+  resources :users, only: %i[ show ] do
+    member do
+      get :followings
+    end
+  end
+  resources :follows, only: %i[ create destroy ]
   resources :profiles, only: %i[ show new create edit update ]
   resources :municipalities, only: %i[ index ]
   resources :machi_repos do

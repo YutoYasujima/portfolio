@@ -1,12 +1,19 @@
 <% content_for :title, "ユーザー詳細" %>
 
 <div class="border-b-2 border-gray-400 text-center">
-  <h2 class="mb-6">
-    <span class="header1"><%= user.profile.nickname %></span>
-    <p>
-      ユーザーのプロフィールを確認できます
-    </p>
-  </h2>
+  <div class="mx-auto max-w-[500px]">
+    <div class="flex justify-end pt-4 pr-2">
+      <span>
+        <%= render "users/follows/follow_buttons", user: user %>
+      </span>
+    </div>
+    <h2 class="mb-6">
+      <span class="header1 pt-0"><%= user.profile.nickname %></span>
+      <p>
+        ユーザーのプロフィールを確認できます
+      </p>
+    </h2>
+  </div>
 
   <nav class="md:fixed md:top-[250px] md:left-[50px]">
     <ul class="flex justify-around mb-4 mx-auto max-w-[500px] md:flex-col md:h-100">

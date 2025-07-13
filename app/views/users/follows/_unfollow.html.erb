@@ -1,0 +1,5 @@
+<%= link_to follow_path(current_user.followings.find_by(id: user.id)), id: "unfollow-button-#{user.id}", data: { turbo_method: :delete } do %>
+  <span class="inline-block w-12 aspect-square text-[#DA954B]">
+    <%= render "shared/icons/owl_full_icon" %>
+  </span>
+<% end %>

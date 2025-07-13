@@ -1,0 +1,5 @@
+<%= link_to follows_path(user_id: user.id), id: "follow-button-#{user.id}", data: { turbo_method: :post } do %>
+  <span class="inline-block w-12 aspect-square">
+    <%= render "shared/icons/owl_icon" %>
+  </span>
+<% end %>

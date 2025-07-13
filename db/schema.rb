@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_10_110805) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_12_052400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -36,6 +36,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_10_110805) do
     t.integer "image_height"
     t.index ["chatable_type", "chatable_id"], name: "index_chats_on_chatable"
     t.index ["user_id"], name: "index_chats_on_user_id"
+  end
+
+  create_table "follows", force: :cascade do |t|
+    t.bigint "follower_id", null: false
+    t.bigint "followed_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["followed_id"], name: "index_follows_on_followed_id"
+    t.index ["follower_id", "followed_id"], name: "index_follows_on_follower_id_and_followed_id", unique: true
+    t.index ["follower_id"], name: "index_follows_on_follower_id"
   end
 
   create_table "machi_repo_tags", force: :cascade do |t|
@@ -135,6 +145,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_10_110805) do
   add_foreign_key "bookmarks", "machi_repos"
   add_foreign_key "bookmarks", "users"
   add_foreign_key "chats", "users"
+  add_foreign_key "follows", "users", column: "followed_id"
+  add_foreign_key "follows", "users", column: "follower_id"
   add_foreign_key "machi_repo_tags", "machi_repos"
   add_foreign_key "machi_repo_tags", "tags"
   add_foreign_key "machi_repos", "users"
