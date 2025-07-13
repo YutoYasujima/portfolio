@@ -104,6 +104,9 @@
   max-width: 300px;
   font-size: 1.875rem;
 }
+.header1.pt-0 {
+  padding-top: 0;
+}
 .header2 {
   display: inline-block;
   margin-left: 0.5rem;
@@ -410,6 +413,15 @@ input:-webkit-autofill{
 
 /* まちレポカード */
 .machi-repo-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: start;
+}
+
+/* ユーザーカード */
+.user-cards {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;

@@ -1,0 +1,7 @@
+<div id="follows" class="user-cards"
+>
+  <%# 一覧表示 %>
+  <% followings.each do |following| %>
+    <%= render "shared/user_card", user: following %>
+  <% end %>
+</div>

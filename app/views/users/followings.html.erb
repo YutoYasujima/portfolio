@@ -1,0 +1,15 @@
+<%= render "shared/mypage_info" %>
+
+<section class="mx-auto pt-4 pb-8 max-w-120">
+  <%= render "shared/infinite_scroll_item",
+    controller: "users",
+    action: "load_more_followings",
+    user_id: 0,
+    title: "フォロー一覧",
+    objects_count: @followings_count,
+    snapshot_time: @snapshot_time,
+    is_last_page: @is_last_page,
+    objects: @followings,
+    contents: render("user_cards_infinite_scroll", followings: @followings)
+  %>
+</section>
