@@ -6,9 +6,10 @@ Rails.application.routes.draw do
     confirmations: "users/confirmations",
     omniauth_callbacks: "users/omniauth_callbacks"
   }
-  resources :users, only: %i[ show ] do
-    member do
+  resources :users, only: %i[] do
+    collection do
       get :followings
+      get :load_more_followings
     end
   end
   resources :follows, only: %i[ create destroy ]

@@ -114,7 +114,7 @@ class MachiReposController < ApplicationController
   # マイまちレポ
   def my_machi_repos
     @user = User.find(params[:user_id])
-    total_records = @user.machi_repos
+    total_records = @user.machi_repos.order(updated_at: :desc)
     load_init_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
     @machi_repos = @records
     @machi_repos_count = @total_records_count
@@ -123,7 +123,7 @@ class MachiReposController < ApplicationController
   # マイまちレポの無限スクロール
   def load_more_my_machi_repos
     user = User.find(params[:user_id])
-    total_records = user.machi_repos
+    total_records = user.machi_repos.order(updated_at: :desc)
     load_more_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
     respond_to do |format|
       format.turbo_stream
@@ -132,7 +132,7 @@ class MachiReposController < ApplicationController
 
   # マイページのブックマーク
   def bookmarks
-    total_records = current_user.bookmark_machi_repos
+    total_records = current_user.bookmark_machi_repos.order(updated_at: :desc)
     load_init_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
     @machi_repos = @records
     @machi_repos_count = @total_records_count
@@ -140,7 +140,7 @@ class MachiReposController < ApplicationController
 
   # マイページのブックマークの無限スクロール
   def load_more_bookmarks
-    total_records = current_user.bookmark_machi_repos
+    total_records = current_user.bookmark_machi_repos.order(updated_at: :desc)
     load_more_data("machi_repos", total_records, MACHI_REPO_PER_PAGE)
     respond_to do |format|
       format.turbo_stream

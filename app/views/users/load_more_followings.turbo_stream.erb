@@ -1,0 +1,38 @@
+<%# 一覧に追加 %>
+<%= turbo_stream.append "follows" do %>
+  <% @records.each do |record| %>
+    <%= render "shared/user_card", user: record %>
+  <% end %>
+<% end %>
+
+<%# 最終ページ判定更新 %>
+<%= turbo_stream.replace "last-page-marker" do %>
+  <input type="hidden"
+    id="last-page-marker"
+    value="<%= @is_last_page %>"
+    data-infinite-scroll-target="lastPageMarker"
+  >
+<% end %>
+
+<%# 最終データの更新日時更新 %>
+<%= turbo_stream.replace "previous-last-updated" do %>
+  <input type="hidden"
+    id="previous-last-updated"
+    value="<%= @records.last&.updated_at&.to_i %>"
+    data-infinite-scroll-target="previousLastUpdated"
+  >
+<% end %>
+
+<%# 最終データのID更新 %>
+<%= turbo_stream.replace "previous-last-id" do %>
+  <input type="hidden"
+    id="previous-last-id"
+    value="<%= @records.last&.id %>"
+    data-infinite-scroll-target="previousLastId"
+  >
+<% end %>
+
+<%# 総数表示更新 %>
+<%= turbo_stream.update "objects-count" do %>
+  <%= @total_records_count %>
+<% end %>

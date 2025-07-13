@@ -56,7 +56,7 @@
       </li>
       <!-- フォロー -->
       <li>
-        <%= link_to followings_user_path(current_user), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "following"}", id: "following-link" do %>
+        <%= link_to followings_users_path, class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "following"}", id: "following-link" do %>
           <div class="icon-circle <%= "icon-circle-current" if current_page == "following" %>">
             <div class="w-8 aspect-square">
               <%= render "shared/icons/owl_icon" %>

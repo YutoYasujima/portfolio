@@ -420,6 +420,15 @@ input:-webkit-autofill{
   align-items: start;
 }
 
+/* ユーザーカード */
+.user-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: start;
+}
+
 /* まちレポ詳細 */
 /* 背景色 */
 .bg-emergency {
