@@ -5,7 +5,7 @@
     controller: "users",
     action: "load_more_followings",
     user_id: 0,
-    title: "フォロー中一覧",
+    title: "フォロー一覧",
     objects_count: @followings_count,
     snapshot_time: @snapshot_time,
     is_last_page: @is_last_page,
@@ -13,27 +13,3 @@
     contents: render("user_cards_infinite_scroll", followings: @followings)
   %>
 </section>
-
-<%
-=begin
-%>
-<section class="mx-auto pt-4 pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
-  <% @followings.each do |user| %>
-    <%= render "shared/user_card", user: user %>
-  <% end %>
-
-  <%= render "shared/infinite_scroll_item",
-    controller: "machi_repos",
-    action: "load_more_bookmarks",
-    user_id: 0,
-    title: "まちレポブックマーク一覧",
-    objects_count: @machi_repos_count,
-    snapshot_time: @snapshot_time,
-    is_last_page: @is_last_page,
-    objects: @machi_repos,
-    contents: render("machi_repo_cards_infinite_scroll", machi_repos: @machi_repos)
-  %>
-</section>
-<%
-=end
-%>

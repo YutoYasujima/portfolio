@@ -1,4 +1,6 @@
 class MachiReposController < ApplicationController
+  include InfiniteScroll
+
   before_action :set_mytown_location, only: %i[ new edit ]
 
   MACHI_REPO_PER_PAGE = 12
@@ -148,75 +150,6 @@ class MachiReposController < ApplicationController
   end
 
   private
-
-  # 無限スクロールの初期表示
-  def load_init_data(table_name, total_records, per_page_num)
-    @snapshot_time = Time.current
-    # 無限スクロール対策のため、UNIXタイムスタンプで保存
-    session[:infinite_scroll_snapshot_time] = @snapshot_time.to_i
-
-    # 動的にモデルクラスを取得
-    model_class = table_name.classify.constantize
-    arel_table = model_class.arel_table
-
-    # データ取得
-    records_below_snapshot = total_records
-                              .where(
-                                arel_table[:updated_at].lteq(@snapshot_time)
-                              )
-
-    # データ総数取得
-    @total_records_count = records_below_snapshot.size
-
-    @records = records_below_snapshot
-                .order(
-                  arel_table[:updated_at].desc,
-                  arel_table[:id].desc
-                )
-                .limit(per_page_num)
-
-    # 最終ページのデータか判定(初期表示のため下記でOK)
-    @is_last_page = @total_records_count <= per_page_num
-  end
-
-  # 無限スクロールの追加読み込み
-  def load_more_data(table_name, total_records, per_page_num)
-    # 初期表示時のスナップショット取得
-    snapshot_time = Time.at(session[:infinite_scroll_snapshot_time].to_i)
-    cursor_updated_at = Time.at(params[:previous_last_updated].to_i)
-    cursor_id = params[:previous_last_id].to_i
-
-    # 動的にモデルクラスを取得
-    model_class = table_name.classify.constantize
-    arel_table = model_class.arel_table
-
-    # データ取得
-    records_below_snapshot = total_records
-                              .where(
-                                arel_table[:updated_at].lteq(snapshot_time)
-                              )
-
-    # データの総数を取得する
-    @total_records_count = records_below_snapshot.size
-
-    # 最終ページ判定のため1件多く取得
-    raw_records = records_below_snapshot
-                      .where(arel_table[:updated_at].lt(cursor_updated_at)
-                        .or(arel_table[:updated_at].eq(cursor_updated_at)
-                          .and(arel_table[:id].lt(cursor_id))
-                        )
-                      )
-                      .order(
-                        arel_table[:updated_at].desc,
-                        arel_table[:id].desc
-                      )
-                      .limit(per_page_num + 1)
-    # 最終ページ判定
-    @is_last_page = raw_records.size <= per_page_num
-
-    # 表示分切り出し
-    @records = raw_records.first(per_page_num)
-  end
 
   def prepare_search_data(raw_search_params)
     # インスタンス変数初期化
