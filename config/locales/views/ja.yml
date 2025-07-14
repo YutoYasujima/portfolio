@@ -1,4 +1,8 @@
 ja:
+  users:
+    passwords:
+      new:
+        title: パスワードリセット
   machi_repos:
     index:
       title: まちレポ
