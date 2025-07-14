@@ -22,7 +22,7 @@ class Users::PasswordsController < Devise::PasswordsController
     if resource.nil?
       # メールアドレスが存在しない場合はDeviseのデフォルト動作
       flash.now[:alert] = "入力されたメールアドレスは登録されていません"
-      self.resource = resource_class.new # フォーム再描画に必要
+      self.resource = resource_class.new(email: email) # フォーム再描画に必要
       render :new, status: :unprocessable_entity
     elsif resource.provider.present?
       # Google認証ユーザーにはパスワードリセットメールを送らない
