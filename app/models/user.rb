@@ -22,6 +22,7 @@ class User < ApplicationRecord
 
   attr_accessor :agreement
   validates :agreement, acceptance: { accept: "1", message: "に同意してください" }
+  validate :email_must_be_different
 
   # Googleログイン(OmniAuth)を通じて認証されたユーザー情報から、
   # アプリ側のUserレコードを探す or 作成する処理
@@ -70,5 +71,14 @@ class User < ApplicationRecord
   # フォロー中のユーザーか確認する
   def follow?(user)
     followings.include?(user)
+  end
+
+  private
+
+  # email変更チェック
+  def email_must_be_different
+    if email == email_was
+      errors.add(:email, "は現在のものと異なるものを入力してください")
+    end
   end
 end

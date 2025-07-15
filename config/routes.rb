@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  namespace :accounts do
+    resource :email, only: %i[ edit update ]
+    # resource :password, only: [:edit, :update]
+    # resource :deactivation, only: [] do
+    #   get :confirm
+    #   delete :destroy
+    # end
+  end
   devise_for :users, controllers: {
     sessions:      "users/sessions",
     passwords:     "users/passwords",

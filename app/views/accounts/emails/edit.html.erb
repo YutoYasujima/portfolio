@@ -1,0 +1,30 @@
+<%= render "shared/account_info" %>
+
+<section class="text-center">
+  <p class="my-8 tracking-widest">
+    メールアドレスの変更ができます。<br>
+    新しいメールアドレスに届く<br>
+    メールを確認してください。
+  </p>
+
+  <%= form_with(model: @user, url: accounts_email_path, method: :patch, local: true, class: "form") do |f| %>
+    <div class="field">
+      <%= f.label :email, "新しいメールアドレス" %>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "text-field" %>
+    </div>
+
+    <div class="field">
+      <%= f.label :current_password, "パスワード" %><br />
+      <%= f.password_field :current_password, autocomplete: "current-password", class: "text-field" %>
+    </div>
+
+    <section class="actions">
+      <%= f.submit "送信", class: "button" %>
+    </div>
+  <% end %>
+</section>
+
+<div>
+  <h2>アカウント削除</h2>
+  <%= button_to "Destroy this user", account_path(@user), method: :delete, class: "mt-2 rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+</div>
