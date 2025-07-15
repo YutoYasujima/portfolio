@@ -140,6 +140,9 @@
 .button-edit {
   background-color: #14B866;
 }
+.button-delete {
+  background-color: #DF3737;
+}
 
 /* フォーム */
 .form {

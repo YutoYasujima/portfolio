@@ -23,8 +23,3 @@
     </div>
   <% end %>
 </section>
-
-<div>
-  <h2>アカウント削除</h2>
-  <%= button_to "Destroy this user", account_path(@user), method: :delete, class: "mt-2 rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
-</div>

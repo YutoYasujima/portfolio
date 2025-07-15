@@ -1,0 +1,16 @@
+<%= render "shared/account_info" %>
+
+<section class="text-center">
+  <p class="my-8 tracking-widest">
+    アカウントを削除することができます。<br>
+    <span class="text-red-600 font-semibold">
+      削除したアカウントは<br>
+      元に戻すことはできません。
+    </span>
+  </p>
+
+  <div>
+    <%= button_to "削除", accounts_deactivation_path, method: :delete, data: { controller: "modal", action: "click->modal#confirm", modal_text_value: "本当に削除しますか？" }, class: "button button-delete" %>
+  </div>
+</section>
+
