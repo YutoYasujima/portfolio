@@ -4,6 +4,7 @@ class Accounts::EmailsController < ApplicationController
   def edit
     # 画面にデータを表示する必要がない
     @user = User.new(id: current_user.id)
+    @devise_mapping = Devise.mappings[:user]
   end
 
   def update

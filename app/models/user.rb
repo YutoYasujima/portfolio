@@ -43,6 +43,10 @@ class User < ApplicationRecord
     profile.prefecture.name_kanji + profile.municipality.name_kanji
   end
 
+  def google_account?
+    provider == "google_oauth2"
+  end
+
   # ブックマークに追加する
   def bookmark(machi_repo)
     bookmark_machi_repos << machi_repo

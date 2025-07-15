@@ -17,28 +17,30 @@
       else
         current_page = ""
       end %>
-      <!-- メール -->
-      <li>
-        <%= link_to edit_accounts_email_path, class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "email"}", id: "email-link" do %>
-          <div class="icon-circle <%= "icon-circle-current" if current_page == "email" %>">
-            <div class="w-8 aspect-square">
-              <%= render "shared/icons/mail_icon" %>
+      <% unless current_user.google_account? %>
+        <!-- メール -->
+        <li>
+          <%= link_to edit_accounts_email_path, class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "email"}", id: "email-link" do %>
+            <div class="icon-circle <%= "icon-circle-current" if current_page == "email" %>">
+              <div class="w-8 aspect-square">
+                <%= render "shared/icons/mail_icon" %>
+              </div>
             </div>
-          </div>
-          <span class="icon-circle-text text-sm">メール</span>
-        <% end %>
-      </li>
-      <!-- パスワード -->
-      <li>
-        <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "password"}", id: "password-link" do %>
-          <div class="icon-circle <%= "icon-circle-current" if current_page == "password" %>">
-            <div class="w-8 aspect-square">
-              <%= render "shared/icons/password_icon" %>
+            <span class="icon-circle-text text-sm">メール</span>
+          <% end %>
+        </li>
+        <!-- パスワード -->
+        <li>
+          <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "password"}", id: "password-link" do %>
+            <div class="icon-circle <%= "icon-circle-current" if current_page == "password" %>">
+              <div class="w-8 aspect-square">
+                <%= render "shared/icons/password_icon" %>
+              </div>
             </div>
-          </div>
-          <span class="icon-circle-text text-sm">パスワード</span>
-        <% end %>
-      </li>
+            <span class="icon-circle-text text-sm">パスワード</span>
+          <% end %>
+        </li>
+      <% end %>
       <!-- アカウント削除 -->
       <li>
         <%= link_to confirm_accounts_deactivation_path, class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "deactivation"}", id: "deactivation-link" do %>

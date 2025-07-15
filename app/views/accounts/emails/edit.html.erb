@@ -7,6 +7,16 @@
     メールを確認してください。
   </p>
 
+  <%# confirmableモジュールを使用している かつ 未確認のメールが有る %>
+  <% if @devise_mapping.confirmable? && current_user.pending_reconfirmation? %>
+    <div class="field text-left">
+      <span class="inline-block text-green-600">
+        <%= current_user.unconfirmed_email %>
+      </span>
+        の確認待ち
+    </div>
+  <% end %>
+
   <%= form_with(model: @user, url: accounts_email_path, method: :patch, local: true, class: "form") do |f| %>
     <div class="field">
       <%= f.label :email, "新しいメールアドレス" %>
