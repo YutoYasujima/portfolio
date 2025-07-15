@@ -22,6 +22,7 @@ class User < ApplicationRecord
 
   attr_accessor :agreement
   validates :agreement, acceptance: { accept: "1", message: "に同意してください" }
+  validate :email_must_be_different
 
   # Googleログイン(OmniAuth)を通じて認証されたユーザー情報から、
   # アプリ側のUserレコードを探す or 作成する処理
@@ -40,6 +41,10 @@ class User < ApplicationRecord
   # マイタウンの「"都道府県""市区町村"」を取得
   def mytown_address
     profile.prefecture.name_kanji + profile.municipality.name_kanji
+  end
+
+  def google_account?
+    provider == "google_oauth2"
   end
 
   # ブックマークに追加する
@@ -70,5 +75,14 @@ class User < ApplicationRecord
   # フォロー中のユーザーか確認する
   def follow?(user)
     followings.include?(user)
+  end
+
+  private
+
+  # email変更チェック
+  def email_must_be_different
+    if email == email_was
+      errors.add(:email, "は現在のものと異なるものを入力してください")
+    end
   end
 end

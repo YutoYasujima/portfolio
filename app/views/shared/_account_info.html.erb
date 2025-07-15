@@ -1,0 +1,57 @@
+<% content_for :title, "アカウント管理" %>
+
+<div class="border-b-2 border-gray-400 text-center">
+  <h2 class="mb-6">
+    <span class="header1">アカウント管理</span>
+    <p>
+      アカウントの管理ができます
+    </p>
+  </h2>
+
+  <nav class="md:fixed md:top-[250px] md:left-[50px]">
+    <ul class="flex justify-center gap-8 mb-4 md:flex-col">
+      <% if controller_name == "emails" && (action_name == "edit" || action_name == "update")
+        current_page = "email"
+      elsif controller_name == "deactivations" && action_name == "confirm"
+        current_page = "deactivation"
+      else
+        current_page = ""
+      end %>
+      <% unless current_user.google_account? %>
+        <!-- メール -->
+        <li>
+          <%= link_to edit_accounts_email_path, class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "email"}", id: "email-link" do %>
+            <div class="icon-circle <%= "icon-circle-current" if current_page == "email" %>">
+              <div class="w-8 aspect-square">
+                <%= render "shared/icons/mail_icon" %>
+              </div>
+            </div>
+            <span class="icon-circle-text text-sm">メール</span>
+          <% end %>
+        </li>
+        <!-- パスワード -->
+        <li>
+          <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "password"}", id: "password-link" do %>
+            <div class="icon-circle <%= "icon-circle-current" if current_page == "password" %>">
+              <div class="w-8 aspect-square">
+                <%= render "shared/icons/password_icon" %>
+              </div>
+            </div>
+            <span class="icon-circle-text text-sm">パスワード</span>
+          <% end %>
+        </li>
+      <% end %>
+      <!-- アカウント削除 -->
+      <li>
+        <%= link_to confirm_accounts_deactivation_path, class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "deactivation"}", id: "deactivation-link" do %>
+          <div class="icon-circle <%= "icon-circle-current" if current_page == "deactivation" %>">
+            <div class="w-8 aspect-square">
+              <%= render "shared/icons/account_circle_off_icon" %>
+            </div>
+          </div>
+          <span class="icon-circle-text text-sm">削除</span>
+        <% end %>
+      </li>
+    </ul>
+  </nav>
+</div>

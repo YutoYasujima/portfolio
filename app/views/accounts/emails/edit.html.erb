@@ -1,0 +1,35 @@
+<%= render "shared/account_info" %>
+
+<section class="text-center">
+  <p class="my-8 tracking-widest">
+    メールアドレスの変更ができます。<br>
+    新しいメールアドレスに届く<br>
+    メールを確認してください。
+  </p>
+
+  <%# confirmableモジュールを使用している かつ 未確認のメールが有る %>
+  <% if @devise_mapping.confirmable? && current_user.pending_reconfirmation? %>
+    <div class="field text-left">
+      <span class="inline-block text-green-600">
+        <%= current_user.unconfirmed_email %>
+      </span>
+        の確認待ち
+    </div>
+  <% end %>
+
+  <%= form_with(model: @user, url: accounts_email_path, method: :patch, local: true, class: "form") do |f| %>
+    <div class="field">
+      <%= f.label :email, "新しいメールアドレス" %>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "text-field" %>
+    </div>
+
+    <div class="field">
+      <%= f.label :current_password, "パスワード" %><br />
+      <%= f.password_field :current_password, autocomplete: "current-password", class: "text-field" %>
+    </div>
+
+    <section class="actions">
+      <%= f.submit "送信", class: "button" %>
+    </div>
+  <% end %>
+</section>

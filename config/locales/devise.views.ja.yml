@@ -6,7 +6,7 @@ ja:
         confirmation_token: パスワード確認用トークン
         confirmed_at: パスワード確認時刻
         created_at: 作成日
-        current_password: 現在のパスワード
+        current_password: パスワード
         current_sign_in_at: 現在のログイン時刻
         current_sign_in_ip: 現在のログインIPアドレス
         email: メールアドレス
@@ -98,7 +98,7 @@ ja:
       edit:
         are_you_sure: 本当によろしいですか？
         cancel_my_account: アカウント削除
-        currently_waiting_confirmation_for_email: '%{email} の確認待ち'
+        currently_waiting_confirmation_for_email: "%{email} の確認待ち"
         leave_blank_if_you_don_t_want_to_change_it: 空欄のままなら変更しません
         title: "%{resource}編集"
         unhappy: 気に入りません
