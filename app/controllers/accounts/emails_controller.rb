@@ -1,10 +1,10 @@
 class Accounts::EmailsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_devise_mapping, only: %i[ edit update ]
 
   def edit
     # 画面にデータを表示する必要がない
     @user = User.new(id: current_user.id)
-    @devise_mapping = Devise.mappings[:user]
   end
 
   def update
@@ -34,5 +34,9 @@ class Accounts::EmailsController < ApplicationController
 
   def email_update_params
     params.require(:user).permit(:email, :current_password)
+  end
+
+  def set_devise_mapping
+    @devise_mapping = Devise.mappings[:user]
   end
 end
