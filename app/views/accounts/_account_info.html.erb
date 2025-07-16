@@ -12,6 +12,8 @@
     <ul class="flex justify-center gap-8 mb-4 md:flex-col">
       <% if controller_name == "emails" && (action_name == "edit" || action_name == "update")
         current_page = "email"
+      elsif controller_name == "passwords" && action_name == "new"
+        current_page = "password"
       elsif controller_name == "deactivations" && action_name == "confirm"
         current_page = "deactivation"
       else
@@ -31,7 +33,7 @@
         </li>
         <!-- パスワード -->
         <li>
-          <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "password"}", id: "password-link" do %>
+          <%= link_to new_accounts_password_path, class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "password"}", id: "password-link" do %>
             <div class="icon-circle <%= "icon-circle-current" if current_page == "password" %>">
               <div class="w-8 aspect-square">
                 <%= render "shared/icons/password_icon" %>

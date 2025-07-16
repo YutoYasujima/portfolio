@@ -12,7 +12,7 @@ class Accounts::EmailsController < ApplicationController
     @user.email = email_update_params[:email]
 
     # バリデーションチェック
-    @user.valid?
+    @user.valid?(:email_update)
     unless @user.valid_password?(email_update_params[:current_password])
       @user.errors.add(:current_password, "が正しくありません")
     end

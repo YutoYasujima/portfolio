@@ -1,0 +1,13 @@
+<%= render "accounts/account_info" %>
+
+<section class="text-center">
+  <p class="my-8 tracking-widest">
+    パスワードの変更ができます。<br>
+    登録されているメールアドレスに届く<br>
+    メールを確認してください。
+  </p>
+
+  <div>
+    <%= button_to "送信", accounts_password_path, class: "button" %>
+  </div>
+</section>
