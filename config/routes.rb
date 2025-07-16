@@ -45,6 +45,7 @@ Rails.application.routes.draw do
   resources :bookmarks, only: %i[ create destroy ]
   resources :tutorials, only: %i[ new create ]
   resources :accounts, only: %i[ index destroy ]
+  resources :communities, only: %i[ index new create ]
   resources :helps, only: %i[ index ]
   get "/terms", to: "pages#terms", as: :terms
   get "/privacy", to: "pages#privacy", as: :privacy

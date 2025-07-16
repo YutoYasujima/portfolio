@@ -116,6 +116,12 @@
   font-weight: 500;
   font-size: 1.25rem;
 }
+.header2.flex {
+  display: flex;
+}
+.header2.ml-0 {
+  margin-left: 0;
+}
 .header3 {
   border-left: 4px solid #F5A83D;
   padding: 0 0.25rem;

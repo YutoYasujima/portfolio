@@ -1,0 +1,75 @@
+<% content_for :title, "コミュニティ" %>
+
+<div class="border-b-2 border-gray-400 text-center">
+  <h2 class="mb-6">
+    <span class="header1">コミュニティ</span>
+    <p>
+      &quot;まち&quot;をみんなで見守ろう！
+    </p>
+  </h2>
+</div>
+
+<section class="mx-auto pt-4 pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
+  <div class="mb-4 text-right">
+    <%= link_to "＋コミュニティを作成する", new_community_path, class: "link mr-4" %>
+  </div>
+  <!-- コミュニティカード -->
+  <div class="community-card shadow mx-auto rounded-lg py-2 px-2 w-78 bg-white">
+    <!-- ヘッダー -->
+    <h3 class="header2 flex justify-between items-end ml-0">
+      <span class="text-2xl">わがまち防衛隊</span>
+      <span class="text-xl text-green-500">参加</span>
+    </h3>
+    <div class="flex items-center gap-1 w-full">
+      <!-- アイコン -->
+      <div class="flex-shrink-0 w-20 h-20 flex justify-center items-center">
+        <div class="w-16 aspect-square">
+          <%= render "shared/icons/handshake_icon" %>
+        </div>
+<%
+=begin
+%>
+      <% if machi_repo.image? %>
+        <%= image_tag(machi_repo.image.url, class: "w-full h-full object-cover") %>
+      <% else %>
+        <div class="w-18 aspect-square">
+          <%= render "shared/icons/handshake_icon" %>
+        </div>
+      <% end %>
+<%
+=end
+%>
+      </div>
+      <div class="flex-1 p-2 min-w-0">
+        <!-- 本拠地 -->
+        <p class="flex items-end mb-1 h-8">
+          <span class="flex-shrink-0 w-6 aspect-square">
+            <%= render "shared/icons/camping_icon" %>
+          </span>
+          <span class="ml-1 truncate overflow-hidden whitespace-nowrap">
+            東京都千代田区
+          </span>
+        </p>
+        <!-- メンバー数 -->
+        <p class="flex mb-1">
+          <span class="flex-shrink-0 w-6 aspect-square">
+            <%= render "shared/icons/groups_icon" %>
+          </span>
+          <span class="w-full ml-1">
+            10人
+          </span>
+        </p>
+        <!-- 作成日時 -->
+        <p class="flex">
+          <span class="flex-shrink-0 w-6 aspect-square">
+            <%= render "shared/icons/schedule_icon" %>
+          </span>
+          <span class="ml-1">
+            <time><%# machi_repo.updated_at.strftime("%Y/%m/%d %H:%M") %></time>
+            2025/01/01
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
