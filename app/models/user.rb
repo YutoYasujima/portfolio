@@ -22,7 +22,7 @@ class User < ApplicationRecord
 
   attr_accessor :agreement
   validates :agreement, acceptance: { accept: "1", message: "に同意してください" }
-  validate :email_must_be_different
+  validate :email_must_be_different, on: :email_update
 
   # Googleログイン(OmniAuth)を通じて認証されたユーザー情報から、
   # アプリ側のUserレコードを探す or 作成する処理
@@ -43,6 +43,7 @@ class User < ApplicationRecord
     profile.prefecture.name_kanji + profile.municipality.name_kanji
   end
 
+  # Googleアカウントか確認する
   def google_account?
     provider == "google_oauth2"
   end
@@ -77,11 +78,16 @@ class User < ApplicationRecord
     followings.include?(user)
   end
 
+  # パスワード変更期限をチェックする
+  def change_password_period_valid?
+    change_password_sent_at && change_password_sent_at >= 1.hours.ago
+  end
+
   private
 
   # email変更チェック
   def email_must_be_different
-    if email == email_was
+    if email.present? && email == email_was
       errors.add(:email, "は現在のものと異なるものを入力してください")
     end
   end
