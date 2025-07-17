@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_12_052400) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_16_221528) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -36,6 +36,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_12_052400) do
     t.integer "image_height"
     t.index ["chatable_type", "chatable_id"], name: "index_chats_on_chatable"
     t.index ["user_id"], name: "index_chats_on_user_id"
+  end
+
+  create_table "communities", force: :cascade do |t|
+    t.bigint "prefecture_id", null: false
+    t.bigint "municipality_id", null: false
+    t.string "name", null: false
+    t.string "icon"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["municipality_id"], name: "index_communities_on_municipality_id"
+    t.index ["prefecture_id", "municipality_id", "name"], name: "idx_on_prefecture_id_municipality_id_name_7d0469a4b1", unique: true
+    t.index ["prefecture_id"], name: "index_communities_on_prefecture_id"
   end
 
   create_table "follows", force: :cascade do |t|
@@ -145,6 +158,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_12_052400) do
   add_foreign_key "bookmarks", "machi_repos"
   add_foreign_key "bookmarks", "users"
   add_foreign_key "chats", "users"
+  add_foreign_key "communities", "municipalities"
+  add_foreign_key "communities", "prefectures"
   add_foreign_key "follows", "users", column: "followed_id"
   add_foreign_key "follows", "users", column: "follower_id"
   add_foreign_key "machi_repo_tags", "machi_repos"

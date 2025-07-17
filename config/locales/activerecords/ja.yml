@@ -7,6 +7,9 @@ ja:
       machi_repo:
         one: まちレポ
         other: まちレポ
+      community:
+        one: コミュニティ
+        other: コミュニティ
     attributes:
       profile:
         nickname: ニックネーム
@@ -27,6 +30,10 @@ ja:
         views_count: 視聴数
       chat:
         image: 画像
+      community:
+        name: コミュニティ名
+        description: コミュニティ紹介
+        icon: アイコン
   enums:
     machi_repo:
       category:
