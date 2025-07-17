@@ -34,15 +34,9 @@
 
     <div class="actions text-center">
       <% submit_class_name = "button" %>
-<%
-=begin
-%>
-      <% if is_edit %>
+      <% if community.persisted? %>
         <% submit_class_name += " button-edit" %>
       <% end %>
-<%
-=end
-%>
       <%= form.submit nil, class: submit_class_name %>
     </div>
   <% end %>

@@ -1,0 +1,17 @@
+<% content_for :title, "コミュニティ編集" %>
+
+<div class="text-center">
+  <h2 class="mb-6">
+    <span class="header1">コミュニティ編集</span>
+    <p>
+      コミュニティの情報を修正できます！
+    </p>
+  </h2>
+
+    <section class="mx-auto px-4 max-w-[900px]">
+    <div class="mx-auto mb-4 w-full max-w-[500px]">
+      <%= link_to "< 詳細へ戻る", community_path(@community), class: "link underline inline-block mx-auto w-full max-w-[300px] text-left"  %>
+    </div>
+    <%= render "communities/form", community: @community %>
+  </section>
+</div>

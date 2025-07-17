@@ -1,9 +1,6 @@
 <%= render "communities/community_info", community: @community %>
 
 <section class="mx-auto pt-4 pb-8 max-w-120">
-<%
-=begin
-%>
   <div class="flex justify-end gap-2 mb-4 pr-2 w-full">
     <%# 編集 %>
     <%= link_to edit_community_path(@community), class: "inline-block border-2 rounded px-2 bg-green-100 text-green-700 shadow", id: "community-edit" do %>
@@ -24,9 +21,6 @@
       </span>
     <% end %>
   </div>
-<%
-=end
-%>
   <div class="">
     <!-- アイコン -->
     <div class="text-center">
@@ -52,6 +46,15 @@
       </h3>
       <div class="ml-8 text-xl font-bold">
         <time><%= @community.created_at.strftime("%Y/%m/%d") %></time>
+      </div>
+    </div>
+    <!-- 更新日時 -->
+    <div class="mb-4 px-2">
+      <h3 class="mb-2">
+        <span class="header2">更新日時</span>
+      </h3>
+      <div class="ml-8 text-xl font-bold">
+        <time><%= @community.updated_at.strftime("%Y/%m/%d %H:%M") %></time>
       </div>
     </div>
     <!-- コミュニティ紹介 -->

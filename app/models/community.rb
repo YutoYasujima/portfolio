@@ -1,7 +1,7 @@
 class Community < ApplicationRecord
   belongs_to :prefecture
   belongs_to :municipality
-  has_many :chats, dependent: :destroy
+  has_many :chats, as: :chatable, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 20 }
   validates :description, length: { maximum: 500 }, allow_blank: true
