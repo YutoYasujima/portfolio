@@ -1,48 +1,49 @@
-<div class="community-card shadow mx-auto rounded-lg py-2 px-2 w-80 bg-white">
-    <!-- ヘッダー -->
-    <h3 class="header2 flex justify-between items-end ml-0">
-      <span class="text-2xl"><%= community.name %></span>
-      <span class="text-xl text-green-500">参加</span>
-    </h3>
-    <div class="flex items-center gap-1 w-full">
-      <!-- アイコン -->
-      <div class="flex-shrink-0 w-20 h-20 flex justify-center items-center">
-        <% if community.icon? %>
-          <%= image_tag(community.icon.thumb.url, class: "w-full h-full object-cover") %>
-        <% else %>
-          <div class="w-18 aspect-square">
-            <%= render "shared/icons/handshake_icon" %>
-          </div>
-        <% end %>
-      </div>
-      <div class="flex-1 p-2 min-w-0">
-        <!-- 本拠地 -->
-        <p class="flex items-end mb-1 h-8">
-          <span class="flex-shrink-0 w-6 aspect-square">
-            <%= render "shared/icons/camping_icon" %>
-          </span>
-          <span class="ml-1 truncate overflow-hidden whitespace-nowrap">
-            <%= community.base %>
-          </span>
-        </p>
-        <!-- メンバー数 -->
-        <p class="flex mb-1">
-          <span class="flex-shrink-0 w-6 aspect-square">
-            <%= render "shared/icons/groups_icon" %>
-          </span>
-          <span class="w-full ml-1">
-            10人
-          </span>
-        </p>
-        <!-- 作成日時 -->
-        <p class="flex">
-          <span class="flex-shrink-0 w-6 aspect-square">
-            <%= render "shared/icons/schedule_icon" %>
-          </span>
-          <span class="ml-1">
-            <time><%= community.created_at.strftime("%Y/%m/%d") %></time>
-          </span>
-        </p>
-      </div>
+<div class="community-card relative shadow mx-auto rounded-lg py-2 px-2 w-80 bg-white">
+  <%= link_to community_path(community), class: "absolute inset-0" do %><% end %>
+  <!-- ヘッダー -->
+  <h3 class="header2 flex justify-between items-end ml-0">
+    <span class="text-2xl"><%= community.name %></span>
+    <span class="text-xl text-green-500">参加</span>
+  </h3>
+  <div class="flex items-center gap-1 w-full">
+    <!-- アイコン -->
+    <div class="flex-shrink-0 w-20 h-20 flex justify-center items-center">
+      <% if community.icon? %>
+        <%= image_tag(community.icon.thumb.url, class: "w-full h-full object-cover") %>
+      <% else %>
+        <div class="w-18 aspect-square">
+          <%= render "shared/icons/handshake_icon" %>
+        </div>
+      <% end %>
+    </div>
+    <div class="flex-1 p-2 min-w-0">
+      <!-- 活動拠点 -->
+      <p class="flex items-end mb-1 h-8">
+        <span class="flex-shrink-0 w-6 aspect-square">
+          <%= render "shared/icons/camping_icon" %>
+        </span>
+        <span class="ml-1 truncate overflow-hidden whitespace-nowrap">
+          <%= community.base %>
+        </span>
+      </p>
+      <!-- メンバー数 -->
+      <p class="flex mb-1">
+        <span class="flex-shrink-0 w-6 aspect-square">
+          <%= render "shared/icons/groups_icon" %>
+        </span>
+        <span class="w-full ml-1">
+          10人
+        </span>
+      </p>
+      <!-- 作成日時 -->
+      <p class="flex">
+        <span class="flex-shrink-0 w-6 aspect-square">
+          <%= render "shared/icons/schedule_icon" %>
+        </span>
+        <span class="ml-1">
+          <time><%= community.created_at.strftime("%Y/%m/%d") %></time>
+        </span>
+      </p>
     </div>
   </div>
+</div>

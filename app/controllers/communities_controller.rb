@@ -3,6 +3,10 @@ class CommunitiesController < ApplicationController
     @communities = Community.all.order(created_at: :desc)
   end
 
+  def show
+    @community = Community.find(params[:id])
+  end
+
   def new
     @community = Community.new
   end
