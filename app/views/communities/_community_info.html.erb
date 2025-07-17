@@ -1,0 +1,78 @@
+<% content_for :title, community.name %>
+
+<div class="border-b-2 border-gray-400 text-center">
+  <h2 class="mb-6">
+    <span class="header1"><%= community.name %></span>
+  </h2>
+
+  <nav class="md:fixed md:top-[250px] md:left-[50px]">
+    <ul class="flex justify-around mb-4 mx-auto max-w-[500px] md:flex-col md:h-100">
+      <% if controller_name == "communities" && action_name == "show"
+        current_page = "detail"
+      elsif controller_name == "machi_repos" && action_name == "my_machi_repos"
+        current_page = "my_machi_repos"
+      elsif controller_name == "machi_repos" && action_name == "bookmarks"
+        current_page = "bookmark"
+      elsif controller_name == "users" && action_name == "followings"
+        current_page = "following"
+      else
+        current_page = ""
+      end %>
+      <!-- 詳細 -->
+      <li>
+        <%= link_to community_path(community), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "detail"}", id: "detail-link" do %>
+          <div class="icon-circle <%= "icon-circle-current" if current_page == "detail" %>">
+            <div class="w-8 aspect-square">
+              <%= render "shared/icons/description_icon" %>
+            </div>
+          </div>
+          <span class="icon-circle-text text-[13px]">詳細</span>
+        <% end %>
+      </li>
+      <!-- チャット -->
+      <li>
+        <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "chat"}", id: "chat-link" do %>
+          <div class="icon-circle <%= "icon-circle-current" if current_page == "chat" %>">
+            <div class="w-8 aspect-square">
+              <%= render "shared/icons/chat_icon" %>
+            </div>
+          </div>
+          <span class="icon-circle-text text-[13px]">チャット</span>
+        <% end %>
+      </li>
+      <!-- メンバー -->
+      <li>
+        <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "member"}", id: "member-link" do %>
+          <div class="icon-circle <%= "icon-circle-current" if current_page == "member" %>">
+            <div class="w-8 aspect-square">
+              <%= render "shared/icons/groups_icon" %>
+            </div>
+          </div>
+          <span class="icon-circle-text text-[13px]">メンバー</span>
+        <% end %>
+      </li>
+      <!-- スカウト -->
+      <li>
+        <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "scout"}", id: "scout-link" do %>
+          <div class="icon-circle <%= "icon-circle-current" if current_page == "scout" %>">
+            <div class="w-8 aspect-square">
+              <%= render "shared/icons/communication_icon" %>
+            </div>
+          </div>
+          <span class="icon-circle-text text-[13px]">スカウト</span>
+        <% end %>
+      </li>
+      <!-- 退会 -->
+      <li>
+        <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "withdrawal"}", id: "withdrawal-link" do %>
+          <div class="icon-circle <%= "icon-circle-current" if current_page == "withdrawal" %>">
+            <div class="w-8 aspect-square">
+              <%= render "shared/icons/logout_icon" %>
+            </div>
+          </div>
+          <span class="icon-circle-text text-[13px]">退会</span>
+        <% end %>
+      </li>
+    </ul>
+  </nav>
+</div>

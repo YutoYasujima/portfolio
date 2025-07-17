@@ -46,12 +46,19 @@
       <%# コミュニティアイコン %>
       <li class="flex-1 text-black md:text-white">
         <%= link_to communities_path, class: "nav-icon #{"pointer-events-none" if current_page?(communities_path)}" do %>
-          <div class="w-10 aspect-square">
+          <div class="w-10 aspect-square text-gray-300">
+            <%= render "shared/icons/handshake_full_icon" %>
+<%
+=begin
+%>
             <% if current_page?(communities_path) %>
               <%= render "shared/icons/handshake_full_icon" %>
             <% else %>
               <%= render "shared/icons/handshake_icon" %>
             <% end %>
+<%
+=end
+%>
           </div>
           <span class="nav-text">コミュニティ</span>
         <% end %>
