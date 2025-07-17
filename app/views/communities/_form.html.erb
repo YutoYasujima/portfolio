@@ -1,0 +1,48 @@
+<%= form_with model: community, class: "form" do |form| %>
+    <%# コミュニティ名 %>
+    <div class="field">
+      <%= form.label :name, class: "require" %>
+      <%= form.text_field :name, autofocus: true, class: "text-field", maxlength: 20 %>
+    </div>
+
+    <%# 活動拠点 %>
+    <div data-controller="prefecture-municipality" class="field">
+      <%= label_tag nil, "活動拠点", class: "require" %>
+      <div class="mytown-selects">
+        <%= form.collection_select :prefecture_id, Prefecture.all, :id, :name_kanji, {}, { class: "select-field", data: { action: "change->prefecture-municipality#loadMunicipalities" }} %>
+
+        <%= form.collection_select :municipality_id, Municipality.where(prefecture_id: form.object.prefecture_id || 1).order(:name_kana), :id, :name_kanji, {}, { class: "select-field", data: { prefecture_municipality_target: "municipality" }} %>
+      </div>
+    </div>
+
+    <%# コミュニティ紹介 %>
+    <div class="field">
+      <%= form.label :description %>
+      <%= form.text_area :description, rows: 6, class: "textarea-field", maxlength: 500 %>
+    </div>
+
+    <%# アイコン %>
+    <div class="field">
+      <%= form.label :icon %>
+      <%= form.file_field :icon, class: "file-field" %>
+      <% if community.icon? %>
+        <p class="mt-2">現在の画像:</p>
+        <%= image_tag(community.icon.medium.url, class: "rounded-full mx-auto object-cover") %>
+      <% end %>
+      <%= form.hidden_field :icon_cache %>
+    </div>
+
+    <div class="actions text-center">
+      <% submit_class_name = "button" %>
+<%
+=begin
+%>
+      <% if is_edit %>
+        <% submit_class_name += " button-edit" %>
+      <% end %>
+<%
+=end
+%>
+      <%= form.submit nil, class: submit_class_name %>
+    </div>
+  <% end %>
