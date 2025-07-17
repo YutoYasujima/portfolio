@@ -11,13 +11,13 @@
         <span class="text-sm">編集</span>
       </div>
     <% end %>
-    <%# 削除 %>
-    <%= button_to community_path(@community), method: :delete, data: { controller: "modal", action: "click->modal#confirm", modal_text_value: "コミュニティを削除しますか？" }, class: "inline-block border-2 rounded px-2 bg-red-100 text-red-700 shadow", id: "community-delete" do %>
+    <%# 解散 %>
+    <%= button_to community_path(@community), method: :delete, data: { controller: "modal", action: "click->modal#confirm", modal_text_value: "この操作は元に戻せません。本当にコミュニティを解散しますか？" }, class: "inline-block border-2 rounded px-2 bg-red-100 text-red-700 shadow", id: "community-delete" do %>
       <span class="flex flex-col justify-center items-center">
         <span class="w-8 aspect-square">
-          <%= render "shared/icons/delete_icon" %>
+          <%= render "shared/icons/waving_hand_icon" %>
         </span>
-        <span class="text-sm">削除</span>
+        <span class="text-sm">解散</span>
       </span>
     <% end %>
   </div>
