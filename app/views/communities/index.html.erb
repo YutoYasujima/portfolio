@@ -1,6 +1,6 @@
 <% content_for :title, "コミュニティ" %>
 
-<div class="border-b-2 border-gray-400 text-center">
+<div class="mb-4 border-b-2 border-gray-400 text-center">
   <h2 class="mb-6">
     <span class="header1">コミュニティ</span>
     <p>
@@ -9,12 +9,14 @@
   </h2>
 </div>
 
-<section class="mx-auto pt-4 pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
+<%= render "shared/search_form_format", defaults: @search_form, search_form: render("communities/search_form", model: @search_form) %>
+
+<section class="mx-auto pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
   <div class="mb-4 text-right">
     <%= link_to "＋コミュニティを作成する", new_community_path, class: "link mr-4" %>
   </div>
 
-  <div class="flex flex-wrap gap-4">
+  <div id="community-cards" class="flex flex-wrap justify-center gap-4">
     <!-- コミュニティカード -->
     <% @communities.each do |community| %>
       <%= render "shared/community_card", community: community %>

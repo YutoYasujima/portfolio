@@ -2,13 +2,23 @@ class CommunitiesController < ApplicationController
   before_action :set_community, only: %i[ show edit update destroy ]
 
   def index
-    @communities = Community.all.order(created_at: :desc)
+    prefecture_id = current_user.profile.prefecture_id
+    municipality_id = current_user.profile.municipality_id
+    @search_form = CommunitySearchForm.new(prefecture_id: prefecture_id, municipality_id: municipality_id)
+    @communities = @search_form.search_communities.order(updated_at: :desc)
+  end
+
+  def search
+    search_form = CommunitySearchForm.new(search_params)
+    @communities = search_form.search_communities.order(updated_at: :desc)
   end
 
   def show; end
 
   def new
-    @community = Community.new
+    prefecture_id = current_user.profile.prefecture_id
+    municipality_id = current_user.profile.municipality_id
+    @community = Community.new(prefecture_id: prefecture_id, municipality_id: municipality_id)
   end
 
   def create
@@ -52,5 +62,12 @@ class CommunitiesController < ApplicationController
 
   def community_params
     params.require(:community).permit(:name, :prefecture_id, :municipality_id, :description, :icon, :icon_cache)
+  end
+
+  # 検索時のストロングパラメータ取得
+  def search_params
+    params.fetch(:search, {}).permit(
+      :name, :prefecture_id, :municipality_id
+    )
   end
 end

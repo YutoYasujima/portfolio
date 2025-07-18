@@ -1,0 +1,6 @@
+<%= turbo_stream.update "community-cards" do %>
+  <!-- コミュニティカード -->
+  <% @communities.each do |community| %>
+    <%= render "shared/community_card", community: community %>
+  <% end %>
+<% end %>

@@ -1,0 +1,38 @@
+<section
+  data-controller="search"
+  class="mb-4 border-2 border-gray-500 shadow-lg md:mx-auto md:max-w-175 xl:mb-8"
+>
+  <h3 data-action="click->search#toggle" class="flex justify-between p-2 bg-[#6495ED] text-white">
+    <span class="flex items-center">
+      <span class="flex-shrink-0 w-6 aspect-square">
+        <%= render "shared/icons/search_icon" %>
+      </span>
+      <span class="text-xl">検索</span>
+    </span>
+    <span class="flex items-center">
+      <!-- プラスアイコン -->
+      <span data-search-target="addIcon" class="w-6 aspect-square">
+        <%= render "shared/icons/add_icon" %>
+      </span>
+      <!-- マイナスアイコン -->
+      <span data-search-target="removeIcon" class="hidden w-6 aspect-square">
+        <%= render "shared/icons/remove_icon" %>
+      </span>
+    </span>
+  </h3>
+  <div data-search-target="contents" class="border-t-2 border-gray-400 p-4 search-contents search-contents-close">
+    <!-- クリアアイコン -->
+    <div class="text-right">
+      <div class="inline-block">
+        <div class="flex flex-col justify-center">
+          <div data-action="click->search#clear" class="flex-shrink-0 w-10 aspect-square">
+            <%= render "shared/icons/clear_day_icon" %>
+          </div>
+          <span class="text-center text-sm">クリア</span>
+        </div>
+      </div>
+    </div>
+    <!-- 検索フォーム -->
+    <%= search_form.html_safe %>
+  </div>
+</section>
