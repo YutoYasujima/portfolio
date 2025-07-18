@@ -55,6 +55,9 @@ application.register("reload", ReloadController)
 import ScrollController from "./scroll_controller"
 application.register("scroll", ScrollController)
 
+import SearchController from "./search_controller"
+application.register("search", SearchController)
+
 import TabController from "./tab_controller"
 application.register("tab", TabController)
 

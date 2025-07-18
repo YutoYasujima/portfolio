@@ -3,7 +3,12 @@ class Community < ApplicationRecord
   belongs_to :municipality
   has_many :chats, as: :chatable, dependent: :destroy
 
-  validates :name, presence: true, length: { maximum: 20 }
+  validates :name, presence: true, length: { maximum: 20 }, uniqueness: {
+    scope: [ :prefecture_id, :municipality_id ],
+    message: "は同じ都道府県・市区町村内で既に使われています"
+  }
+  validates :prefecture_id, presence: true
+  validates :municipality_id, presence: true
   validates :description, length: { maximum: 500 }, allow_blank: true
 
   def base
