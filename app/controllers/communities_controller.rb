@@ -1,7 +1,8 @@
 class CommunitiesController < ApplicationController
-  before_action :set_community, only: %i[ show edit update destroy ]
+  before_action :set_community, only: %i[ show edit update destroy scout ]
   before_action :authorize_edit_and_update, only: %i[ edit update ]
   before_action :authorize_destroy, only: %i[ destroy ]
+  before_action :authorize_access, only: %i[ scout ]
 
   def index
     prefecture_id = current_user.profile.prefecture_id
@@ -60,14 +61,14 @@ class CommunitiesController < ApplicationController
   end
 
   def scout
-    @community = Community.find(params[:community_id])
     @requested_users = @community.requested_users.order(updated_at: :desc)
   end
 
   private
 
   def set_community
-    @community = Community.find(params[:id])
+    community_id = params[:community_id] || params[:id]
+    @community = Community.find(community_id)
   end
 
   # edit・updateのユーザー権限判定
@@ -80,7 +81,14 @@ class CommunitiesController < ApplicationController
   # destroyのユーザー権限判定
   def authorize_destroy
     unless current_user.leader_in?(@community)
-      redirect_to community_path(@community), alert: "コミュニティを解散できるのはリーダーのみです"
+      redirect_to community_path(@community), alert: "この操作を行う権限がありません"
+    end
+  end
+
+  # 閲覧権限判定
+  def authorize_access
+    unless current_user.approved_in?(@community)
+      redirect_to community_path(@community), alert: "この操作を行う権限がありません"
     end
   end
 
