@@ -1,5 +1,7 @@
 class CommunitiesController < ApplicationController
   before_action :set_community, only: %i[ show edit update destroy ]
+  before_action :authorize_edit_and_update, only: %i[ edit update ]
+  before_action :authorize_destroy, only: %i[ destroy ]
 
   def index
     prefecture_id = current_user.profile.prefecture_id
@@ -24,12 +26,21 @@ class CommunitiesController < ApplicationController
   def create
     @community = Community.build(community_params)
 
-    if @community.save
-      redirect_to communities_path, notice: "コミュニティを登録しました"
-    else
-      append_errors_to_flash(@community, "登録")
-      render :new, status: :unprocessable_entity
+    # communityの作成者をリーダー、参加中として登録する
+    ActiveRecord::Base.transaction do
+      @community.save!
+
+      @community.community_memberships.create!(
+        user: current_user,
+        role: :leader,
+        status: :approved
+      )
     end
+
+    redirect_to communities_path, notice: "コミュニティを登録しました"
+  rescue
+    append_errors_to_flash(@community, "登録")
+    render :new, status: :unprocessable_entity
   end
 
   def edit; end
@@ -45,19 +56,33 @@ class CommunitiesController < ApplicationController
 
   def destroy
     @community.destroy!
-    redirect_to communities_path, notice: "\"#{@community.name}\"を削除しました", status: :see_other
+    redirect_to communities_path, notice: "\"#{@community.name}\"を解散しました", status: :see_other
   end
 
   private
+
+  def set_community
+    @community = Community.find(params[:id])
+  end
+
+  # edit・updateのユーザー権限判定
+  def authorize_edit_and_update
+    unless current_user.leader_or_sub_in?(@community)
+      redirect_to community_path(@community), alert: "この操作を行う権限がありません"
+    end
+  end
+
+  # destroyのユーザー権限判定
+  def authorize_destroy
+    unless current_user.leader_in?(@community)
+      redirect_to community_path(@community), alert: "コミュニティを解散できるのはリーダーのみです"
+    end
+  end
 
   # エラーメッセージを追加する
   def append_errors_to_flash(record, action_name)
     flash.now[:alert] = [ "コミュニティの#{action_name}に失敗しました" ]
     flash.now[:alert] += record.errors.full_messages if record.errors.any?
-  end
-
-  def set_community
-    @community = Community.find(params[:id])
   end
 
   def community_params

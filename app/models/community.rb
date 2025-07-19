@@ -2,6 +2,8 @@ class Community < ApplicationRecord
   belongs_to :prefecture
   belongs_to :municipality
   has_many :chats, as: :chatable, dependent: :destroy
+  has_many :community_memberships, dependent: :destroy
+  has_many :users, through: :community_memberships
 
   validates :name, presence: true, length: { maximum: 20 }, uniqueness: {
     scope: [ :prefecture_id, :municipality_id ],
