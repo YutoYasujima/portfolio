@@ -48,10 +48,13 @@ Rails.application.routes.draw do
   resources :communities do
     collection do
       get :search
+      get :scout
     end
 
     member do
       post :join, to: "community_memberships#join"
+      patch :approve, to: "community_memberships#approve", as: :approve_member
+      patch :reject, to: "community_memberships#reject", as: :reject_member
       delete :cancel, to: "community_memberships#cancel"
     end
   end

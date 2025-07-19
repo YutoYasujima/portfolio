@@ -1,0 +1,14 @@
+<% content_for :title, "スカウト" %>
+
+<%= render "communities/community_info", community: @community %>
+
+<section class="mx-auto pt-4 pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
+  <h3 class="mb-4">
+    <span class="header2">参加希望</span>
+  </h3>
+  <div id="user-cards" class="flex flex-wrap justify-center gap-4">
+    <% @requested_users.each do |user| %>
+      <%= render "shared/user_card", user: user, mode: "requested", buttons: render("community_memberships/buttons/requested_buttons", community: @community, user: user) %>
+    <% end %>
+  </div>
+</section>
