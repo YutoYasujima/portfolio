@@ -49,6 +49,11 @@ Rails.application.routes.draw do
     collection do
       get :search
     end
+
+    member do
+      post :join, to: "community_memberships#join"
+      delete :cancel, to: "community_memberships#cancel"
+    end
   end
   resources :helps, only: %i[ index ]
   get "/terms", to: "pages#terms", as: :terms

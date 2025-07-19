@@ -1,0 +1,8 @@
+<%= button_to join_community_path(community), method: :post, form: { data: { turbo_stream: true } }, class: "inline-block shadow border-2 rounded p-2 w-19 bg-orange-100 text-orange-700", id: "community-delete" do %>
+  <span class="flex flex-col justify-center items-center">
+    <span class="w-8 aspect-square">
+      <%= render "shared/icons/emoji_people_icon" %>
+    </span>
+    <span class="text-sm">参加希望</span>
+  </span>
+<% end %>

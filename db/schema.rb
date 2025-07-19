@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_16_221528) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_18_115614) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -49,6 +49,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_16_221528) do
     t.index ["municipality_id"], name: "index_communities_on_municipality_id"
     t.index ["prefecture_id", "municipality_id", "name"], name: "idx_on_prefecture_id_municipality_id_name_7d0469a4b1", unique: true
     t.index ["prefecture_id"], name: "index_communities_on_prefecture_id"
+  end
+
+  create_table "community_memberships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "community_id", null: false
+    t.integer "role", default: 0, null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["community_id"], name: "index_community_memberships_on_community_id"
+    t.index ["user_id", "community_id"], name: "index_community_memberships_on_user_id_and_community_id", unique: true
+    t.index ["user_id"], name: "index_community_memberships_on_user_id"
   end
 
   create_table "follows", force: :cascade do |t|
@@ -160,6 +172,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_16_221528) do
   add_foreign_key "chats", "users"
   add_foreign_key "communities", "municipalities"
   add_foreign_key "communities", "prefectures"
+  add_foreign_key "community_memberships", "communities"
+  add_foreign_key "community_memberships", "users"
   add_foreign_key "follows", "users", column: "followed_id"
   add_foreign_key "follows", "users", column: "follower_id"
   add_foreign_key "machi_repo_tags", "machi_repos"

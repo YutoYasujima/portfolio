@@ -19,6 +19,8 @@ class User < ApplicationRecord
                               foreign_key: "followed_id",
                               dependent: :destroy
   has_many :followers, through: :passive_follows, source: :follower
+  has_many :community_memberships, dependent: :destroy
+  has_many :communities, through: :community_memberships
 
   attr_accessor :agreement
   validates :agreement, acceptance: { accept: "1", message: "に同意してください" }
@@ -76,6 +78,41 @@ class User < ApplicationRecord
   # フォロー中のユーザーか確認する
   def follow?(user)
     followings.include?(user)
+  end
+
+  # ユーザーが参加しているならコミュニティを取得する
+  def membership_for(community)
+    community_memberships.find_by(community_id: community.id)
+  end
+
+  # コミュニティにおける役割を取得する
+  def role_in(community)
+    membership_for(community)&.role
+  end
+
+  # コミュニティにおいてリーダーまたはサブリーダーか判定する
+  def leader_or_sub_in?(community)
+    %w[leader sub].include?(role_in(community))
+  end
+
+  # コミュニティにおいてリーダーか判定する
+  def leader_in?(community)
+    role_in(community) == "leader"
+  end
+
+  # コミュニティにおける所属状態を取得する
+  def status_in(community)
+    membership_for(community)&.status
+  end
+
+  # コミュニティに参加中か判定する
+  def requested_in?(community)
+    status_in(community) == "requested"
+  end
+
+  # コミュニティに参加中か判定する
+  def approved_in?(community)
+    status_in(community) == "approved"
   end
 
   # パスワード変更期限をチェックする
