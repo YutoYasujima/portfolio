@@ -1,7 +1,7 @@
 <%# 一覧に追加 %>
 <%= turbo_stream.append "follows" do %>
   <% @records.each do |record| %>
-    <%= render "shared/user_card", user: record %>
+    <%= render "shared/user_card", user: record, mode: "following", buttons: nil %>
   <% end %>
 <% end %>
 

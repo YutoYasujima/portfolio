@@ -59,6 +59,11 @@ class CommunitiesController < ApplicationController
     redirect_to communities_path, notice: "\"#{@community.name}\"を解散しました", status: :see_other
   end
 
+  def scout
+    @community = Community.find(params[:community_id])
+    @requested_users = @community.requested_users.order(updated_at: :desc)
+  end
+
   private
 
   def set_community

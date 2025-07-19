@@ -4,6 +4,9 @@ class Community < ApplicationRecord
   has_many :chats, as: :chatable, dependent: :destroy
   has_many :community_memberships, dependent: :destroy
   has_many :users, through: :community_memberships
+  has_many :requested_memberships, -> { where(status: :requested) }, class_name: "CommunityMembership"
+  # statusがrequestedのユーザーを取得する
+  has_many :requested_users, through: :requested_memberships, source: :user
 
   validates :name, presence: true, length: { maximum: 20 }, uniqueness: {
     scope: [ :prefecture_id, :municipality_id ],

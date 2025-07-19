@@ -4,7 +4,7 @@ class CommunityMembershipsController < ApplicationController
   def join
     # 参加中のユーザーは拒否
     if current_user.approved_in?(@community)
-      redirect_to @community, alert: "既にこのコミュニティに参加しています"
+      redirect_to community_path(@community), alert: "既にこのコミュニティに参加しています"
       return
     end
 
@@ -17,6 +17,38 @@ class CommunityMembershipsController < ApplicationController
       flash.now[:notice] = "参加をリクエストしました"
     else
       flash.now[:alert] = "参加リクエストに失敗しました"
+    end
+  end
+
+  def approve
+    # リーダーまたはサブリーダーのみ承認できる
+    unless current_user.leader_or_sub_in?(@community)
+      redirect_to community_path(@community), alert: "操作を行う権限がありません"
+      return
+    end
+
+    @user_id = params[:user_id]
+    membership = CommunityMembership.find_by(community_id: params[:id], user_id: @user_id)
+    if membership&.requested? && membership.update(status: :approved)
+      flash.now[:notice] = "参加を承認しました"
+    else
+      flash.now[:alert] = "承認できませんでした"
+    end
+  end
+
+  def reject
+    # リーダーまたはサブリーダーのみ承認できる
+    unless current_user.leader_or_sub_in?(@community)
+      redirect_to community_path(@community), alert: "操作を行う権限がありません"
+      return
+    end
+
+    @user_id = params[:user_id]
+    membership = CommunityMembership.find_by(community_id: params[:id], user_id: @user_id)
+    if membership&.requested? && membership.update(status: :rejected)
+      flash.now[:notice] = "参加を断りました"
+    else
+      flash.now[:alert] = "参加を断れませんでした"
     end
   end
 
