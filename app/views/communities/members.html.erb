@@ -1,0 +1,41 @@
+<% content_for :title, "メンバー" %>
+
+<%= render "communities/community_info", community: @community %>
+
+<section class="mx-auto pt-4 pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
+  <%# リーダー %>
+  <section class="mb-4">
+    <h3 class="mb-4">
+      <span class="header2">リーダー</span>
+    </h3>
+    <div id="leader" class="flex justify-center">
+      <%= render "shared/user_card", user: @leader, mode: "members", buttons: nil %>
+    </div>
+  </section>
+  <%# サブリーダー %>
+  <% if @sub_leaders.present? %>
+    <section class="mb-4">
+      <h3 class="mb-4">
+        <span class="header2">サブリーダー</span>
+      </h3>
+      <div id="sub-leaders" class="flex flex-wrap justify-center gap-4">
+        <% @sub_leaders.each do |user| %>
+          <%= render "shared/user_card", user: user, mode: "members", buttons: nil %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+  <%# メンバー %>
+  <% if @general_members.present? %>
+    <section class="mb-4">
+      <h3 class="mb-4">
+        <span class="header2">メンバー</span>
+      </h3>
+      <div id="members" class="flex flex-wrap justify-center gap-4">
+        <% @general_members.each do |user| %>
+          <%= render "shared/user_card", user: user, mode: "members", buttons: nil %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</section>
