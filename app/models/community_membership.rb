@@ -13,7 +13,8 @@ class CommunityMembership < ApplicationRecord
     invited: 1,   # スカウト中
     approved: 2,  # 参加中
     rejected: 3,  # 拒否済み
-    cancelled: 4   # キャンセル/退会
+    cancelled: 4, # 参加前キャンセル
+    withdrawn: 5  # 退会
   }
 
   validates :user_id, uniqueness: { scope: :community_id }
