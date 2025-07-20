@@ -1,5 +1,5 @@
 <!-- ユーザーカード -->
-<div id="user-card-<%= user.id %>" class="shadow mx-auto rounded-xl py-2 w-full max-w-78 bg-white">
+<div id="user-card-<%= user.id %>" class="shadow rounded-xl py-2 w-full max-w-78 bg-white">
   <div class="flex items-center ml-2">
     <!-- ユーザーアイコン -->
     <div class="flex-shrink-0 w-12 aspect-square">
@@ -14,7 +14,11 @@
     <div class="ml-2">
       <!-- ユーザー名 -->
       <div class="mb-1">
-        <%= link_to user.profile.nickname, profile_path(user.profile), class: "text-xl underline" %>
+        <% if current_user == user %>
+          <span class="text-xl"><%= user.profile.nickname %></span>
+        <% else %>
+          <%= link_to user.profile.nickname, profile_path(user.profile), class: "text-xl underline" %>
+        <% end %>
       </div>
       <!-- マイタウン -->
       <div class="flex items-align">
@@ -24,7 +28,7 @@
         <%= user.mytown_address %>
       </div>
     </div>
-    <% if mode != "requested" %>
+    <% if mode == "following" %>
       <!-- フォローアイコン -->
       <div class="flex-shrink-0 ml-auto">
         <%= render "users/follows/follow_buttons", user: user %>

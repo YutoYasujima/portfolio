@@ -12,8 +12,8 @@
         current_page = "detail"
       elsif controller_name == "communities" && action_name == "scout"
         current_page = "scout"
-      elsif controller_name == "machi_repos" && action_name == "bookmarks"
-        current_page = "bookmark"
+      elsif controller_name == "communities" && action_name == "members"
+        current_page = "members"
       elsif controller_name == "users" && action_name == "followings"
         current_page = "following"
       else
@@ -45,8 +45,8 @@
       <% end %>
       <!-- メンバー -->
       <li>
-        <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "member"}", id: "member-link" do %>
-          <div class="icon-circle <%= "icon-circle-current" if current_page == "member" %>">
+        <%= link_to members_communities_path(community_id: community.id), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "members"}", id: "members-link" do %>
+          <div class="icon-circle <%= "icon-circle-current" if current_page == "members" %>">
             <div class="w-8 aspect-square">
               <%= render "shared/icons/groups_icon" %>
             </div>

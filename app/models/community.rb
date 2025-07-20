@@ -20,5 +20,17 @@ class Community < ApplicationRecord
     prefecture.name_kanji + municipality.name_kanji
   end
 
+  def leader
+    community_memberships.find_by(role: :leader)&.user
+  end
+
+  def sub_leaders
+    users.joins(:community_memberships).where(community_memberships: { community_id: id, role: :sub })
+  end
+
+  def general_members
+    community_memberships.approved.where(role: :general).includes(:user).map(&:user)
+  end
+
   mount_uploader :icon, CommunityIconUploader
 end

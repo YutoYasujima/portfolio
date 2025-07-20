@@ -1,5 +1,5 @@
 class CommunitiesController < ApplicationController
-  before_action :set_community, only: %i[ show edit update destroy scout ]
+  before_action :set_community, only: %i[ show edit update destroy scout members ]
   before_action :authorize_edit_and_update, only: %i[ edit update ]
   before_action :authorize_destroy, only: %i[ destroy ]
   before_action :authorize_access, only: %i[ scout ]
@@ -62,6 +62,12 @@ class CommunitiesController < ApplicationController
 
   def scout
     @requested_users = @community.requested_users.order(updated_at: :desc)
+  end
+
+  def members
+    @leader = @community.leader
+    @sub_leaders = @community.sub_leaders
+    @general_members = @community.general_members
   end
 
   private

@@ -49,6 +49,7 @@ Rails.application.routes.draw do
     collection do
       get :search
       get :scout
+      get :members
     end
 
     member do
