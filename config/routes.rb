@@ -56,6 +56,7 @@ Rails.application.routes.draw do
       patch :approve, to: "community_memberships#approve", as: :approve_member
       patch :reject, to: "community_memberships#reject", as: :reject_member
       delete :cancel, to: "community_memberships#cancel"
+      delete :withdraw, to: "community_memberships#withdraw"
     end
   end
   resources :helps, only: %i[ index ]
