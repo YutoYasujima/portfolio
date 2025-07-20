@@ -9,6 +9,7 @@ class CommunityMembershipsController < ApplicationController
     end
 
     membership = CommunityMembership.find_or_initialize_by(user: current_user, community: @community)
+
     @status = "requested"
     membership.status = @status
     membership.role = "general"
@@ -53,6 +54,12 @@ class CommunityMembershipsController < ApplicationController
   end
 
   def cancel
+    # 参加中のユーザーは拒否
+    if current_user.approved_in?(@community)
+      redirect_to community_path(@community), alert: "既にこのコミュニティに参加しています"
+      return
+    end
+
     @membership = CommunityMembership.find_by(user: current_user, community: @community)
     @previous_status = @membership&.status
     if @membership.update(status: :cancelled, role: :general)
