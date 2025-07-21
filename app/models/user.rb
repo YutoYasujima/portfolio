@@ -80,7 +80,7 @@ class User < ApplicationRecord
     followings.include?(user)
   end
 
-  # ユーザーが参加しているならコミュニティを取得する
+  # ユーザーが参加しているコミュニティのCommunityMembershipを取得する
   def membership_for(community)
     community_memberships.find_by(community_id: community.id)
   end

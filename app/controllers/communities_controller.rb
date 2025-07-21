@@ -62,14 +62,15 @@ class CommunitiesController < ApplicationController
   end
 
   def scout
-    # @requested_users = @community.requested_users.order(updated_at: :desc)
-    @memberships_requested = @community.community_memberships.where(status: :requested).includes(:user).order(updated_at: :desc)
+    @memberships_requested = @community.community_memberships.where(status: :requested).includes(:user, :community).order(updated_at: :desc)
   end
 
   def members
-    @leader = @community.leader
-    @sub_leaders = @community.sub_leaders
-    @general_members = @community.general_members
+    memberships = @community.community_memberships.includes(:user, :community)
+
+    @leader_membership       = memberships.find { |m| m.role == "leader" }
+    @sub_leaders_memberships = memberships.select { |m| m.role == "sub" }
+    @members_memberships     = memberships.select { |m| m.role == "general" && m.status == "approved" }
   end
 
   private

@@ -9,33 +9,29 @@
       <span class="header2">リーダー</span>
     </h3>
     <div id="leader" class="flex justify-center">
-      <%= render "shared/user_card", user: @leader, mode: "members", buttons: nil %>
+      <%= render "shared/user_card", user: @leader_membership.user, mode: "members", buttons: nil %>
     </div>
   </section>
   <%# サブリーダー %>
-  <% if @sub_leaders.present? %>
-    <section class="mb-4">
-      <h3 class="mb-4">
-        <span class="header2">サブリーダー</span>
-      </h3>
-      <div id="sub-leaders" class="flex flex-wrap justify-center gap-4">
-        <% @sub_leaders.each do |user| %>
-          <%= render "shared/user_card", user: user, mode: "members", buttons: nil %>
-        <% end %>
-      </div>
-    </section>
-  <% end %>
+  <section class="mb-4">
+    <h3 class="mb-4">
+      <span class="header2">サブリーダー</span>
+    </h3>
+    <div id="sub-leaders" class="flex flex-wrap justify-center gap-4">
+      <% @sub_leaders_memberships.each do |membership| %>
+        <%= render "shared/user_card", user: membership.user, mode: "members", buttons: render("community_memberships/buttons/sub_leader_buttons", membership: membership) %>
+      <% end %>
+    </div>
+  </section>
   <%# メンバー %>
-  <% if @general_members.present? %>
-    <section class="mb-4">
-      <h3 class="mb-4">
-        <span class="header2">メンバー</span>
-      </h3>
-      <div id="members" class="flex flex-wrap justify-center gap-4">
-        <% @general_members.each do |user| %>
-          <%= render "shared/user_card", user: user, mode: "members", buttons: nil %>
-        <% end %>
-      </div>
-    </section>
-  <% end %>
+  <section class="mb-4">
+    <h3 class="mb-4">
+      <span class="header2">メンバー</span>
+    </h3>
+    <div id="members" class="flex flex-wrap justify-center gap-4">
+      <% @members_memberships.each do |membership| %>
+        <%= render "shared/user_card", user: membership.user, mode: "members", buttons: render("community_memberships/buttons/member_buttons", membership: membership) %>
+      <% end %>
+    </div>
+  </section>
 </section>

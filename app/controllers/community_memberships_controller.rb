@@ -1,9 +1,10 @@
 class CommunityMembershipsController < ApplicationController
-  # before_action :set_community, only: %i[ join ]
-  before_action :set_membership, only: %i[ approve reject cancel withdraw ]
+  before_action :set_membership
 
   # 参加申請
   def join
+    # joinアクションはCommunityMembershipクラスのインスタンスがない場合作成する
+    # そのため、params[:id]はCommunityのものを受け取る
     community = Community.find(params[:id])
     # 参加中のユーザーは拒否
     if current_user.approved_in?(community)
@@ -97,12 +98,45 @@ class CommunityMembershipsController < ApplicationController
     end
   end
 
+  # 役職変更
+  def update_role
+    community = @membership.community
+    @success = false
+    # リーダーのみが役職を変更できる
+    unless current_user.leader_in?(community)
+      redirect_to community_path(community), alert: "操作を行う権限がありません"
+      return
+    end
+
+    unless CommunityMembership.roles.keys.include?(params[:role])
+      redirect_to community_path(community), alert: "無効な操作が行われました"
+      return
+    end
+
+    # roleの更新
+    ActiveRecord::Base.transaction do
+      if params[:role] == "leader"
+        # リーダー(current_user)を入れ替える
+        current_user.membership_for(community).sub!
+      end
+      @membership.update!(role: params[:role])
+      @success = true
+    rescue
+      flash.now[:alert] = "役職を変更できませんでした"
+    end
+
+    if @success
+      if params[:role] == "leader"
+        # リーダーを入れ替える場合は各ユーザーカードの表示も変える必要があるため、
+        # 画面の更新をする
+        redirect_to members_communities_path(community_id: community.id), notice: "リーダーを変更しました"
+      else
+        flash.now[:notice] = "役職を変更しました"
+      end
+    end
+  end
 
   private
-
-  # def set_community
-  #   @community = Community.find(params[:id])
-  # end
 
   def set_membership
     @membership = CommunityMembership.find(params[:id])

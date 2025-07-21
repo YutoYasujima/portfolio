@@ -1,0 +1,18 @@
+<% if @success %>
+  <%= turbo_stream.remove "user-card-#{@membership.user.id}" %>
+
+  <% if @membership.role == "leader" %>
+  <% elsif @membership.role == "sub" %>
+    <%= turbo_stream.append "sub-leaders" do %>
+      <%= render "shared/user_card", user: @membership.user, mode: "members", buttons: render("community_memberships/buttons/sub_leader_buttons", membership: @membership) %>
+    <% end %>
+  <% elsif @membership.role == "general" %>
+    <%= turbo_stream.append "members" do %>
+      <%= render "shared/user_card", user: @membership.user, mode: "members", buttons: render("community_memberships/buttons/member_buttons", membership: @membership) %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.update "flash_messages" do %>
+  <%= render "shared/flash_messages" %>
+<% end %>
