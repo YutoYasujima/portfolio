@@ -7,8 +7,8 @@
     <span class="header2">参加希望</span>
   </h3>
   <div id="user-cards" class="flex flex-wrap justify-center gap-4">
-    <% @requested_users.each do |user| %>
-      <%= render "shared/user_card", user: user, mode: "requested", buttons: render("community_memberships/buttons/requested_buttons", community: @community, user: user) %>
+    <% @memberships_requested.each do |membership| %>
+      <%= render "shared/user_card", user: membership.user, mode: "requested", buttons: render("community_memberships/buttons/requested_buttons", membership: membership) %>
     <% end %>
   </div>
 </section>

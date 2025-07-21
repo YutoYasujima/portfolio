@@ -69,7 +69,7 @@
         <!-- 退会 -->
         <li>
           <%# 解散 %>
-          <%= button_to withdraw_community_path(@community), method: :delete, data: { controller: "modal", action: "click->modal#confirm", modal_text_value: "コミュニティから退会しますか？" }, class: "icon-circle-wrapper", id: "community-withdraw" do %>
+          <%= button_to withdraw_membership_path(@membership), method: :delete, data: { controller: "modal", action: "click->modal#confirm", modal_text_value: "コミュニティから退会しますか？" }, class: "icon-circle-wrapper", id: "community-withdraw" do %>
             <span class="icon-circle">
               <span class="w-8 aspect-square">
                 <%= render "shared/icons/logout_icon" %>

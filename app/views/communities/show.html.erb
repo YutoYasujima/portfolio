@@ -28,7 +28,7 @@
     <%# 参加希望 %>
     <div id="community-membership-button">
       <% if status == "requested" %>
-        <%= render "community_memberships/buttons/cancel_button", community: @community, previous_status: status %>
+        <%= render "community_memberships/buttons/cancel_button", membership: @membership, previous_status: status %>
       <% elsif status != "approved" %>
         <%= render "community_memberships/buttons/join_button", community: @community %>
       <% end %>
