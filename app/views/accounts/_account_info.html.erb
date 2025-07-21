@@ -14,7 +14,7 @@
         current_page = "email"
       elsif controller_name == "passwords" && action_name == "new"
         current_page = "password"
-      elsif controller_name == "deactivations" && action_name == "confirm"
+      elsif controller_name == "deactivations" && (action_name == "confirm" || action_name == "destroy")
         current_page = "deactivation"
       else
         current_page = ""
