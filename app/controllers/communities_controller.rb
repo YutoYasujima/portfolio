@@ -1,5 +1,6 @@
 class CommunitiesController < ApplicationController
   before_action :set_community, only: %i[ show edit update destroy scout members ]
+  before_action :set_membership, only: %i[ show scout members ]
   before_action :authorize_edit_and_update, only: %i[ edit update ]
   before_action :authorize_destroy, only: %i[ destroy ]
   before_action :authorize_access, only: %i[ scout ]
@@ -61,13 +62,15 @@ class CommunitiesController < ApplicationController
   end
 
   def scout
-    @requested_users = @community.requested_users.order(updated_at: :desc)
+    @memberships_requested = @community.community_memberships.where(status: :requested).includes(:user, :community).order(updated_at: :desc)
   end
 
   def members
-    @leader = @community.leader
-    @sub_leaders = @community.sub_leaders
-    @general_members = @community.general_members
+    memberships = @community.community_memberships.includes(:user, :community)
+
+    @leader_membership       = memberships.find { |m| m.role == "leader" }
+    @sub_leaders_memberships = memberships.select { |m| m.role == "sub" }
+    @members_memberships     = memberships.select { |m| m.role == "general" && m.status == "approved" }
   end
 
   private
@@ -75,6 +78,10 @@ class CommunitiesController < ApplicationController
   def set_community
     community_id = params[:community_id] || params[:id]
     @community = Community.find(community_id)
+  end
+
+  def set_membership
+    @membership = CommunityMembership.find_by(community_id: @community, user_id: current_user.id)
   end
 
   # edit・updateのユーザー権限判定

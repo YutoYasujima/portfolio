@@ -1,6 +1,6 @@
-<% if current_user.leader_or_sub_in?(community) %>
+<% if current_user.leader_or_sub_in?(membership.community) %>
   <div class="flex justify-around border-t border-gray-500 pt-2">
-    <%= button_to approve_member_community_path(community, user_id: user.id), method: :patch, form: { data: { turbo_stream: true } }, class: "inline-block border-2 rounded-lg py-1 w-35 bg-blue-100 text-blue-700", id: "request-approved" do %>
+    <%= button_to approve_membership_path(membership), method: :patch, form: { data: { turbo_stream: true } }, class: "inline-block border-2 rounded-lg py-1 w-35 bg-blue-100 text-blue-700" do %>
       <span class="flex justify-center items-center gap-2">
         <span class="w-6 aspect-square">
           <%= render "shared/icons/cheer_icon" %>
@@ -8,7 +8,7 @@
         <span class="text-sm">よろしく！</span>
       </span>
     <% end %>
-    <%= button_to reject_member_community_path(community, user_id: user.id), method: :patch, form: { data: { turbo_stream: true } }, class: "inline-block border-2 rounded-lg py-1 w-35 bg-red-100 text-red-700", id: "request-approved" do %>
+    <%= button_to reject_membership_path(membership), method: :patch, form: { data: { turbo_stream: true } }, class: "inline-block border-2 rounded-lg py-1 w-35 bg-red-100 text-red-700" do %>
       <span class="flex justify-center items-center gap-2">
         <span class="w-6 aspect-square">
           <%= render "shared/icons/sentiment_stressed_icon" %>

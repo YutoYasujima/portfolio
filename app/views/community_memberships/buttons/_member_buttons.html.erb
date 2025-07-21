@@ -1,0 +1,14 @@
+<% if current_user.leader_in?(membership.community) %>
+  <div class="flex justify-around border-t border-gray-500 pt-2">
+    <%= button_to update_role_membership_path(membership), method: :patch, params: { role: "sub" }, form: { data: { turbo_stream: true } }, class: "inline-block border-2 rounded-lg py-1 w-35 bg-green-100 text-green-700" do %>
+      <span class="flex justify-center items-center gap-2">
+        <span class="text-sm">サブリーダーにする</span>
+      </span>
+    <% end %>
+    <%= button_to kick_membership_path(membership), method: :patch, data: { controller: "modal", action: "click->modal#confirm", modal_text_value: "本当に退会してもらいますか？" }, form: { data: { turbo_stream: true } }, class: "inline-block border-2 rounded-lg py-1 w-35 bg-red-100 text-red-700" do %>
+      <span class="flex justify-center items-center gap-2">
+        <span class="text-sm">退会してもらう</span>
+      </span>
+    <% end %>
+  </div>
+<% end %>

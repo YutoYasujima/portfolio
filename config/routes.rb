@@ -54,10 +54,17 @@ Rails.application.routes.draw do
 
     member do
       post :join, to: "community_memberships#join"
-      patch :approve, to: "community_memberships#approve", as: :approve_member
-      patch :reject, to: "community_memberships#reject", as: :reject_member
-      delete :cancel, to: "community_memberships#cancel"
-      delete :withdraw, to: "community_memberships#withdraw"
+    end
+
+    resources :memberships, controller: "community_memberships", only: [], shallow: true do
+      member do
+        patch :approve
+        patch :reject
+        delete :cancel
+        delete :withdraw
+        patch :kick
+        patch :update_role
+      end
     end
   end
   resources :helps, only: %i[ index ]
