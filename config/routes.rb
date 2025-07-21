@@ -62,6 +62,7 @@ Rails.application.routes.draw do
         patch :reject
         delete :cancel
         delete :withdraw
+        patch :kick
         patch :update_role
       end
     end

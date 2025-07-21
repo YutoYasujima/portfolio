@@ -1,5 +1,5 @@
 class CommunityMembershipsController < ApplicationController
-  before_action :set_membership
+  before_action :set_membership, except: :join
 
   # 参加申請
   def join
@@ -34,7 +34,6 @@ class CommunityMembershipsController < ApplicationController
       return
     end
 
-    @user = @membership.user
     if @membership&.requested? && @membership.update(status: :approved)
       flash.now[:notice] = "参加を承認しました"
     else
@@ -51,7 +50,6 @@ class CommunityMembershipsController < ApplicationController
       return
     end
 
-    @user = @membership.user
     if @membership&.requested? && @membership.update(status: :rejected)
       flash.now[:notice] = "参加を断りました"
     else
@@ -98,6 +96,23 @@ class CommunityMembershipsController < ApplicationController
     end
   end
 
+  # 強制退会
+  def kick
+    community = @membership.community
+    # リーダーのみユーザーを強制退会させられる
+    unless current_user.leader_in?(community)
+      redirect_to community_path(community), alert: "操作を行う権限がありません"
+      return
+    end
+
+    user_name = @membership.user.profile.nickname
+    if @membership.general? && @membership.update(status: :kicked, role: :general)
+      flash.now[:notice] = "\"#{user_name}\"さんに退会してもらいました"
+    else
+      flash.now[:alert] = "\"#{user_name}\"さんを退会させられませんでした"
+    end
+  end
+
   # 役職変更
   def update_role
     community = @membership.community
@@ -129,7 +144,7 @@ class CommunityMembershipsController < ApplicationController
       if params[:role] == "leader"
         # リーダーを入れ替える場合は各ユーザーカードの表示も変える必要があるため、
         # 画面の更新をする
-        redirect_to members_communities_path(community_id: community.id), notice: "リーダーを変更しました"
+        redirect_to members_communities_path(community_id: community.id), notice: "リーダーを交代しました"
       else
         flash.now[:notice] = "役職を変更しました"
       end

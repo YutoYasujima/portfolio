@@ -1,6 +1,6 @@
 <% if current_user.leader_in?(membership.community) %>
   <div class="flex justify-around border-t border-gray-500 pt-2">
-    <%= button_to update_role_membership_path(membership), method: :patch, params: { role: "leader" }, data: { controller: "modal", action: "click->modal#confirm", modal_text_value: "本当にリーダーを変更しますか？" }, form: { data: { turbo_stream: true } }, class: "inline-block border-2 rounded-lg py-1 w-35 bg-blue-100 text-blue-700" do %>
+    <%= button_to update_role_membership_path(membership), method: :patch, params: { role: "leader" }, data: { controller: "modal", action: "click->modal#confirm", modal_text_value: "本当にリーダーを交代しますか？" }, form: { data: { turbo_stream: true } }, class: "inline-block border-2 rounded-lg py-1 w-35 bg-blue-100 text-blue-700" do %>
       <span class="flex justify-center items-center gap-2">
         <span class="text-sm">リーダーにする</span>
       </span>
