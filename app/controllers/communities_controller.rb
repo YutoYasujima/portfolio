@@ -64,6 +64,8 @@ class CommunitiesController < ApplicationController
   def scout
     # 参加希望ユーザー
     @memberships_requested = @community.community_memberships.where(status: :requested).includes(:user, :community).order(updated_at: :desc)
+    # スカウト中ユーザー
+    @memberships_invited = @community.community_memberships.where(status: :invited).includes(:user, :community).order(updated_at: :desc)
     # ユーザー検索
     prefecture_id = @community.prefecture_id
     municipality_id = @community.municipality_id

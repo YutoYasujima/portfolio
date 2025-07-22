@@ -1,5 +1,5 @@
 class CommunityMembershipsController < ApplicationController
-  before_action :set_membership, except: :join
+  before_action :set_membership, except: %i[ join invite ]
 
   # 参加申請
   def join
@@ -13,15 +13,47 @@ class CommunityMembershipsController < ApplicationController
     end
 
     @membership = CommunityMembership.find_or_initialize_by(user: current_user, community: community)
-
-    @status = "requested"
-    @membership.status = @status
+    @membership.status = "requested"
     @membership.role = "general"
 
     if @membership.save
       flash.now[:notice] = "参加をリクエストしました"
     else
       flash.now[:alert] = "参加リクエストに失敗しました"
+    end
+  end
+
+  # スカウト
+  def invite
+    # inviteアクションはCommunityMembershipクラスのインスタンスがない場合作成する
+    # そのため、params[:id]はCommunityのものを受け取る
+    community = Community.find(params[:id])
+    # リーダーまたはサブリーダーのみスカウトできる
+    unless current_user.leader_or_sub_in?(community)
+      redirect_to community_path(community), alert: "操作を行う権限がありません"
+      return
+    end
+
+    user = User.find(params[:user_id])
+    @success = false
+    @membership = CommunityMembership.find_by(user: user, community: community)
+    if @membership.present?
+      if @membership.requested?
+        redirect_to scout_communities_path(community_id: community.id), alert: "\"#{user.profile.nickname}\"さんから参加希望が出ています"
+        return
+      end
+    else
+      @membership.CommunityMembership.new(user: user, community: community)
+    end
+
+    @membership.status = "invited"
+    @membership.role = "general"
+
+    if @membership.save
+      @success = true
+      flash.now[:notice] = "スカウトしました"
+    else
+      flash.now[:alert] = "スカウトに失敗しました"
     end
   end
 

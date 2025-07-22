@@ -55,6 +55,7 @@ Rails.application.routes.draw do
 
     member do
       post :join, to: "community_memberships#join"
+      post :invite, to: "community_memberships#invite"
     end
 
     resources :memberships, controller: "community_memberships", only: [], shallow: true do

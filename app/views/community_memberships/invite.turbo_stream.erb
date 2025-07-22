@@ -1,0 +1,11 @@
+<% if @success %>
+  <%= turbo_stream.remove "user-card-#{@membership.user.id}" %>
+
+  <%= turbo_stream.append "inviting-user-cards" do %>
+    <%= render "shared/user_card", user: @membership.user, option: nil, buttons: nil %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.update "flash_messages" do %>
+  <%= render "shared/flash_messages" %>
+<% end %>

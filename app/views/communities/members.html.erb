@@ -9,7 +9,7 @@
       <span class="header2">リーダー</span>
     </h3>
     <div id="leader" class="flex justify-center">
-      <%= render "shared/user_card", user: @leader_membership.user, mode: "members", buttons: nil %>
+      <%= render "shared/user_card", user: @leader_membership.user, option: nil, buttons: nil %>
     </div>
   </section>
   <%# サブリーダー %>
@@ -19,7 +19,7 @@
     </h3>
     <div id="sub-leaders" class="flex flex-wrap justify-center gap-4">
       <% @sub_leaders_memberships.each do |membership| %>
-        <%= render "shared/user_card", user: membership.user, mode: "members", buttons: render("community_memberships/buttons/sub_leader_buttons", membership: membership) %>
+        <%= render "shared/user_card", user: membership.user, option: nil, buttons: render("community_memberships/buttons/sub_leader_buttons", membership: membership) %>
       <% end %>
     </div>
   </section>
@@ -30,7 +30,7 @@
     </h3>
     <div id="members" class="flex flex-wrap justify-center gap-4">
       <% @members_memberships.each do |membership| %>
-        <%= render "shared/user_card", user: membership.user, mode: "members", buttons: render("community_memberships/buttons/member_buttons", membership: membership) %>
+        <%= render "shared/user_card", user: membership.user, option: nil, buttons: render("community_memberships/buttons/member_buttons", membership: membership) %>
       <% end %>
     </div>
   </section>

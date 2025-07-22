@@ -10,7 +10,7 @@
     </h3>
     <div id="requested-user-cards" class="flex flex-wrap justify-center gap-4">
       <% @memberships_requested.each do |membership| %>
-        <%= render "shared/user_card", user: membership.user, mode: "requested", buttons: render("community_memberships/buttons/requested_buttons", membership: membership) %>
+        <%= render "shared/user_card", user: membership.user, option: nil, buttons: render("community_memberships/buttons/requested_buttons", membership: membership) %>
       <% end %>
     </div>
   </section>
@@ -20,8 +20,8 @@
       <span class="header2">スカウト中</span>
     </h3>
     <div id="inviting-user-cards" class="flex flex-wrap justify-center gap-4">
-      <% @memberships_requested.each do |membership| %>
-        <%= render "shared/user_card", user: membership.user, mode: "invited", buttons: render("community_memberships/buttons/requested_buttons", membership: membership) %>
+      <% @memberships_invited.each do |membership| %>
+        <%= render "shared/user_card", user: membership.user, option: nil, buttons: nil %>
       <% end %>
     </div>
   </section>
@@ -30,10 +30,12 @@
     <h3 class="mb-4">
       <span class="header2">スカウトする</span>
     </h3>
+    <!-- ユーザー検索 -->
     <%= render "shared/search_form_format", defaults: @search_form, search_form: render("communities/scout_search_form", model: @search_form, community: @community) %>
+    <!-- ユーザー一覧 -->
     <div id="candidate-user-cards" class="flex flex-wrap justify-center gap-4">
       <% @scout_candidates.each do |user| %>
-        <%= render "shared/user_card", user: user, mode: "candidate", buttons: nil %>
+        <%= render "shared/user_card", user: user, option: render("community_memberships/buttons/invite_button", community: @community, user: user), buttons: nil %>
       <% end %>
     </div>
   </section>

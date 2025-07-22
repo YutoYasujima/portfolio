@@ -28,12 +28,8 @@
         <%= user.mytown_address %>
       </div>
     </div>
-    <% if mode == "following" %>
-      <!-- フォローアイコン -->
-      <div class="flex-shrink-0 ml-auto">
-        <%= render "users/follows/follow_buttons", user: user %>
-      </div>
-    <% end %>
+    <!-- アイコン表示 -->
+    <%= option&.html_safe %>
   </div>
   <%= buttons&.html_safe %>
 </div>

@@ -2,6 +2,6 @@
 >
   <%# 一覧表示 %>
   <% followings.each do |following| %>
-    <%= render "shared/user_card", user: following, mode: "following", buttons: nil %>
+    <%= render "shared/user_card", user: following, option: render("users/follows/follow_buttons", user: following), buttons: nil %>
   <% end %>
 </div>
