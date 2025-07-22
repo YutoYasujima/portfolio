@@ -1,0 +1,6 @@
+<%= turbo_stream.update "candidate-user-cards" do %>
+  <!-- ユーザーカード -->
+  <% @scout_candidates.each do |user| %>
+    <%= render "shared/user_card", user: user, mode: "candidate", buttons: nil %>
+  <% end %>
+<% end %>

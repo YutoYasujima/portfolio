@@ -47,7 +47,8 @@ Rails.application.routes.draw do
   resources :accounts, only: %i[ index destroy ]
   resources :communities do
     collection do
-      get :search
+      get :community_search
+      get :scout_search
       get :scout
       get :members
     end

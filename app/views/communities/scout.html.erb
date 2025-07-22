@@ -2,13 +2,39 @@
 
 <%= render "communities/community_info", community: @community %>
 
-<section class="mx-auto pt-4 pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
-  <h3 class="mb-4">
-    <span class="header2">参加希望</span>
-  </h3>
-  <div id="user-cards" class="flex flex-wrap justify-center gap-4">
-    <% @memberships_requested.each do |membership| %>
-      <%= render "shared/user_card", user: membership.user, mode: "requested", buttons: render("community_memberships/buttons/requested_buttons", membership: membership) %>
-    <% end %>
-  </div>
-</section>
+<div class="mx-auto pt-4 pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
+  <!-- 参加希望 -->
+  <section>
+    <h3 class="mb-4">
+      <span class="header2">参加希望</span>
+    </h3>
+    <div id="requested-user-cards" class="flex flex-wrap justify-center gap-4">
+      <% @memberships_requested.each do |membership| %>
+        <%= render "shared/user_card", user: membership.user, mode: "requested", buttons: render("community_memberships/buttons/requested_buttons", membership: membership) %>
+      <% end %>
+    </div>
+  </section>
+  <!-- スカウト中 -->
+  <section>
+    <h3 class="mb-4">
+      <span class="header2">スカウト中</span>
+    </h3>
+    <div id="inviting-user-cards" class="flex flex-wrap justify-center gap-4">
+      <% @memberships_requested.each do |membership| %>
+        <%= render "shared/user_card", user: membership.user, mode: "invited", buttons: render("community_memberships/buttons/requested_buttons", membership: membership) %>
+      <% end %>
+    </div>
+  </section>
+  <!-- スカウトする -->
+  <section>
+    <h3 class="mb-4">
+      <span class="header2">スカウトする</span>
+    </h3>
+    <%= render "shared/search_form_format", defaults: @search_form, search_form: render("communities/scout_search_form", model: @search_form, community: @community) %>
+    <div id="candidate-user-cards" class="flex flex-wrap justify-center gap-4">
+      <% @scout_candidates.each do |user| %>
+        <%= render "shared/user_card", user: user, mode: "candidate", buttons: nil %>
+      <% end %>
+    </div>
+  </section>
+</div>
