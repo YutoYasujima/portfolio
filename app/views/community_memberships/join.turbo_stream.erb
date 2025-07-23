@@ -1,5 +1,9 @@
-<%= turbo_stream.update "community-membership-button" do %>
-  <%= render "community_memberships/buttons/join_cancel_button", membership: @membership %>
+<% if @membership.requested? %>
+  <%= turbo_stream.update "community-membership-button" do %>
+    <div class="mr-4 text-right">
+      <%= render "community_memberships/buttons/join_cancel_button", membership: @membership %>
+    </div>
+  <% end %>
 <% end %>
 
 <%= turbo_stream.update "flash_messages" do %>

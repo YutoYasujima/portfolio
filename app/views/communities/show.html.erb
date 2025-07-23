@@ -1,10 +1,9 @@
 <%= render "communities/community_info", community: @community %>
 
 <section class="mx-auto pt-4 pb-8 max-w-120">
-  <div class="flex justify-end gap-2 mb-4 pr-2 w-full">
-    <% role = current_user.role_in(@community) %>
-    <% status = current_user.status_in(@community) %>
-    <% if role == "sub" || role == "leader" %>
+  <%# コミュニティのリーダーまたはサブリーダーのみ編集できる %>
+  <% if @membership&.role == "leader" || @membership&.role == "sub" %>
+    <div class="flex justify-end gap-2 mb-4 pr-2 w-full">
       <%# 編集 %>
       <div class="relative flex flex-col justify-center items-center shadow border-2 rounded px-2 bg-green-100 text-green-700 ">
         <%= link_to edit_community_path(@community), class: "absolute inset-0", id: "community-edit" do %><% end %>
@@ -13,7 +12,8 @@
         </div>
         <span class="text-sm">編集</span>
       </div>
-      <% if role == "leader" %>
+      <%# コミュニティのリーダーのみ解散できる %>
+      <% if @membership&.role == "leader" %>
         <%# 解散 %>
         <%= button_to community_path(@community), method: :delete, data: { controller: "modal", action: "click->modal#confirm", modal_text_value: "この操作は元に戻せません。本当にコミュニティを解散しますか？" }, class: "inline-block border-2 rounded px-2 bg-red-100 text-red-700 shadow", id: "community-delete" do %>
           <span class="flex flex-col justify-center items-center">
@@ -24,16 +24,27 @@
           </span>
         <% end %>
       <% end %>
-    <% end %>
-    <%# 参加希望 %>
+    </div>
+  <% end %>
+  <%# コミュニティに未所属のユーザー用ボタン表示 %>
+  <% if @membership&.status != "approved" %>
     <div id="community-membership-button">
-      <% if status == "requested" %>
-        <%= render "community_memberships/buttons/join_cancel_button", membership: @membership %>
-      <% elsif status != "approved" %>
-        <%= render "community_memberships/buttons/join_button", community: @community %>
+      <%# スカウト %>
+      <% if @membership&.status == "invited" %>
+        <%= render "communities/invited", membership: @membership %>
+      <%# 参加希望 %>
+      <% elsif @membership&.status == "requested" %>
+        <div class="mr-4 text-right">
+          <%= render "community_memberships/buttons/join_cancel_button", membership: @membership %>
+        </div>
+      <%# コミュニティに未所属 %>
+      <% else %>
+        <div class="mr-4 text-right">
+          <%= render "community_memberships/buttons/join_button", community: @community %>
+        </div>
       <% end %>
     </div>
-  </div>
+  <% end %>
   <div class="">
     <!-- アイコン -->
     <div class="text-center">

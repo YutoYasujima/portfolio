@@ -10,13 +10,18 @@ class UserSearchForm
 
   # コミュニティスカウトのための検索
   def search_user_for_scout(community)
-    scope = User.joins(:profile)
-                .left_outer_joins(:community_memberships)
-                .where("community_memberships.community_id IS NULL OR (community_memberships.community_id = ? AND community_memberships.status NOT IN (?, ?, ?))",
-                community.id,
-                CommunityMembership.statuses[:approved],
-                CommunityMembership.statuses[:invited],
-                CommunityMembership.statuses[:requested])
+    # CommunityMembershipにあるスカウト対象外のユーザーを取得
+    excluded_user_ids = CommunityMembership.where(
+      community_id: community.id,
+      status: [
+        CommunityMembership.statuses[:approved],
+        CommunityMembership.statuses[:invited],
+        CommunityMembership.statuses[:requested]
+      ]
+    ).select(:user_id)
+    # コミュニティと関連のないユーザーまたは
+    # 関連はあったがスカウト対象のユーザー取得
+    scope = User.joins(:profile).where.not(id: excluded_user_ids)
 
     # ニックネーム検索
     if nickname.present?

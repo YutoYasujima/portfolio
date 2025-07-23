@@ -60,7 +60,8 @@ Rails.application.routes.draw do
 
     resources :memberships, controller: "community_memberships", only: [], shallow: true do
       member do
-        patch :approve
+        patch :requested_approve
+        patch :invited_accept
         patch :reject
         delete :join_cancel
         delete :invite_cancel

@@ -5,14 +5,29 @@ class CommunityMembershipsController < ApplicationController
   def join
     # joinアクションはCommunityMembershipクラスのインスタンスがない場合作成する
     # そのため、params[:id]はCommunityのものを受け取る
-    community = Community.find(params[:id])
+    community = Community.find_by(id: params[:id])
+    # コミュニティが削除されていた場合
+    if community.nil?
+      redirect_to communities_path, alert: "コミュニティは解散しています"
+      return
+    end
+
     # 参加中のユーザーは拒否
     if current_user.approved_in?(community)
       redirect_to community_path(community), alert: "既にこのコミュニティに参加しています"
       return
     end
 
-    @membership = CommunityMembership.find_or_initialize_by(user: current_user, community: community)
+    @membership = CommunityMembership.find_by(user: current_user, community: community)
+    if @membership.present?
+      if @membership.invited?
+        redirect_to community_path(community), notice: "コミュニティからスカウトされています"
+        return
+      end
+    else
+      @membership = CommunityMembership.new(user: current_user, community: community)
+    end
+
     @membership.status = "requested"
     @membership.role = "general"
 
@@ -23,11 +38,39 @@ class CommunityMembershipsController < ApplicationController
     end
   end
 
+  # 参加希望キャンセル
+  def join_cancel
+    community = @membership&.community
+    # コミュニティが削除されていた場合
+    if community.nil?
+      redirect_to communities_path, alert: "コミュニティは解散しています"
+      return
+    end
+
+    # 参加中のユーザーは拒否
+    if current_user.approved_in?(community)
+      redirect_to community_path(community), alert: "既にこのコミュニティに参加しています"
+      return
+    end
+
+    if @membership.update(status: :cancelled, role: :general)
+      flash.now[:notice] = "参加希望を取り消しました"
+    else
+      flash.now[:alert] = "参加希望を取り消すことができませんでした"
+    end
+  end
+
   # スカウト
   def invite
     # inviteアクションはCommunityMembershipクラスのインスタンスがない場合作成する
     # そのため、params[:id]はCommunityのものを受け取る
-    community = Community.find(params[:id])
+    community = Community.find_by(id: params[:id])
+    # コミュニティが削除されていた場合
+    if community.nil?
+      redirect_to communities_path, alert: "コミュニティは解散しています"
+      return
+    end
+
     # リーダーまたはサブリーダーのみスカウトできる
     unless current_user.leader_or_sub_in?(community)
       redirect_to community_path(community), alert: "操作を行う権限がありません"
@@ -38,9 +81,10 @@ class CommunityMembershipsController < ApplicationController
     # 削除されていてもユーザーカードを削除するためにIDを保持
     @user_id = params[:user_id]
     user = User.find_by(id: @user_id)
+    # userがnilなら@membershipもnilになる
     @membership = CommunityMembership.find_by(user: user, community: community)
     if user.nil?
-      flash.now[:alert] = "そのユーザーはアカウントを削除しました"
+      flash.now[:alert] = "ユーザーはアカウントを削除しています"
       return
     end
 
@@ -63,18 +107,36 @@ class CommunityMembershipsController < ApplicationController
     end
   end
 
-    # スカウトキャンセル
+  # スカウトキャンセル
   def invite_cancel
     # ユーザーがアカウントを削除していた場合を考える
     # 削除されていてもユーザーカードを削除するためにIDを保持
     @user_id = params[:user_id]
-    if @membership.nil?
-      flash.now[:alert] = "そのユーザーはアカウントを削除しました"
+    user = User.find_by(id: @user_id)
+    if user.nil?
+      flash.now[:alert] = "そのユーザーはアカウントを削除しています"
       return
     end
 
-    community = @membership.community
-    user = @membership.user
+    # ユーザーが存在しているのに@membershipがnilならコミュニティが削除されている
+    community = @membership&.community
+    if community.nil?
+      redirect_to communities_path, alert: "コミュニティは解散しています"
+      return
+    end
+
+    # user_idで取得したユーザーと@membershipで取得できるユーザーが違う場合不正
+    if user != @membership.user
+      redirect_to community_path(community), alert: "不正な入力がありました"
+      return
+    end
+
+    # リーダーまたはサブリーダーのみスカウトキャンセルができる
+    unless current_user.leader_or_sub_in?(community)
+      redirect_to community_path(community), alert: "操作を行う権限がありません"
+      return
+    end
+
     # 参加中のユーザーは拒否
     if user.approved_in?(community)
       flash.now[:alert] = "既にコミュニティに参加しています"
@@ -82,22 +144,37 @@ class CommunityMembershipsController < ApplicationController
     end
 
     if @membership.update(status: :cancelled, role: :general)
-      flash.now[:notice] = "取り消しました"
+      flash.now[:notice] = "スカウトを取り消しました"
     else
-      flash.now[:alert] = "取り消しできませんでした"
+      flash.now[:alert] = "スカウトを取り消すことができませんでした"
     end
   end
 
-  # 参加
-  def approve
-    community = @membership.community
+  # 参加承認
+  def requested_approve
+    # 参加希望を出したユーザーがアカウントを削除していた場合
+    # 削除されていてもユーザーカードを削除するためにIDを保持
+    @user_id = params[:user_id]
+    user = User.find_by(id: @user_id)
+    if user.nil?
+      flash.now[:alert] = "そのユーザーはアカウントを削除しています"
+      return
+    end
+
+    # コミュニティが削除されていた場合
+    community = @membership&.community
+    if community.nil?
+      redirect_to communities_path, alert: "コミュニティは解散しています"
+      return
+    end
+
     # リーダーまたはサブリーダーのみ承認できる
     unless current_user.leader_or_sub_in?(community)
       redirect_to community_path(community), alert: "操作を行う権限がありません"
       return
     end
 
-    if @membership&.requested? && @membership.update(status: :approved)
+    if @membership.requested? && @membership.update(status: :approved)
       flash.now[:notice] = "参加を承認しました"
     else
       flash.now[:alert] = "承認できませんでした"
@@ -117,22 +194,6 @@ class CommunityMembershipsController < ApplicationController
       flash.now[:notice] = "参加を断りました"
     else
       flash.now[:alert] = "参加を断れませんでした"
-    end
-  end
-
-  # 参加希望キャンセル
-  def join_cancel
-    community = @membership.community
-    # 参加中のユーザーは拒否
-    if current_user.approved_in?(community)
-      redirect_to community_path(community), alert: "既にこのコミュニティに参加しています"
-      return
-    end
-
-    if @membership.update(status: :cancelled, role: :general)
-      flash.now[:notice] = "取り消しました"
-    else
-      flash.now[:alert] = "取り消しできませんでした"
     end
   end
 
