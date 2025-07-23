@@ -1,9 +1,0 @@
-<%= turbo_stream.update "community-membership-button" do %>
-  <% if @previous_status == "requested" %>
-    <%= render "community_memberships/buttons/join_button", community: @membership.community %>
-  <% end %>
-<% end %>
-
-<%= turbo_stream.update "flash_messages" do %>
-  <%= render "shared/flash_messages" %>
-<% end %>

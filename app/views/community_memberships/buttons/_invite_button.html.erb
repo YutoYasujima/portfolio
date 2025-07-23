@@ -1,6 +1,6 @@
-<div class="flex-shrink-0 ml-auto mr-2">
-  <%= button_to invite_community_path(community, user_id: user.id), method: :post, form: { data: { turbo_stream: true } }, class: "inline-block" do %>
-    <span class="flex flex-col justify-center items-center text-orange-500">
+<div id="candidate-user-<%= user.id %>" class="flex-shrink-0 ml-auto mr-2">
+  <%= button_to invite_community_path(community), method: :post, params: { user_id: user.id }, form: { data: { turbo_stream: true } }, class: "inline-block" do %>
+    <span class="flex flex-col justify-center items-center text-green-500">
       <span class="w-10 aspect-square">
         <%= render "shared/icons/communication_icon" %>
       </span>

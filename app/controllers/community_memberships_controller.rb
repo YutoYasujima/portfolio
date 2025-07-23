@@ -34,26 +34,57 @@ class CommunityMembershipsController < ApplicationController
       return
     end
 
-    user = User.find(params[:user_id])
-    @success = false
+    # ユーザーがアカウントを削除していた場合を考える
+    # 削除されていてもユーザーカードを削除するためにIDを保持
+    @user_id = params[:user_id]
+    user = User.find_by(id: @user_id)
     @membership = CommunityMembership.find_by(user: user, community: community)
+    if user.nil?
+      flash.now[:alert] = "そのユーザーはアカウントを削除しました"
+      return
+    end
+
     if @membership.present?
       if @membership.requested?
-        redirect_to scout_communities_path(community_id: community.id), alert: "\"#{user.profile.nickname}\"さんから参加希望が出ています"
+        flash.now[:notice] = "\"#{user.profile.nickname}\"さんから参加希望が出ています"
         return
       end
     else
-      @membership.CommunityMembership.new(user: user, community: community)
+      @membership = CommunityMembership.new(user: user, community: community)
     end
 
     @membership.status = "invited"
     @membership.role = "general"
 
     if @membership.save
-      @success = true
       flash.now[:notice] = "スカウトしました"
     else
       flash.now[:alert] = "スカウトに失敗しました"
+    end
+  end
+
+    # スカウトキャンセル
+  def invite_cancel
+    # ユーザーがアカウントを削除していた場合を考える
+    # 削除されていてもユーザーカードを削除するためにIDを保持
+    @user_id = params[:user_id]
+    if @membership.nil?
+      flash.now[:alert] = "そのユーザーはアカウントを削除しました"
+      return
+    end
+
+    community = @membership.community
+    user = @membership.user
+    # 参加中のユーザーは拒否
+    if user.approved_in?(community)
+      flash.now[:alert] = "既にコミュニティに参加しています"
+      return
+    end
+
+    if @membership.update(status: :cancelled, role: :general)
+      flash.now[:notice] = "取り消しました"
+    else
+      flash.now[:alert] = "取り消しできませんでした"
     end
   end
 
@@ -89,8 +120,8 @@ class CommunityMembershipsController < ApplicationController
     end
   end
 
-  # 申請キャンセル
-  def cancel
+  # 参加希望キャンセル
+  def join_cancel
     community = @membership.community
     # 参加中のユーザーは拒否
     if current_user.approved_in?(community)
@@ -98,7 +129,6 @@ class CommunityMembershipsController < ApplicationController
       return
     end
 
-    @previous_status = @membership.status
     if @membership.update(status: :cancelled, role: :general)
       flash.now[:notice] = "取り消しました"
     else
@@ -186,6 +216,6 @@ class CommunityMembershipsController < ApplicationController
   private
 
   def set_membership
-    @membership = CommunityMembership.find(params[:id])
+    @membership = CommunityMembership.find_by(id: params[:id])
   end
 end

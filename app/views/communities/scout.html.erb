@@ -21,7 +21,7 @@
     </h3>
     <div id="inviting-user-cards" class="flex flex-wrap justify-center gap-4">
       <% @memberships_invited.each do |membership| %>
-        <%= render "shared/user_card", user: membership.user, option: nil, buttons: nil %>
+        <%= render "shared/user_card", user: membership.user, option: render("community_memberships/buttons/invite_cancel_button", membership: membership), buttons: nil %>
       <% end %>
     </div>
   </section>

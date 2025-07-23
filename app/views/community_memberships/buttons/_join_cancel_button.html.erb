@@ -1,4 +1,4 @@
-<%= button_to cancel_membership_path(membership), method: :delete, form: { data: { turbo_stream: true } }, class: "inline-block shadow border-2 rounded p-2 w-19 bg-red-100 text-red-700", id: "community-delete" do %>
+<%= button_to join_cancel_membership_path(membership), method: :delete, form: { data: { turbo_stream: true } }, class: "inline-block shadow border-2 rounded p-2 w-19 bg-red-100 text-red-700", id: "community-delete" do %>
   <span class="flex flex-col justify-center items-center">
     <span class="w-8 aspect-square">
       <%= render "shared/icons/emoji_people_icon" %>

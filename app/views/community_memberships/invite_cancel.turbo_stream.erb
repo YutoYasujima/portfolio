@@ -1,0 +1,15 @@
+<%# ユーザーのアカウントが削除されていた or コミュニティに参加済み or キャンセル成功 %>
+<% if @membership.nil? || @membership.approved? || @membership.cancelled? %>
+  <%= turbo_stream.remove "user-card-#{@user_id}" %>
+<% end %>
+
+<% if @membership&.cancelled? %>
+  <%# スカウトする一覧の先頭に追加 %>
+  <%= turbo_stream.prepend "candidate-user-cards" do %>
+    <%= render "shared/user_card", user: @membership.user, option: render("community_memberships/buttons/invite_button", community: @membership.community, user: @membership.user), buttons: nil %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.update "flash_messages" do %>
+  <%= render "shared/flash_messages" %>
+<% end %>
