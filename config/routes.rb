@@ -62,7 +62,8 @@ Rails.application.routes.draw do
       member do
         patch :requested_approve
         patch :invited_accept
-        patch :reject
+        patch :requested_reject
+        patch :invited_reject
         delete :join_cancel
         delete :invite_cancel
         delete :withdraw

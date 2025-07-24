@@ -1,6 +1,20 @@
 class CommunityMembershipsController < ApplicationController
   before_action :set_membership, except: %i[ join invite ]
 
+  # コミュニティ・ユーザー存在確認要否
+  #                   | community | user |   実行者   |
+  # join              |    〇     |  ✕  |    user    |
+  # join_cancel       |    〇     |  ✕  |    user    |
+  # invite            |    〇     |  〇  | leader,sub |
+  # invite_cancel     |    〇     |  〇  | leader,sub |
+  # requested_approve |    〇     |  〇  | leader,sub |
+  # requested_reject  |    〇     |  〇  | leader,sub |
+  # invite_accept     |    〇     |  ✕  |    user    |
+  # invite_reject     |    〇     |  ✕  |    user    |
+  # withdraw          |    〇     |  ✕  | sub,member |
+  # kick              |    ✕     |  〇  |   leader   |
+  # update_role       |    ✕     |  〇  |   leader   |
+
   # 参加申請
   def join
     # joinアクションはCommunityMembershipクラスのインスタンスがない場合作成する
@@ -181,9 +195,24 @@ class CommunityMembershipsController < ApplicationController
     end
   end
 
-  # 参加拒否
-  def reject
-    community = @membership.community
+  # 参加希望拒否
+  def requested_reject
+    # 参加希望を出したユーザーがアカウントを削除していた場合
+    # 削除されていてもユーザーカードを削除するためにIDを保持
+    @user_id = params[:user_id]
+    user = User.find_by(id: @user_id)
+    if user.nil?
+      flash.now[:alert] = "そのユーザーはアカウントを削除しています"
+      return
+    end
+
+    # コミュニティが削除されていた場合
+    community = @membership&.community
+    if community.nil?
+      redirect_to communities_path, alert: "コミュニティは解散しています"
+      return
+    end
+
     # リーダーまたはサブリーダーのみ拒否できる
     unless current_user.leader_or_sub_in?(community)
       redirect_to community_path(community), alert: "操作を行う権限がありません"
