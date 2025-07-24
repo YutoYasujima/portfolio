@@ -195,7 +195,7 @@ class CommunityMembershipsController < ApplicationController
     end
   end
 
-  # 参加希望拒否
+  # 参加希望お断り
   def requested_reject
     # 参加希望を出したユーザーがアカウントを削除していた場合
     # 削除されていてもユーザーカードを削除するためにIDを保持
@@ -223,6 +223,50 @@ class CommunityMembershipsController < ApplicationController
       flash.now[:notice] = "参加を断りました"
     else
       flash.now[:alert] = "参加を断れませんでした"
+    end
+  end
+
+  # スカウト受け入れ
+  def invited_accept
+    # コミュニティが削除されていた場合
+    community = @membership&.community
+    if community.nil?
+      redirect_to communities_path, alert: "コミュニティは解散しています"
+      return
+    end
+
+    # 参加中のユーザーは拒否
+    if current_user.approved_in?(community)
+      redirect_to community_path(community), alert: "既にこのコミュニティに参加しています"
+      return
+    end
+
+    if @membership.invited? && @membership.update(status: :approved)
+      redirect_to community_path(community), notice: "コミュニティに参加しました"
+    else
+      redirect_to community_path(community), alert: "コミュニティに参加できませんでした"
+    end
+  end
+
+  # スカウトお断り
+  def invited_reject
+    # コミュニティが削除されていた場合
+    community = @membership&.community
+    if community.nil?
+      redirect_to communities_path, alert: "コミュニティは解散しています"
+      return
+    end
+
+    # 参加中のユーザーは拒否
+    if current_user.approved_in?(community)
+      redirect_to community_path(community), alert: "既にこのコミュニティに参加しています"
+      return
+    end
+
+    if @membership&.invited? && @membership.update(status: :rejected)
+      redirect_to community_path(community), notice: "参加を断りました"
+    else
+      redirect_to community_path(community), alert: "参加を断れませんでした"
     end
   end
 
