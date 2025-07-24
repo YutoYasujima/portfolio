@@ -182,6 +182,12 @@ class CommunityMembershipsController < ApplicationController
       return
     end
 
+    # user_idで取得したユーザーと@membershipで取得できるユーザーが違う場合不正
+    if user != @membership.user
+      redirect_to community_path(community), alert: "不正な入力がありました"
+      return
+    end
+
     # リーダーまたはサブリーダーのみ承認できる
     unless current_user.leader_or_sub_in?(community)
       redirect_to community_path(community), alert: "操作を行う権限がありません"
@@ -210,6 +216,12 @@ class CommunityMembershipsController < ApplicationController
     community = @membership&.community
     if community.nil?
       redirect_to communities_path, alert: "コミュニティは解散しています"
+      return
+    end
+
+    # user_idで取得したユーザーと@membershipで取得できるユーザーが違う場合不正
+    if user != @membership.user
+      redirect_to community_path(community), alert: "不正な入力がありました"
       return
     end
 
@@ -272,7 +284,13 @@ class CommunityMembershipsController < ApplicationController
 
   # 自主退会
   def withdraw
-    community = @membership.community
+    # コミュニティが削除されていた場合
+    community = @membership&.community
+    if community.nil?
+      redirect_to communities_path, alert: "コミュニティは解散しています"
+      return
+    end
+
     # 非参加中のユーザーは拒否
     unless current_user.approved_in?(community)
       redirect_to community_path(community), alert: "このコミュニティに参加していません"
@@ -294,14 +312,29 @@ class CommunityMembershipsController < ApplicationController
 
   # 強制退会
   def kick
+    # 強制退会したいユーザーがアカウントを削除していた場合
+    user = @membership&.user
+    if user.nil?
+      flash.now[:alert] = "そのユーザーはアカウントを削除しています"
+      return
+    end
+
     community = @membership.community
+
+    # ユーザーが参加済みであること
+    unless user.approved_in?(community)
+      flash.now[:alert] = "そのユーザーは既に退会しています"
+      return
+    end
+
     # リーダーのみユーザーを強制退会させられる
     unless current_user.leader_in?(community)
       redirect_to community_path(community), alert: "操作を行う権限がありません"
       return
     end
 
-    user_name = @membership.user.profile.nickname
+    user_name = user.profile.nickname
+    # 強制退会させられるのは通常メンバーのみ
     if @membership.general? && @membership.update(status: :kicked, role: :general)
       flash.now[:notice] = "\"#{user_name}\"さんに退会してもらいました"
     else
@@ -311,8 +344,36 @@ class CommunityMembershipsController < ApplicationController
 
   # 役職変更
   def update_role
-    community = @membership.community
     @success = false
+    # 役職変更したいユーザーがアカウントを削除していた場合
+    # 削除されていてもユーザーカードを削除するためにIDを保持
+    @user_id = params[:user_id]
+    user = User.find_by(id: @user_id)
+    if user.nil?
+      flash.now[:alert] = "そのユーザーはアカウントを削除しています"
+      return
+    end
+
+    # 役職変更はリーダーが行う操作のため、コミュニティが無いことはあり得ないが、
+    # 上記で取得したユーザーが不正の場合、@membershipがnilの場合もあるため確認
+    community = @membership&.community
+    if community.nil?
+      redirect_to communities_path, alert: "不正な入力がありました"
+      return
+    end
+
+    # user_idで取得したユーザーと@membershipで取得できるユーザーが違う場合不正
+    if user != @membership.user
+      redirect_to community_path(community), alert: "不正な入力がありました"
+      return
+    end
+
+    # ユーザーが参加済みであること
+    unless user.approved_in?(community)
+      flash.now[:alert] = "そのユーザーは既に退会しています"
+      return
+    end
+
     # リーダーのみが役職を変更できる
     unless current_user.leader_in?(community)
       redirect_to community_path(community), alert: "操作を行う権限がありません"

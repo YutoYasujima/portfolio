@@ -1,6 +1,6 @@
 <% if current_user.leader_in?(membership.community) %>
   <div class="flex justify-around border-t border-gray-500 pt-2">
-    <%= button_to update_role_membership_path(membership), method: :patch, params: { role: "sub" }, form: { data: { turbo_stream: true } }, class: "inline-block border-2 rounded-lg py-1 w-35 bg-green-100 text-green-700" do %>
+    <%= button_to update_role_membership_path(membership), method: :patch, params: { role: "sub", user_id: membership.user.id }, form: { data: { turbo_stream: true } }, class: "inline-block border-2 rounded-lg py-1 w-35 bg-green-100 text-green-700" do %>
       <span class="flex justify-center items-center gap-2">
         <span class="text-sm">サブリーダーにする</span>
       </span>
