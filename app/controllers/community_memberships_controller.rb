@@ -1,5 +1,4 @@
 class CommunityMembershipsController < ApplicationController
-
   COMMUNITY_DISBANDED_MSG = "コミュニティは解散しています"
   ACCOUNT_DELETED_MSG = "そのユーザーはアカウントを削除しています"
   ALREADY_JOINED_COMMUNITY_MSG = "既にコミュニティに参加しています"
@@ -24,41 +23,32 @@ class CommunityMembershipsController < ApplicationController
   # 参加申請
   def join
     # CommunityMembershipデータは作成or検索で取得
-    @membership = nil
-
     # コミュニティ取得
-    community = find_community_from_params_or_redirect(params[:id])
-    return unless community
+    community = find_community_from_params_or_redirect(params[:id]) or return
 
     # 参加中のユーザーは拒否
     return if redirect_if_already_approved(current_user, community)
 
-    @membership = CommunityMembership.find_by(user: current_user, community: community)
-    if @membership.present?
-      # スカウトされている場合は参加希望できない
-      if @membership.invited?
-        redirect_to community_path(community), notice: "コミュニティからスカウトされています"
-        return
-      end
-    else
-      @membership = CommunityMembership.new(user: current_user, community: community)
+    @membership = CommunityMembership.find_or_initialize_by(user: current_user, community: community)
+    # スカウトされている場合は参加希望できない
+    if @membership.persisted? && @membership.invited?
+      redirect_to community_path(community), notice: "コミュニティからスカウトされています"
+      return
     end
 
-    @membership.status = "requested"
-    @membership.role = "general"
+    @membership.assign_attributes(status: :requested, role: :general)
 
     if @membership.save
       flash.now[:notice] = "参加をリクエストしました"
     else
-      flash.now[:alert] = "参加リクエストに失敗しました"
+      flash.now[:alert] = "リクエストに失敗しました"
     end
   end
 
   # 参加希望キャンセル
   def join_cancel
     # コミュニティ取得
-    community = find_community_form_community_membership_or_redirect(@membership)
-    return unless community
+    community = find_community_form_community_membership_or_redirect(@membership) or return
 
     # 参加中のユーザーは拒否
     return if redirect_if_already_approved(current_user, community)
@@ -73,11 +63,7 @@ class CommunityMembershipsController < ApplicationController
   # スカウト
   def invite
     # CommunityMembershipデータは作成or検索で取得
-    @membership = nil
-
-    # コミュニティ取得
-    community = find_community_from_params_or_redirect(params[:id])
-    return unless community
+    community = find_community_from_params_or_redirect(params[:id]) or return
 
     # リーダーまたはサブリーダーのみスカウトできる
     return if redirect_unless_leader_or_sub(current_user, community)
@@ -85,22 +71,16 @@ class CommunityMembershipsController < ApplicationController
     # ユーザーがアカウントを削除していた場合を考える
     # 削除されていてもユーザーカードを削除するためにIDを保持
     @user_id = params[:user_id]
-    user = find_user_from_params_or_render(@user_id)
-    return unless user
+    user = find_user_from_params_or_render(@user_id) or return
 
-    @membership = CommunityMembership.find_by(user: user, community: community)
-    if @membership.present?
-      # 参加希望がある場合はスカウトできない
-      if @membership.requested?
-        flash.now[:notice] = "\"#{user.profile.nickname}\"さんから参加希望が出ています"
-        return
-      end
-    else
-      @membership = CommunityMembership.new(user: user, community: community)
+    @membership = CommunityMembership.find_or_initialize_by(user: user, community: community)
+    # 参加希望がある場合はスカウトできない
+    if @membership.persisted? && @membership.requested?
+      flash.now[:notice] = "\"#{user.profile.nickname}\"さんから参加希望が出ています"
+      return
     end
 
-    @membership.status = "invited"
-    @membership.role = "general"
+    @membership.assign_attributes(status: :invited, role: :general)
 
     if @membership.save
       flash.now[:notice] = "スカウトしました"
@@ -111,15 +91,12 @@ class CommunityMembershipsController < ApplicationController
 
   # スカウトキャンセル
   def invite_cancel
-    # ユーザーがアカウントを削除していた場合を考える
-    # ユーザーカードを画面から削除するためにIDを保持
+    # ユーザーがアカウントを削除していしていても、カードを画面から削除するためにIDを保持
     @user_id = params[:user_id]
-    user = find_user_from_params_or_render(@user_id)
-    return unless user
+    user = find_user_from_params_or_render(@user_id) or return
 
     # ユーザーが存在しているのにcommunityがnilならコミュニティが解散している
-    community = find_community_form_community_membership_or_redirect(@membership)
-    return unless community
+    community = find_community_form_community_membership_or_redirect(@membership) or return
 
     # リーダーまたはサブリーダーのみスカウトできる
     return if redirect_unless_leader_or_sub(current_user, community)
@@ -127,8 +104,7 @@ class CommunityMembershipsController < ApplicationController
     # user_idで取得したユーザーと@membershipで取得できるユーザーが違う場合は不正
     return if redirect_if_user_mismatch(user, @membership.user, community)
 
-    # 参加中のユーザーは拒否
-    # ユーザーカードを画面から削除する
+    # 参加中のユーザーは拒否、ユーザーカードを画面から削除する
     return if render_if_already_approved(user, community)
 
     if @membership.update(status: :cancelled, role: :general)
@@ -140,15 +116,12 @@ class CommunityMembershipsController < ApplicationController
 
   # 参加承認
   def requested_approve
-    # 参加希望を出したユーザーがアカウントを削除していた場合
-    # 削除されていてもユーザーカードを削除するためにIDを保持
+    # ユーザーがアカウントを削除していしていても、カードを画面から削除するためにIDを保持
     @user_id = params[:user_id]
-    user = find_user_from_params_or_render(@user_id)
-    return unless user
+    user = find_user_from_params_or_render(@user_id) or return
 
     # ユーザーが存在しているのにcommunityがnilならコミュニティが解散している
-    community = find_community_form_community_membership_or_redirect(@membership)
-    return unless community
+    community = find_community_form_community_membership_or_redirect(@membership) or return
 
     # リーダーまたはサブリーダーのみ参加承認できる
     return if redirect_unless_leader_or_sub(current_user, community)
@@ -165,15 +138,12 @@ class CommunityMembershipsController < ApplicationController
 
   # 参加希望お断り
   def requested_reject
-    # 参加希望を出したユーザーがアカウントを削除していた場合
-    # 削除されていてもユーザーカードを削除するためにIDを保持
+    # ユーザーがアカウントを削除していしていても、カードを画面から削除するためにIDを保持
     @user_id = params[:user_id]
-    user = find_user_from_params_or_render(@user_id)
-    return unless user
+    user = find_user_from_params_or_render(@user_id) or return
 
     # ユーザーが存在しているのにcommunityがnilならコミュニティが解散している
-    community = find_community_form_community_membership_or_redirect(@membership)
-    return unless community
+    community = find_community_form_community_membership_or_redirect(@membership) or return
 
     # リーダーまたはサブリーダーのみ参加承認できる
     return if redirect_unless_leader_or_sub(current_user, community)
@@ -191,8 +161,7 @@ class CommunityMembershipsController < ApplicationController
   # スカウト受け入れ
   def invited_accept
     # ユーザーが存在しているのにcommunityがnilならコミュニティが解散している
-    community = find_community_form_community_membership_or_redirect(@membership)
-    return unless community
+    community = find_community_form_community_membership_or_redirect(@membership) or return
 
     # 参加中のユーザーは拒否
     return if redirect_if_already_approved(current_user, community)
@@ -207,8 +176,7 @@ class CommunityMembershipsController < ApplicationController
   # スカウトお断り
   def invited_reject
     # ユーザーが存在しているのにcommunityがnilならコミュニティが解散している
-    community = find_community_form_community_membership_or_redirect(@membership)
-    return unless community
+    community = find_community_form_community_membership_or_redirect(@membership) or return
 
     # 参加中のユーザーは拒否
     return if redirect_if_already_approved(current_user, community)
@@ -223,8 +191,7 @@ class CommunityMembershipsController < ApplicationController
   # 自主退会
   def withdraw
     # ユーザーが存在しているのにcommunityがnilならコミュニティが解散している
-    community = find_community_form_community_membership_or_redirect(@membership)
-    return unless community
+    community = find_community_form_community_membership_or_redirect(@membership) or return
 
     # 非参加中のユーザーは拒否
     unless current_user.approved_in?(community)
@@ -250,12 +217,10 @@ class CommunityMembershipsController < ApplicationController
     # 強制退会するユーザーがアカウントを削除していた場合
     # 削除されていてもユーザーカードを削除するためにIDを保持
     @user_id = params[:user_id]
-    user = find_user_from_params_or_render(@user_id)
-    return unless user
+    user = find_user_from_params_or_render(@user_id) or return
 
     # ユーザーが存在しているのにcommunityがnilならコミュニティが解散している
-    community = find_community_form_community_membership_or_redirect(@membership)
-    return unless community
+    community = find_community_form_community_membership_or_redirect(@membership) or return
 
     # ユーザーが退会していないことを確認
     return if render_if_already_withdrawn(user, community)
@@ -278,13 +243,11 @@ class CommunityMembershipsController < ApplicationController
     # 役職変更したいユーザーがアカウントを削除していた場合
     # 削除されていてもユーザーカードを削除するためにIDを保持
     @user_id = params[:user_id]
-    user = find_user_from_params_or_render(@user_id)
-    return unless user
+    user = find_user_from_params_or_render(@user_id) or return
 
     # 役職変更はリーダーが行う操作のため、コミュニティが無いことは有り得ないが、
     # 上記で取得したユーザーが不正の場合、@membershipがnilの場合もあるため確認
-    community = find_community_form_community_membership_or_redirect(@membership)
-    return unless community
+    community = find_community_form_community_membership_or_redirect(@membership) or return
 
     # user_idで取得したユーザーと@membershipで取得できるユーザーが違う場合は不正
     return if redirect_if_user_mismatch(user, @membership.user, community)
@@ -313,14 +276,14 @@ class CommunityMembershipsController < ApplicationController
       flash.now[:alert] = "役職を変更できませんでした"
     end
 
-    if @success
-      if params[:role] == "leader"
-        # リーダーを入れ替える場合は各ユーザーカードの表示も変える必要があるため、
-        # 画面の再読込をする
-        redirect_to members_communities_path(community_id: community.id), notice: "リーダーを交代しました"
-      else
-        flash.now[:notice] = "役職を変更しました"
-      end
+    return unless @success
+
+    if params[:role] == "leader"
+      # リーダーを入れ替える場合は各ユーザーカードの表示も変える必要があるため、
+      # 画面の再読込をする
+      redirect_to members_communities_path(community_id: community.id), notice: "リーダーを交代しました"
+    else
+      flash.now[:notice] = "役職を変更しました"
     end
   end
 
