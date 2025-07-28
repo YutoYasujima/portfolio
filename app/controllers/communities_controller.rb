@@ -9,12 +9,14 @@ class CommunitiesController < ApplicationController
     prefecture_id = current_user.profile.prefecture_id
     municipality_id = current_user.profile.municipality_id
     @search_form = CommunitySearchForm.new(prefecture_id: prefecture_id, municipality_id: municipality_id)
-    @communities = @search_form.search_communities.order(updated_at: :desc)
+    @communities = @search_form.search_communities(current_user)
+    # community_idをキー、各コミュニティにおけるユーザーの所属状態statusをバリューとしたハッシュを取得する
+    @memberships_by_community_id = current_user.community_memberships.index_by(&:community_id)
   end
 
   def community_search
     search_form = CommunitySearchForm.new(community_search_params)
-    @communities = search_form.search_communities.order(updated_at: :desc)
+    @communities = search_form.search_communities(current_user)
   end
 
   def show; end
