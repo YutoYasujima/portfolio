@@ -1,6 +1,6 @@
 <%= form_with url: community_search_communities_path, method: :get, scope: :search, model: model, html: { data: { search_target: "searchForm", turbo_stream: true } } do |form| %>
   <!-- コミュニティ名 -->
-  <div class="field md:w-1/2">
+  <div class="field">
     <%= form.label :name, "コミュニティ名" %>
     <%= form.text_field :name, placeholder: "入力してください", class: "text-field", maxlength: 20, data: { search_target: "inputValue" } %>
   </div>
