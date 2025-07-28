@@ -47,20 +47,25 @@ Rails.application.routes.draw do
   resources :accounts, only: %i[ index destroy ]
   resources :communities do
     collection do
-      get :search
+      get :community_search
+      get :scout_search
       get :scout
       get :members
     end
 
     member do
       post :join, to: "community_memberships#join"
+      post :invite, to: "community_memberships#invite"
     end
 
     resources :memberships, controller: "community_memberships", only: [], shallow: true do
       member do
-        patch :approve
-        patch :reject
-        delete :cancel
+        patch :requested_approve
+        patch :invited_accept
+        patch :requested_reject
+        patch :invited_reject
+        delete :join_cancel
+        delete :invite_cancel
         delete :withdraw
         patch :kick
         patch :update_role

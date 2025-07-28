@@ -23,12 +23,4 @@ export default class extends Controller {
     event.preventDefault();
     this.searchFormTarget.requestSubmit();
   }
-
-  clear() {
-    // ページのリロードを行う
-    // Turboのキャッシュをクリア
-    Turbo.cache.clear();
-    // Turboで現在のURLを再訪問（履歴は上書き）
-    Turbo.visit(window.location.href, { action: "replace" });
-  }
 }

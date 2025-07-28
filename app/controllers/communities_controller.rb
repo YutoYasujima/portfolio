@@ -1,20 +1,35 @@
 class CommunitiesController < ApplicationController
-  before_action :set_community, only: %i[ show edit update destroy scout members ]
+  before_action :set_community, only: %i[ show edit update destroy scout scout_search members ]
   before_action :set_membership, only: %i[ show scout members ]
   before_action :authorize_edit_and_update, only: %i[ edit update ]
   before_action :authorize_destroy, only: %i[ destroy ]
   before_action :authorize_access, only: %i[ scout ]
 
   def index
-    prefecture_id = current_user.profile.prefecture_id
-    municipality_id = current_user.profile.municipality_id
-    @search_form = CommunitySearchForm.new(prefecture_id: prefecture_id, municipality_id: municipality_id)
-    @communities = @search_form.search_communities.order(updated_at: :desc)
+    session.delete(:communities_home_search_values) if params[:clear].present?
+
+    # 検索フォームの値設定
+    raw_search_params =
+      if session[:communities_home_search_values].present?
+        session[:communities_home_search_values]
+      else
+        {
+          prefecture_id: current_user.profile.prefecture_id, municipality_id: current_user.profile.municipality_id
+        }
+      end
+    @search_form = CommunitySearchForm.new(raw_search_params)
+    @communities = @search_form.search_communities(current_user)
+    # community_idをキー、各コミュニティにおけるユーザーの所属状態statusをバリューとしたハッシュを取得する
+    @memberships_by_community_id = current_user.community_memberships.index_by(&:community_id)
   end
 
-  def search
-    search_form = CommunitySearchForm.new(search_params)
-    @communities = search_form.search_communities.order(updated_at: :desc)
+  def community_search
+    search_form = CommunitySearchForm.new(community_search_params)
+    # sessionに画面表示の条件を保持しておく
+    session[:communities_home_search_values] = search_form.attributes
+    @communities = search_form.search_communities(current_user)
+    # community_idをキー、各コミュニティにおけるユーザーの所属状態statusをバリューとしたハッシュを取得する
+    @memberships_by_community_id = current_user.community_memberships.index_by(&:community_id)
   end
 
   def show; end
@@ -62,7 +77,31 @@ class CommunitiesController < ApplicationController
   end
 
   def scout
+    # 参加希望ユーザー
     @memberships_requested = @community.community_memberships.where(status: :requested).includes(:user, :community).order(updated_at: :desc)
+    # スカウト中ユーザー
+    @memberships_invited = @community.community_memberships.where(status: :invited).includes(:user, :community).order(updated_at: :desc)
+    # ユーザー検索
+    session.delete(:scout_community_members_search_values) if params[:clear].present?
+
+    # 検索フォームの値設定
+    raw_search_params =
+      if session[:scout_community_members_search_values].present?
+        session[:scout_community_members_search_values]
+      else
+        {
+          prefecture_id: current_user.profile.prefecture_id, municipality_id: current_user.profile.municipality_id
+        }
+      end
+    @search_form = UserSearchForm.new(raw_search_params)
+    @scout_candidates = @search_form.search_user_for_scout(@community)
+  end
+
+  def scout_search
+    search_form = UserSearchForm.new(scout_search_params)
+    # sessionに画面表示の条件を保持しておく
+    session[:scout_community_members_search_values] = search_form.attributes
+    @scout_candidates = search_form.search_user_for_scout(@community)
   end
 
   def members
@@ -115,10 +154,17 @@ class CommunitiesController < ApplicationController
     params.require(:community).permit(:name, :prefecture_id, :municipality_id, :description, :icon, :icon_cache)
   end
 
-  # 検索時のストロングパラメータ取得
-  def search_params
+  # コミュニティ検索時のストロングパラメータ取得
+  def community_search_params
     params.fetch(:search, {}).permit(
       :name, :prefecture_id, :municipality_id
+    )
+  end
+
+  # スカウトユーザー検索時のストロングパラメータ取得
+  def scout_search_params
+    params.fetch(:search, {}).permit(
+      :nickname, :identifier, :prefecture_id, :municipality_id
     )
   end
 end

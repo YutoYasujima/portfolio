@@ -1,0 +1,31 @@
+<%= form_with url: scout_search_communities_path, method: :get, scope: :search, model: model, html: { data: { search_target: "searchForm", turbo_stream: true } } do |form| %>
+  <!-- コミュニティID(モデルに存在しない) -->
+  <%= hidden_field_tag :community_id, community.id %>
+
+  <!-- ニックネーム -->
+  <div class="field">
+    <%= form.label :nickname, "ニックネーム" %>
+    <%= form.text_field :nickname, placeholder: "入力してください", class: "text-field", maxlength: 20, data: { search_target: "inputValue" } %>
+  </div>
+
+  <!-- ユーザーID -->
+  <div class="field">
+    <%= form.label :identifier, "ユーザーID" %>
+    <%= form.text_field :identifier, placeholder: "入力してください", class: "text-field", maxlength: 10, data: { search_target: "inputValue" } %>
+  </div>
+
+  <!-- マイタウン -->
+  <div data-controller="prefecture-municipality" class="field">
+    <%= label_tag nil, "マイタウン" %>
+    <div class="mytown-selects">
+      <%= form.collection_select :prefecture_id, Prefecture.all, :id, :name_kanji, {}, { class: "select-field", data: { search_target: "inputValue", action: "change->prefecture-municipality#loadMunicipalities" }} %>
+
+      <%= form.collection_select :municipality_id, Municipality.where(prefecture_id: form.object.prefecture_id || 1).order(:name_kana), :id, :name_kanji, {}, { class: "select-field", data: { search_target: "inputValue", prefecture_municipality_target: "municipality" }} %>
+    </div>
+  </div>
+
+  <div class="flex justify-center gap-2 mt-8 text-center">
+    <%= button_tag "検索", type: "button", class: "button", data: { action: "click->search#submit" } %>
+    <%= link_to "クリア", scout_communities_path(community_id: community.id, clear: 1), class: "button button-clear flex justify-center items-center" %>
+  </div>
+<% end %>

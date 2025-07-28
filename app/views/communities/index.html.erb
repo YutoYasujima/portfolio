@@ -9,7 +9,7 @@
   </h2>
 </div>
 
-<%= render "shared/search_form_format", defaults: @search_form, search_form: render("communities/search_form", model: @search_form) %>
+<%= render "shared/search_form_format", defaults: @search_form, search_form: render("communities/community_search_form", model: @search_form) %>
 
 <section class="mx-auto pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
   <div class="mb-4 text-right">
@@ -19,7 +19,7 @@
   <div id="community-cards" class="flex flex-wrap justify-center gap-4">
     <!-- コミュニティカード -->
     <% @communities.each do |community| %>
-      <%= render "shared/community_card", community: community %>
+      <%= render "shared/community_card", community: community, memberships_by_community_id: @memberships_by_community_id %>
     <% end %>
   </div>
 </section>

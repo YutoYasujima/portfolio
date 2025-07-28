@@ -1,0 +1,22 @@
+<%# ユーザーのアカウントが削除されていた or 招待に成功 %>
+<% if @membership.nil? || @membership.requested? || @membership.invited? %>
+  <%= turbo_stream.remove "user-card-#{@user_id}" %>
+<% end %>
+
+<%# 参加希望の方に追加しておく %>
+<% if @membership&.requested? %>
+  <%= turbo_stream.prepend "requested-user-cards" do %>
+    <%= render "shared/user_card", user: @membership.user, option: nil, buttons: render("community_memberships/buttons/requested_buttons", membership: @membership) %>
+  <% end %>
+<% end %>
+
+<%# 招待に成功 %>
+<% if @membership&.invited? %>
+  <%= turbo_stream.append "inviting-user-cards" do %>
+    <%= render "shared/user_card", user: @membership.user, option: render("community_memberships/buttons/invite_cancel_button", membership: @membership), buttons: nil %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.update "flash_messages" do %>
+  <%= render "shared/flash_messages" %>
+<% end %>

@@ -1,9 +1,22 @@
 <div class="community-card relative shadow rounded-lg py-2 px-2 w-80 bg-white">
   <%= link_to community_path(community), class: "absolute inset-0" do %><% end %>
   <!-- ヘッダー -->
-  <h3 class="header2 flex justify-between items-end ml-0">
-    <span class="text-2xl"><%= community.name %></span>
-    <span class="text-xl text-green-500">参加</span>
+  <h3 class="header2 flex justify-between items-end gap-1 ml-0">
+    <span class="text-xl truncate overflow-hidden whitespace-nowrap">
+      <%= community.name %>
+    </span>
+    <% membership_status = memberships_by_community_id[community.id]&.status %>
+    <span class="flex-shrink-0 text-base">
+      <% if membership_status == "approved" %>
+        <span class="text-blue-500">参加中</span>
+      <% elsif membership_status == "requested" %>
+        <span class="text-green-500">参加希望</span>
+      <% elsif membership_status == "invited" %>
+        <span class="text-red-500 text-lg">スカウト</span>
+      <% else %>
+        <span class="text-gray-500">未参加</span>
+      <% end %>
+    </span>
   </h3>
   <div class="flex items-center gap-1 w-full">
     <!-- アイコン -->
@@ -32,7 +45,7 @@
           <%= render "shared/icons/groups_icon" %>
         </span>
         <span class="w-full ml-1">
-          10人
+          <%= community.approved_members_count %>人
         </span>
       </p>
       <!-- 作成日時 -->

@@ -1,0 +1,7 @@
+<div id="candidate-user-<%= membership.user.id %>" class="flex-shrink-0 ml-auto mr-2">
+  <%= button_to invite_cancel_membership_path(membership, user_id: membership.user.id), method: :delete, form: { data: { turbo_stream: true } }, class: "flex items-center" do %>
+    <span class="w-8 aspect-square text-red-500">
+      <%= render "shared/icons/close_icon" %>
+    </span>
+  <% end %>
+</div>

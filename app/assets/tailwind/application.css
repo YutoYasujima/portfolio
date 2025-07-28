@@ -136,7 +136,7 @@
 /* ボタン */
 .button {
   padding: 0.25rem 1.25rem;
-  min-width: 150px;
+  min-width: 140px;
   height: 40px;
   border-radius: 8px;
   color: white;
@@ -148,6 +148,9 @@
 }
 .button-delete {
   background-color: #DF3737;
+}
+.button-clear {
+  background-color: #f59e0b;
 }
 
 /* フォーム */

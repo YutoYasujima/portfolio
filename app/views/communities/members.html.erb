@@ -3,13 +3,22 @@
 <%= render "communities/community_info", community: @community %>
 
 <section class="mx-auto pt-4 pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
+  <%= button_tag type: "button",
+    data: { controller: "reload", action: "click->reload#reload" },
+    class: "link underline flex items-center ml-auto" do
+  %>
+    <span class="w-6 aspect-square">
+      <%= render "shared/icons/refresh_icon" %>
+    </span>
+      <span>最新情報取得</span>
+  <% end %>
   <%# リーダー %>
   <section class="mb-4">
     <h3 class="mb-4">
       <span class="header2">リーダー</span>
     </h3>
     <div id="leader" class="flex justify-center">
-      <%= render "shared/user_card", user: @leader_membership.user, mode: "members", buttons: nil %>
+      <%= render "shared/user_card", user: @leader_membership.user, option: nil, buttons: nil %>
     </div>
   </section>
   <%# サブリーダー %>
@@ -19,7 +28,7 @@
     </h3>
     <div id="sub-leaders" class="flex flex-wrap justify-center gap-4">
       <% @sub_leaders_memberships.each do |membership| %>
-        <%= render "shared/user_card", user: membership.user, mode: "members", buttons: render("community_memberships/buttons/sub_leader_buttons", membership: membership) %>
+        <%= render "shared/user_card", user: membership.user, option: nil, buttons: render("community_memberships/buttons/sub_leader_buttons", membership: membership) %>
       <% end %>
     </div>
   </section>
@@ -30,7 +39,7 @@
     </h3>
     <div id="members" class="flex flex-wrap justify-center gap-4">
       <% @members_memberships.each do |membership| %>
-        <%= render "shared/user_card", user: membership.user, mode: "members", buttons: render("community_memberships/buttons/member_buttons", membership: membership) %>
+        <%= render "shared/user_card", user: membership.user, option: nil, buttons: render("community_memberships/buttons/member_buttons", membership: membership) %>
       <% end %>
     </div>
   </section>
