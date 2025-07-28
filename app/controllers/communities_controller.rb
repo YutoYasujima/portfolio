@@ -17,6 +17,8 @@ class CommunitiesController < ApplicationController
   def community_search
     search_form = CommunitySearchForm.new(community_search_params)
     @communities = search_form.search_communities(current_user)
+    # community_idをキー、各コミュニティにおけるユーザーの所属状態statusをバリューとしたハッシュを取得する
+    @memberships_by_community_id = current_user.community_memberships.index_by(&:community_id)
   end
 
   def show; end
