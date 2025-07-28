@@ -15,7 +15,8 @@
     </div>
   </div>
 
-  <div class="mt-8 text-center">
+  <div class="flex justify-center gap-2 mt-8 text-center">
     <%= button_tag "検索", type: "button", class: "button", data: { action: "click->search#submit" } %>
+    <%= link_to "クリア", communities_path(clear: 1), class: "button button-clear flex justify-center items-center" %>
   </div>
 <% end %>

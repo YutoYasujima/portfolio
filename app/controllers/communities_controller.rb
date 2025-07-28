@@ -6,9 +6,18 @@ class CommunitiesController < ApplicationController
   before_action :authorize_access, only: %i[ scout ]
 
   def index
-    prefecture_id = current_user.profile.prefecture_id
-    municipality_id = current_user.profile.municipality_id
-    @search_form = CommunitySearchForm.new(prefecture_id: prefecture_id, municipality_id: municipality_id)
+    clear_community_search_values! if params[:clear].present?
+
+    # 検索フォームの値設定
+    raw_search_params = if stored_community_search_values.present?
+                          stored_community_search_values
+                        else
+                          {
+                            prefecture_id: current_user.profile.prefecture_id,
+                            municipality_id: current_user.profile.municipality_id
+                          }
+                        end
+    @search_form = CommunitySearchForm.new(raw_search_params)
     @communities = @search_form.search_communities(current_user)
     # community_idをキー、各コミュニティにおけるユーザーの所属状態statusをバリューとしたハッシュを取得する
     @memberships_by_community_id = current_user.community_memberships.index_by(&:community_id)
@@ -16,6 +25,8 @@ class CommunitiesController < ApplicationController
 
   def community_search
     search_form = CommunitySearchForm.new(community_search_params)
+    # sessionに画面表示の条件を保持しておく
+    store_community_search_values!(search_form.attributes)
     @communities = search_form.search_communities(current_user)
     # community_idをキー、各コミュニティにおけるユーザーの所属状態statusをバリューとしたハッシュを取得する
     @memberships_by_community_id = current_user.community_memberships.index_by(&:community_id)
@@ -144,5 +155,20 @@ class CommunitiesController < ApplicationController
     params.fetch(:search, {}).permit(
       :nickname, :identifier, :prefecture_id, :municipality_id
     )
+  end
+
+  # セッションから検索条件を取得
+  def stored_community_search_values
+    session[:communities_home_search_values]
+  end
+
+  # セッションに検索条件を保存
+  def store_community_search_values!(values)
+    session[:communities_home_search_values] = values
+  end
+
+  # セッションをクリア
+  def clear_community_search_values!
+    session.delete(:communities_home_search_values)
   end
 end
