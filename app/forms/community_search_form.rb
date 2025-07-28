@@ -46,24 +46,41 @@ class CommunitySearchForm
       .select("communities.*, COALESCE(memberships_count.approved_count, 0) AS approved_members_count")
 
     # ユーザーのstatusで並び替え
+    ## サニタイズ
+    join_sql = ApplicationRecord.send(
+      :sanitize_sql_array,
+      [
+        <<~SQL,
+          LEFT OUTER JOIN community_memberships AS current_user_membership
+          ON current_user_membership.community_id = communities.id
+          AND current_user_membership.user_id = ?
+        SQL
+        user.id
+      ]
+    )
     ## userとのmembershipを外部結合
-    scope = scope
-    .joins(<<~SQL)
-      LEFT OUTER JOIN community_memberships AS current_user_membership
-        ON current_user_membership.community_id = communities.id
-        AND current_user_membership.user_id = #{user.id}
-    SQL
+    scope = scope.joins(join_sql)
 
     ## 結合したstatusをソート用の値に変換する
-    scope = scope.select(<<~SQL)
-      current_user_membership.status AS user_membership_status,
-      CASE current_user_membership.status
-        WHEN #{CommunityMembership.statuses[:approved]} THEN 1
-        WHEN #{CommunityMembership.statuses[:invited]} THEN 2
-        WHEN #{CommunityMembership.statuses[:requested]} THEN 3
-        ELSE 4
-      END AS user_membership_priority
-    SQL
+    ## サニタイズ
+    case_sql = ApplicationRecord.send(
+      :sanitize_sql_array,
+      [
+        <<~SQL,
+          current_user_membership.status AS user_membership_status,
+          CASE current_user_membership.status
+            WHEN ? THEN 1
+            WHEN ? THEN 2
+            WHEN ? THEN 3
+            ELSE 4
+          END AS user_membership_priority
+        SQL
+        CommunityMembership.statuses[:approved],
+        CommunityMembership.statuses[:invited],
+        CommunityMembership.statuses[:requested]
+      ]
+    )
+    scope = scope.select(case_sql)
 
     ## ステータス順 + 更新日時
     scope = scope.order("user_membership_priority ASC, communities.updated_at DESC")

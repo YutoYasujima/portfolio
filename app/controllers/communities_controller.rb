@@ -167,19 +167,4 @@ class CommunitiesController < ApplicationController
       :nickname, :identifier, :prefecture_id, :municipality_id
     )
   end
-
-  # セッションからコミュニティ検索条件を取得
-  def stored_community_search_values
-    session[:communities_home_search_values]
-  end
-
-  # セッションにコミュニティ検索条件を保存
-  def store_community_search_values!(values)
-    session[:communities_home_search_values] = values
-  end
-
-  # セッションのコミュニティ検索条件をクリア
-  def clear_community_search_values!
-    session.delete(:communities_home_search_values)
-  end
 end
