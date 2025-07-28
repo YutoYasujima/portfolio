@@ -1,6 +1,6 @@
 <%= turbo_stream.update "candidate-user-cards" do %>
   <!-- ユーザーカード -->
   <% @scout_candidates.each do |user| %>
-    <%= render "shared/user_card", user: user, option: nil, buttons: nil %>
+    <%= render "shared/user_card", user: user, option: render("community_memberships/buttons/invite_button", community: @community, user: user), buttons: nil %>
   <% end %>
 <% end %>
