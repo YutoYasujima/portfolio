@@ -1,0 +1,15 @@
+<%= render "shared/mypage_info" %>
+
+<section class="mx-auto pt-4 pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
+  <%= render "shared/infinite_scroll_item",
+    controller: "users",
+    action: "load_more_communities",
+    user_id: 0,
+    title: "参加コミュニティ一覧",
+    objects_count: @communities_count,
+    snapshot_time: @snapshot_time,
+    is_last_page: @is_last_page,
+    objects: @communities,
+    contents: render("communities_cards_infinite_scroll", communities: @communities, memberships_by_community_id: @memberships_by_community_id)
+  %>
+</section>

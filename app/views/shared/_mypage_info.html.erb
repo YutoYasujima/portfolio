@@ -18,6 +18,8 @@
         current_page = "bookmark"
       elsif controller_name == "users" && action_name == "followings"
         current_page = "following"
+      elsif controller_name == "users" && action_name == "communities"
+        current_page = "community"
       else
         current_page = ""
       end %>
@@ -67,7 +69,7 @@
       </li>
       <!-- コミュニティ -->
       <li>
-        <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "community"}", id: "community-link" do %>
+        <%= link_to communities_users_path, class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "community"}", id: "community-link" do %>
           <div class="icon-circle <%= "icon-circle-current" if current_page == "community" %>">
             <div class="w-8 aspect-square">
               <%= render "shared/icons/handshake_icon" %>

@@ -1,0 +1,6 @@
+<div id="communities" class="flex flex-wrap justify-center gap-4">
+  <!-- コミュニティカード -->
+  <% communities.each do |community| %>
+    <%= render "shared/community_card", community: community, memberships_by_community_id: memberships_by_community_id %>
+  <% end %>
+</div>
