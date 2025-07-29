@@ -115,6 +115,25 @@ class User < ApplicationRecord
     status_in(community) == "approved"
   end
 
+  # ユーザーが参加中のコミュニティをメンバー数とともに取得
+  def approved_communities_with_member_count
+    # 関連のあるコミュニティ取得
+    my_communities = communities
+    # 取得した各コミュニティのID取得
+    community_ids = my_communities.select(:id)
+    # 取得した各コミュニティのメンバー数取得
+    approved_memberships = CommunityMembership
+      .select("community_id, COUNT(*) AS approved_count")
+      .where(status: :approved, community_id: community_ids)
+      .group(:community_id)
+    # 参加中のコミュニティ取得
+    my_communities
+      .joins("LEFT OUTER JOIN (#{approved_memberships.to_sql}) AS memberships_count ON memberships_count.community_id = communities.id")
+      .where(community_memberships: { status: :approved })
+      .select("communities.*, COALESCE(memberships_count.approved_count, 0) AS approved_members_count")
+  end
+
+
   # パスワード変更期限をチェックする
   def change_password_period_valid?
     change_password_sent_at && change_password_sent_at >= 1.hours.ago

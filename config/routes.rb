@@ -18,6 +18,8 @@ Rails.application.routes.draw do
     collection do
       get :followings
       get :load_more_followings
+      get :communities
+      get :load_more_communities
     end
   end
   resources :follows, only: %i[ create destroy ]
