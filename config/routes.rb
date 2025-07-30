@@ -73,6 +73,15 @@ Rails.application.routes.draw do
         patch :update_role
       end
     end
+
+    resources :chats, only: %i[ index create destroy ], module: :communities do
+      collection do
+        get :load_more
+      end
+      member do
+        get :render_chat
+      end
+    end
   end
   resources :helps, only: %i[ index ]
   get "/terms", to: "pages#terms", as: :terms

@@ -528,6 +528,9 @@ input:-webkit-autofill{
 .share .chat-message-wrapper {
   background-color: hsl(96, 100%, 80%);
 }
+.default .chat-message-wrapper {
+  background-color: hsl(210, 100%, 80%);
+}
 /* 吹き出し */
 .chat-message-wrapper::after {
   content: '';
@@ -552,6 +555,9 @@ input:-webkit-autofill{
 }
 .share .chat-message-wrapper::after {
   border-right-color: hsl(96, 100%, 80%);
+}
+.default .chat-message-wrapper::after {
+  background-color: hsl(210, 100%, 80%);
 }
 /* メッセージ */
 .chat-message {

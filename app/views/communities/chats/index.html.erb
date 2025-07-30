@@ -5,37 +5,18 @@
 <div data-controller="disable-scroll"></div>
 
 <div class="flex flex-col">
-  <%= render "machi_repos/machi_repo_info", machi_repo: @machi_repo %>
+  <%= render "communities/community_info", community: @community, membership: @membership %>
 
   <section
     class="relative flex-1 mx-auto w-full max-w-120 shadow-lg"
-    data-controller="chat-scroll machi-repos--chat"
-    data-chat-scroll-machi-repo-id-value="<%= @machi_repo.id %>"
-    data-machi-repos--chat-machi-repo-id-value="<%= @machi_repo.id %>"
-    data-machi-repos--chat-user-id-value="<%= current_user.id %>"
-    data-machi-repos--chat-textarea-resize-outlet=".textarea-resize"
   >
-    <%# スクロール可能表示 %>
-    <div
-      data-chat-scroll-target="scrollableIcon"
-      class="hidden absolute top-[8px] left-1/2 -translate-x-1/2 z-1"
-    >
-      <div class="bounce w-8 aspect-square  border rounded-full bg-white">
-        <%= render "shared/icons/arrow_upward_icon" %>
-      </div>
-    </div>
     <%# chat-sectionのモバイル版の高さはtoggle_controller.jsで設定しているが、height設定をしないとスクロールができないため設定している %>
     <div
       id="chat-section"
       class="invisible px-2 h-[100px] overflow-y-auto transition-all duration-300 ease-in-out md:h-[calc(100vh-355px)]"
-      data-chat-scroll-target="container"
-      data-machi-repos--chat-target="container"
     >
       <div
         id="chat-area"
-        data-chat-scroll-target="chatArea"
-        data-machi-repos--chat-target="chatArea"
-        class=""
       >
         <%# id="chat-last-page-marker"の後にturbo_frameでchatを追加(無限スクロール) %>
         <div id="chat-last-page-marker" data-last-page="<%= @is_last_page %>" class="hidden"></div>
@@ -63,7 +44,7 @@
           <% previous_date = chat_date %>
 
           <% if current_user == chat.user %>
-            <%= render "shared/chat_mine", chat: chat, chat_color_class_name: "#{@machi_repo.info_level}", remove_button: render("machi_repos/chats/chat_remove_button", machi_repo: @machi_repo, chat: chat) %>
+            <%= render "shared/chat_mine", chat: chat, chat_color_class_name: "default", remove_button: nil %>
           <% else %>
             <%= render "shared/chat_others", nickname: chat.user.profile.nickname, chat: chat %>
           <% end %>
@@ -125,16 +106,5 @@
         </div>
       </div>
     <% end %>
-
-    <%# 新着チャット表示 %>
-    <div
-      data-action="click->machi-repos--chat#scrollNewChat"
-      data-machi-repos--chat-target="newIcon"
-      class="hidden absolute bottom-2 right-2 shadow-lg border-2 border-orange-400 rounded-full w-[60px] aspect-square text-center leading-[60px] bg-white text-orange-500 font-semibold z-1 md:right-4">
-      New!!
-    </div>
-
-    <!-- ヘルプ -->
-    <%= render "shared/help_item", title: "チャット方法", content: render("shared/helps/how_to_chat/content"), position_style: "absolute top-2 right-2 md:right-6" %>
   </section>
 </div>

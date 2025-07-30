@@ -10,12 +10,12 @@
     <ul class="flex justify-center <%= is_belongs_to_community ? "gap-3" : "gap-12" %> mb-4 mx-auto max-w-[500px] md:flex-col">
       <% if controller_name == "communities" && action_name == "show"
         current_page = "detail"
+      elsif controller_name == "chats" && action_name == "index"
+        current_page = "chat"
       elsif controller_name == "communities" && action_name == "scout"
         current_page = "scout"
       elsif controller_name == "communities" && action_name == "members"
         current_page = "members"
-      elsif controller_name == "users" && action_name == "followings"
-        current_page = "following"
       else
         current_page = ""
       end %>
@@ -33,7 +33,7 @@
       <% if is_belongs_to_community %>
         <!-- チャット -->
         <li>
-          <%= link_to "#", class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "chat"}", id: "chat-link" do %>
+          <%= link_to community_chats_path(community), class: "icon-circle-wrapper #{"icon-circle-wrapper-current" if current_page == "chat"}", id: "chat-link" do %>
             <div class="icon-circle <%= "icon-circle-current" if current_page == "chat" %>">
               <div class="w-8 aspect-square">
                 <%= render "shared/icons/chat_icon" %>
@@ -69,7 +69,7 @@
         <!-- 退会 -->
         <li>
           <%# 解散 %>
-          <%= button_to withdraw_membership_path(@membership), method: :delete, data: { controller: "modal", action: "click->modal#confirm", modal_text_value: "コミュニティから退会しますか？" }, class: "icon-circle-wrapper", id: "community-withdraw" do %>
+          <%= button_to withdraw_membership_path(membership), method: :delete, data: { controller: "modal", action: "click->modal#confirm", modal_text_value: "コミュニティから退会しますか？" }, class: "icon-circle-wrapper", id: "community-withdraw" do %>
             <span class="icon-circle">
               <span class="w-8 aspect-square">
                 <%= render "shared/icons/logout_icon" %>

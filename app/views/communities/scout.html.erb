@@ -1,6 +1,6 @@
 <% content_for :title, "スカウト" %>
 
-<%= render "communities/community_info", community: @community %>
+<%= render "communities/community_info", community: @community, membership: @membership %>
 
 <div class="mx-auto pt-4 pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
   <%= button_tag type: "button",
