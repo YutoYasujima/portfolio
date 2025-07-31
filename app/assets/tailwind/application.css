@@ -557,7 +557,7 @@ input:-webkit-autofill{
   border-right-color: hsl(96, 100%, 80%);
 }
 .default .chat-message-wrapper::after {
-  background-color: hsl(210, 100%, 80%);
+  border-right-color: hsl(210, 100%, 80%);
 }
 /* メッセージ */
 .chat-message {

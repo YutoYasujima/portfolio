@@ -51,14 +51,14 @@
         <%# 日付表示 %>
         <% top_chat_date = @chats.last&.created_at&.to_date %>
         <% if top_chat_date %>
-          <%= render "chat_date_block", date: top_chat_date %>
+          <%= render "shared/chat_date_block", date: top_chat_date %>
         <% end %>
 
         <% previous_date = top_chat_date %>
         <% @chats.reverse_each do |chat| %>
           <% chat_date = chat.created_at.to_date %>
           <% if previous_date != chat_date %>
-            <%= render "chat_date_block", date: chat_date %>
+            <%= render "shared/chat_date_block", date: chat_date %>
           <% end %>
           <% previous_date = chat_date %>
 

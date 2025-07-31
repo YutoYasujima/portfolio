@@ -1,7 +1,7 @@
 class CommunityChatChannel < ApplicationCable::Channel
   def subscribed
     # stream_from "some_channel"
-    @community = Community.find(params[:community_id])
+    @community = Community.find(params[:object_id])
     stream_from "community_chat_#{@community.id}"
   end
 
