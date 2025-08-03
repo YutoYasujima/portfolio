@@ -577,6 +577,10 @@ input:-webkit-autofill{
   height: 100%;
   object-fit: cover;
 }
+/* チャットエリア外非表示 */
+.non-chat-area-close {
+  overflow: hidden;
+}
 
 /* スクロールバー非表示 */
 .hide-scrollbar {
