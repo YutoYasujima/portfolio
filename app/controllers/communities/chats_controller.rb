@@ -1,6 +1,6 @@
 class Communities::ChatsController < ApplicationController
   before_action :set_community_and_membership, only: %i[ index load_more ]
-  before_action :authorize_access
+  before_action :authorize_access, only: %i[ index ]
 
   CHAT_PER_PAGE = 15
 
