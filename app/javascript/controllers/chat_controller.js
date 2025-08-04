@@ -50,6 +50,10 @@ export default class extends Controller {
     this.inputFormAreaHeight = 40;
     // チャットエリア外の固定要素の合計高さ(ヘッダー、トグルバー、入力フォーム)
     this.nonChatFixAreaHeight = HEADER_HEIGHT + this.toggleBarAreaHeight + this.inputFormAreaHeight;
+
+    // 選択中のチャットの削除ボタン
+    this.selectedChatButton = null;
+    this.timeoutId = null;
   }
 
   connect() {
@@ -73,8 +77,18 @@ export default class extends Controller {
 
     // 画面リサイズ時のチャット画面の高さ調整
     window.addEventListener("resize", this.resizeChatAreaHeight);
-    // Newアイコン非表示
+    // Newアイコンを非表示にする
     this.containerTarget.addEventListener("scroll", this.hiddenNewIcon);
+    // チャット長押しで削除表示(PC)
+    document.addEventListener("mousedown", this.pressStart);
+    this.chatAreaTarget.addEventListener("mousedown", this.pressStart);
+    this.chatAreaTarget.addEventListener("mouseup", this.cancelPress);
+    this.chatAreaTarget.addEventListener("mouseleave", this.cancelPress);
+    // チャット長押しで削除表示(モバイル)
+    document.addEventListener("touchstart", this.pressStart);
+    this.chatAreaTarget.addEventListener("touchstart", this.pressStart);
+    this.chatAreaTarget.addEventListener("touchend", this.cancelPress);
+    this.chatAreaTarget.addEventListener("touchcancel", this.cancelPress);
   }
 
   disconnect() {
@@ -82,6 +96,16 @@ export default class extends Controller {
 
     this.containerTarget.removeEventListener("scroll", this.infiniteScroll);
     this.containerTarget.removeEventListener("scroll", this.hiddenNewIcon);
+
+    document.removeEventListener("mousedown", this.pressStart);
+    this.chatAreaTarget.removeEventListener("mousedown", this.pressStart);
+    this.chatAreaTarget.removeEventListener("mouseup", this.cancelPress);
+    this.chatAreaTarget.removeEventListener("mouseleave", this.cancelPress);
+    // チャット長押しで削除表示(モバイル)
+    document.removeEventListener("touchstart", this.pressStart);
+    this.chatAreaTarget.removeEventListener("touchstart", this.pressStart);
+    this.chatAreaTarget.removeEventListener("touchend", this.cancelPress);
+    this.chatAreaTarget.removeEventListener("touchcancel", this.cancelPress);
   }
 
   // チャットエリアの高さを設定する
@@ -409,6 +433,40 @@ export default class extends Controller {
       this.newIconTarget.classList.add("hidden");
     }
   }, 200);
+
+  pressStart = (event) => {
+    clearTimeout(this.timeoutId);
+    const chat = event.target.closest(".chat");
+    // チャットではない場所または誰かのチャットでmousedownした場合、
+    // 表示されている削除ボタンがあれば隠す
+    if (!chat || chat.dataset.chatOwn === "others") {
+      if (this.selectedChatButton) {
+        this.selectedChatButton.closest(".chat").querySelector(".chat-contents-wrapper").classList.remove("shake");
+        this.selectedChatButton.classList.add("hidden");
+        this.selectedChatButton = null;
+      }
+      return;
+    }
+
+    const chatButton = chat.querySelector("button");
+    // ターゲット以外の削除ボタンが表示されていたら非表示にする
+    if (this.selectedChatButton && this.selectedChatButton !== chatButton) {
+      this.selectedChatButton.closest(".chat").querySelector(".chat-contents-wrapper").classList.remove("shake");
+      this.selectedChatButton.classList.add("hidden");
+      this.selectedChatButton = null;
+    }
+
+    this.timeoutId = setTimeout(() => {
+      this.selectedChatButton = chatButton;
+      this.selectedChatButton.classList.remove("hidden");
+      chat.querySelector(".chat-contents-wrapper").classList.add("shake");
+    }, 500);
+  }
+
+  // Timeoutクリア
+  cancelPress = () => {
+    clearTimeout(this.timeoutId);
+  }
 
   // flashコントローラーを利用してフラッシュメッセージをクリアする
   callFlashClear() {

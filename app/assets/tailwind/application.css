@@ -635,10 +635,9 @@ input:-webkit-autofill{
   transition: all 0.3s ease-out;
 }
 
-
 /* アニメーション */
 .shake {
-  animation: shake 1.5s infinite linear;
+  animation: shake 2.5s infinite linear;
 }
 @keyframes shake {
   0%   { transform: translate(1px, -1px); }

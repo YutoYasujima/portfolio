@@ -11,7 +11,7 @@
 
     <%# レコード表示 %>
     <% if current_user == chat.user %>
-      <%= render "shared/chat_mine", chat: chat, chat_color_class_name: "default", remove_button: nil %>
+      <%= render "shared/chat_mine", chat: chat, chat_color_class_name: "default", remove_button: render("communities/chats/chat_remove_button", community: @community, chat: chat) %>
     <% else %>
       <%= render "shared/chat_others", nickname: chat.user.profile.nickname, chat: chat %>
     <% end %>

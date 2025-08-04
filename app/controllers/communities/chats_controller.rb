@@ -84,6 +84,25 @@ class Communities::ChatsController < ApplicationController
     end
   end
 
+  def destroy
+    @chat = current_user.chats.find(params[:id])
+    @community = @chat.chatable
+
+    @chat.destroy!
+
+    # Action Cableで他のユーザーにも通知
+    ActionCable.server.broadcast "community_chat_#{@community.id}", {
+      type: "destroy",
+      chat_id: @chat.id,
+      user_id: current_user.id
+    }
+
+    # 自身のチャットはTurbo Streamで画面から削除
+    respond_to do |format|
+      format.turbo_stream
+    end
+  end
+
   private
 
   def set_community_and_membership
