@@ -1,0 +1,5 @@
+<%= button_to community_chat_path(community, chat), method: :delete, data: { controller: "modal", action: "click->modal#confirm", modal_text_value: "削除しますか？" }, class: "hidden absolute top-1/2 -translate-y-1/2 left-0 -translate-x-[calc(100%+8px)] border-2 border-red-700 rounded-xl p-1 shadow-lg bg-red-100" do %>
+  <span class="block w-8 aspect-square text-red-700">
+    <%= render "shared/icons/delete_icon" %>
+  </span>
+<% end %>

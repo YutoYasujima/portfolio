@@ -7,6 +7,9 @@ import { application } from "./application"
 import AccordionController from "./accordion_controller"
 application.register("accordion", AccordionController)
 
+import ChatController from "./chat_controller"
+application.register("chat", ChatController)
+
 import ChatScrollController from "./chat_scroll_controller"
 application.register("chat-scroll", ChatScrollController)
 

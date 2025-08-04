@@ -1,0 +1,157 @@
+<% content_for :head do %>
+  <meta name="turbo-cache-control" content="no-cache">
+<% end %>
+
+<div data-controller="disable-scroll"></div>
+
+<div class="flex flex-col"
+  data-controller="chat"
+  data-chat-controller-name-value="communities"
+  data-chat-channel-name-value="CommunityChatChannel"
+  data-chat-object-id-value="<%= @community.id %>"
+  data-chat-textarea-resize-outlet=".textarea-resize"
+>
+  <div class="transition-all duration-300 ease-in-out"
+    data-chat-target="nonChatArea"
+  >
+    <%= render "communities/community_info", community: @community, membership: @membership %>
+  </div>
+  <div class="border-b-2 border-gray-400 bg-white md:hidden"
+    data-chat-target="toggleBarArea"
+    data-action="click->chat#toggleNonChatArea"
+  >
+    <div class="mx-auto w-8 aspect-square"
+      data-chat-target="toggleIcon"
+    >
+      <%= render "shared/icons/eject_icon" %>
+    </div>
+  </div>
+
+  <section class="relative flex-1 mx-auto w-full max-w-120 shadow-lg">
+    <%# スクロール可能表示 %>
+    <div class="hidden absolute top-[8px] left-1/2 -translate-x-1/2 z-1"
+      data-chat-target="scrollableIcon"
+    >
+      <div class="bounce w-8 aspect-square border rounded-full bg-white">
+        <%= render "shared/icons/arrow_upward_icon" %>
+      </div>
+    </div>
+    <%# チャットエリア %>
+    <div
+      id="chat-section"
+      class="opacity-0 px-2 overflow-y-auto transition-all duration-300 ease-in-out"
+      data-chat-target="container"
+    >
+      <%# チャットエリア(チャット表示) %>
+      <div
+        id="chat-area"
+        data-chat-target="chatArea"
+      >
+        <%# 最終ページ判定 %>
+        <input type="hidden"
+          id="last-page-marker"
+          value="<%= @is_last_page %>"
+          data-chat-target="lastPageMarker"
+        >
+        <%# 取得データの最後の更新日時を保持 %>
+        <input type="hidden"
+          id="previous-last-created"
+          value="<%= @chats.last&.created_at&.to_i %>"
+          data-chat-target="previousLastCreated"
+        >
+        <%# 取得データの最後のIDを保持 %>
+        <input type="hidden"
+          id="previous-last-id"
+          value="<%= @chats.last&.id %>"
+          data-chat-target="previousLastId"
+        >
+        <%# chatの初期表示 %>
+        <div id="chats">
+          <%# 日付表示 %>
+          <% top_chat_date = @chats.last&.created_at&.to_date %>
+          <% if top_chat_date %>
+            <%= render "shared/chat_date_block", date: top_chat_date %>
+          <% end %>
+
+          <% previous_date = top_chat_date %>
+          <% @chats.reverse_each do |chat| %>
+            <% chat_date = chat.created_at.to_date %>
+            <% if previous_date != chat_date %>
+              <%= render "shared/chat_date_block", date: chat_date %>
+            <% end %>
+            <% previous_date = chat_date %>
+
+            <% if current_user == chat.user %>
+              <%= render "shared/chat_mine", chat: chat, chat_color_class_name: "default", remove_button: render("communities/chats/chat_remove_button", community: @community, chat: chat) %>
+            <% else %>
+              <%= render "shared/chat_others", nickname: chat.user.profile.nickname, chat: chat %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <%= form_with url: "#", method: :post, local: true, class:"absolute bottom-[-40px] shadow-lg w-full max-w-[480px]" do |form| %>
+      <div data-chat-target="textareaForm">
+        <div class="flex items-end p-1 bg-white">
+          <div data-action="click->chat#toggleChatForm" class="flex-shrink-0 w-8 aspect-square text-green-600">
+            <%= render "shared/icons/image_icon" %>
+          </div>
+
+          <%= form.text_area :message,
+            maxlength: 500,
+            rows: 1,
+            placeholder: "メッセージを入力してください",
+            class: "textarea-resize rounded-xl px-2 py-1 w-full resize-none overflow-hidden bg-gray-100",
+            data: {
+              controller: "textarea-resize",
+              textarea_resize_target: "textarea",
+              action: "input->textarea-resize#resize",
+              chat_target: "textarea",
+            }
+          %>
+
+          <%= form.button id: "message-btn", type: "button", data: { action: "click->chat#postMessage"} do %>
+            <div class="flex-shrink-0 w-8 aspect-square text-blue-500">
+              <%= render "shared/icons/send_full_icon" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div data-chat-target="fileFieldForm" class="hidden">
+        <div class="flex items-end p-1 bg-white">
+          <div data-action="click->chat#toggleChatForm" class="flex-shrink-0 w-8 aspect-square text-rose-600">
+            <%= render "shared/icons/chat_add_on_icon" %>
+          </div>
+
+          <%= form.file_field :image,
+            class: "rounded-xl px-2 py-1 w-full bg-gray-100",
+            data: { chat_target: "fileField" }
+          %>
+
+          <%= form.button id: "image-btn", type: "button", data: { action: "click->chat#uploadImage"} do %>
+            <div class="flex-shrink-0 w-8 aspect-square text-blue-500">
+              <%= render "shared/icons/upload_icon" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <div
+        data-chat-target="spinner"
+        class="hidden absolute top-[0px] right-[0px] bottom-[0px] w-10 aspect-square bg-white z-1">
+        <div class="flex justify-center items-center w-full h-full">
+          <div class="w-6 aspect-square border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      </div>
+    <% end %>
+
+    <%# 新着チャット表示 %>
+    <div
+      data-action="click->chat#scrollNewChat"
+      data-chat-target="newIcon"
+      class="hidden absolute bottom-2 right-2 shadow-lg border-2 border-orange-400 rounded-full w-[60px] aspect-square text-center leading-[60px] bg-white text-orange-500 font-semibold z-1 md:right-4">
+      New!!
+    </div>
+  </section>
+</div>

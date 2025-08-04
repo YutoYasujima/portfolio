@@ -1,15 +1,15 @@
 <%= turbo_stream.after "chat-last-page-marker" do %>
   <% previous_date = @new_prev_date %>
-  <%= render "chat_date_block", date: previous_date %>
+  <%= render "shared/chat_date_block", date: previous_date %>
   <% @chats.reverse_each do |chat| %>
     <% chat_date = chat.created_at.to_date %>
     <% if previous_date != chat_date %>
-      <%= render "chat_date_block", date: chat_date %>
+      <%= render "shared/chat_date_block", date: chat_date %>
     <% end %>
     <% previous_date = chat_date %>
 
     <% if current_user == chat.user %>
-      <%= render "shared/chat_mine", machi_repo: @machi_repo, chat: chat %>
+      <%= render "shared/chat_mine", chat: chat, chat_color_class_name: "#{@machi_repo.info_level}", remove_button: render("machi_repos/chats/chat_remove_button", machi_repo: @machi_repo, chat: chat) %>
     <% else %>
       <%= render "shared/chat_others", nickname: chat.user.profile.nickname, chat: chat %>
     <% end %>
