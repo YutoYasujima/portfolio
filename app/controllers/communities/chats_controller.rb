@@ -1,5 +1,6 @@
 class Communities::ChatsController < ApplicationController
   before_action :set_community_and_membership, only: %i[ index load_more ]
+  before_action :authorize_access
 
   CHAT_PER_PAGE = 15
 
@@ -104,6 +105,13 @@ class Communities::ChatsController < ApplicationController
   end
 
   private
+
+  # 閲覧権限判定
+  def authorize_access
+    unless current_user.approved_in?(@community)
+      redirect_to community_path(@community), alert: "この操作を行う権限がありません"
+    end
+  end
 
   def set_community_and_membership
     @community = Community.find(params[:community_id])
