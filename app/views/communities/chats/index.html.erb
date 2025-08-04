@@ -28,6 +28,14 @@
   </div>
 
   <section class="relative flex-1 mx-auto w-full max-w-120 shadow-lg">
+    <%# スクロール可能表示 %>
+    <div class="hidden absolute top-[8px] left-1/2 -translate-x-1/2 z-1"
+      data-chat-target="scrollableIcon"
+    >
+      <div class="bounce w-8 aspect-square border rounded-full bg-white">
+        <%= render "shared/icons/arrow_upward_icon" %>
+      </div>
+    </div>
     <%# チャットエリア %>
     <div
       id="chat-section"
@@ -58,26 +66,28 @@
           data-chat-target="previousLastId"
         >
         <%# chatの初期表示 %>
-        <%# 日付表示 %>
-        <% top_chat_date = @chats.last&.created_at&.to_date %>
-        <% if top_chat_date %>
-          <%= render "shared/chat_date_block", date: top_chat_date %>
-        <% end %>
-
-        <% previous_date = top_chat_date %>
-        <% @chats.reverse_each do |chat| %>
-          <% chat_date = chat.created_at.to_date %>
-          <% if previous_date != chat_date %>
-            <%= render "shared/chat_date_block", date: chat_date %>
+        <div id="chats">
+          <%# 日付表示 %>
+          <% top_chat_date = @chats.last&.created_at&.to_date %>
+          <% if top_chat_date %>
+            <%= render "shared/chat_date_block", date: top_chat_date %>
           <% end %>
-          <% previous_date = chat_date %>
 
-          <% if current_user == chat.user %>
-            <%= render "shared/chat_mine", chat: chat, chat_color_class_name: "default", remove_button: nil %>
-          <% else %>
-            <%= render "shared/chat_others", nickname: chat.user.profile.nickname, chat: chat %>
+          <% previous_date = top_chat_date %>
+          <% @chats.reverse_each do |chat| %>
+            <% chat_date = chat.created_at.to_date %>
+            <% if previous_date != chat_date %>
+              <%= render "shared/chat_date_block", date: chat_date %>
+            <% end %>
+            <% previous_date = chat_date %>
+
+            <% if current_user == chat.user %>
+              <%= render "shared/chat_mine", chat: chat, chat_color_class_name: "default", remove_button: nil %>
+            <% else %>
+              <%= render "shared/chat_others", nickname: chat.user.profile.nickname, chat: chat %>
+            <% end %>
           <% end %>
-        <% end %>
+        </div>
       </div>
     </div>
 
@@ -135,5 +145,13 @@
         </div>
       </div>
     <% end %>
+
+    <%# 新着チャット表示 %>
+    <div
+      data-action="click->chat#scrollNewChat"
+      data-chat-target="newIcon"
+      class="hidden absolute bottom-2 right-2 shadow-lg border-2 border-orange-400 rounded-full w-[60px] aspect-square text-center leading-[60px] bg-white text-orange-500 font-semibold z-1 md:right-4">
+      New!!
+    </div>
   </section>
 </div>

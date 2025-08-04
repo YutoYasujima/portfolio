@@ -17,6 +17,10 @@ export default class extends Controller {
     "fileField",
     "newIcon",
     "spinner",
+    "lastPageMarker",
+    "previousLastCreated",
+    "previousLastId",
+    "scrollableIcon",
   ];
 
   static values = {
@@ -26,10 +30,13 @@ export default class extends Controller {
   };
 
   static outlets = [
-  "textarea-resize",
+    "textarea-resize",
   ];
 
-  connect() {
+  initialize() {
+    // インスタンス内変数初期化処理
+    // 読み込み中フラグ
+    this.isLoading = false;
     // チャット送信中フラグ
     this.isSending = false;
     // レスポンシブの状態フラグ
@@ -43,7 +50,9 @@ export default class extends Controller {
     this.inputFormAreaHeight = 40;
     // チャットエリア外の固定要素の合計高さ(ヘッダー、トグルバー、入力フォーム)
     this.nonChatFixAreaHeight = HEADER_HEIGHT + this.toggleBarAreaHeight + this.inputFormAreaHeight;
+  }
 
+  connect() {
     // チャットエリアの高さ設定
     this.setChatAreaHeight(() => {
       // 一番下にスクロール
@@ -52,42 +61,27 @@ export default class extends Controller {
       this.containerTarget.classList.remove("opacity-0");
     });
 
-    // Action CableによるWebSocket通信
-    // 接続情報設定：チャネルクラス名とIDを設定する
-    this.subscriptionInfo = {
-      channel: this.channelNameValue,
-      object_id: this.objectIdValue,
-    };
-    // 二重チャネル購読防止
-    this.removeExistingSubscription();
+    // 無限スクロールの要否判定
+    const isLastPage = this.lastPageMarkerTarget.value === "true";
+    if (!isLastPage) {
+      this.containerTarget.addEventListener("scroll", this.infiniteScroll);
+      this.scrollableIconTarget.classList.remove("hidden");
+    }
 
     // チャネルの購読開始
     this.subscribeChannel();
 
-    this.resizeChatAreaHeight = debounce(() => {
-      if (this.isMobile !== window.innerWidth < BREAKPOINT_MOBILE) {
-        // レスポンシブの変更あり
-        // タイトル部分を表示させておく
-        this.nonChatAreaTarget.style.height = null;
-        this.nonChatAreaTarget.classList.remove("non-chat-area-close");
-        this.toggleIconTarget.classList.remove("rotate-180");
-        // リサイズ時にタイトル部分の高さ保持変数の値を変更しておく
-        this.openedNonChatAreaHeight = this.nonChatAreaTarget.clientHeight;
-        this.isMobile = window.innerWidth < BREAKPOINT_MOBILE ? true : false;
-      }
-
-      // スクロール位置保持
-      const scrollPosition = this.containerTarget.scrollHeight - this.containerTarget.scrollTop;
-      // チャットエリア高さ設定
-      this.setChatAreaHeight();
-      // スクロール位置反映
-      this.containerTarget.scrollTop = this.containerTarget.scrollHeight - scrollPosition;
-    }, 200);
+    // 画面リサイズ時のチャット画面の高さ調整
     window.addEventListener("resize", this.resizeChatAreaHeight);
+    // Newアイコン非表示
+    this.containerTarget.addEventListener("scroll", this.hiddenNewIcon);
   }
 
   disconnect() {
     window.removeEventListener("resize", this.resizeChatAreaHeight);
+
+    this.containerTarget.removeEventListener("scroll", this.infiniteScroll);
+    this.containerTarget.removeEventListener("scroll", this.hiddenNewIcon);
   }
 
   // チャットエリアの高さを設定する
@@ -102,6 +96,14 @@ export default class extends Controller {
 
   // チャネル購読
   subscribeChannel() {
+    // Action CableによるWebSocket通信
+    // 接続情報設定：チャネルクラス名とIDを設定する
+    this.subscriptionInfo = {
+      channel: this.channelNameValue,
+      object_id: this.objectIdValue,
+    };
+    // 二重チャネル購読防止
+    this.removeExistingSubscription();
     // サーバーのチャネルクラスのsubscribedメソッド呼び出し
     // subscriptionInfoのデータをパラメータとしてチャネルに接続
     this.subscription = consumer.subscriptions.create(this.subscriptionInfo,
@@ -122,7 +124,7 @@ export default class extends Controller {
                 this.containerTarget.scrollTop = this.containerTarget.scrollHeight;
               } else {
                 // Newアイコンを表示
-                // this.newIconTarget.classList.remove("hidden");
+                this.newIconTarget.classList.remove("hidden");
               }
             });
           } else if (data.type === "destroy") {
@@ -311,6 +313,102 @@ export default class extends Controller {
       }, {once: true});
     });
   }
+
+  // 画面のリサイズによるチャットエリア高さの対応
+  resizeChatAreaHeight = debounce(() => {
+    if (this.isMobile !== window.innerWidth < BREAKPOINT_MOBILE) {
+      // レスポンシブの変更あり
+      // タイトル部分を表示させておく
+      this.nonChatAreaTarget.style.height = null;
+      this.nonChatAreaTarget.classList.remove("non-chat-area-close");
+      this.toggleIconTarget.classList.remove("rotate-180");
+      // リサイズ時にタイトル部分の高さ保持変数の値を変更しておく
+      this.openedNonChatAreaHeight = this.nonChatAreaTarget.clientHeight;
+      this.isMobile = window.innerWidth < BREAKPOINT_MOBILE ? true : false;
+    }
+
+    // スクロール位置保持
+    const scrollPosition = this.containerTarget.scrollHeight - this.containerTarget.scrollTop;
+    // チャットエリア高さ設定
+    this.setChatAreaHeight();
+    // スクロール位置反映
+    this.containerTarget.scrollTop = this.containerTarget.scrollHeight - scrollPosition;
+  }, 200);
+
+  // 無限スクロール用トリガー
+  infiniteScroll = () => {
+    if (this.containerTarget.scrollTop < 400) {
+      // ページ最上部に近づいたとき
+      this.loadPreviousPage();
+    }
+  }
+
+  // 無限スクロール
+  loadPreviousPage() {
+    if (this.loading) {
+      return;
+    }
+    this.loading = true;
+
+    // URLのクエリパラメータ作成
+    const params = new URLSearchParams();
+    params.append("previous_last_created", this.previousLastCreatedTarget.value);
+    params.append("previous_last_id", this.previousLastIdTarget.value);
+
+    const url = `/${this.controllerNameValue}/${this.objectIdValue}/chats/load_more?${params.toString()}`;
+    // 次のページ（上方向）を非同期で取得
+    fetch(url, {
+      headers: {
+        "Accept": "text/vnd.turbo-stream.html"
+      }
+    })
+    .then(response => response.text())
+    .then(html => {
+      // 日付表示対応
+      // 受け取ったTurbo Streamファイルを解析
+      // 解析したファイル内にある日付表示がDOM上に既にあった場合は
+      // DOM上の表示を削除する
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+      const streamElements = doc.querySelectorAll("turbo-stream");
+      streamElements.forEach(streamEl => {
+        const templateContent = streamEl.querySelector("template")?.content;
+        const chatDates = templateContent?.querySelectorAll("[data-chat-date]");
+        chatDates?.forEach(chatDate => {
+          const date = chatDate.dataset.chatDate;
+          const existedChatDates = this.chatAreaTarget.querySelectorAll(`[data-chat-date="${CSS.escape(date)}"]`);
+          existedChatDates.forEach(existedChatDate => {
+            existedChatDate.remove();
+          });
+        });
+      });
+
+      // Turbo Streamの中身を表示する
+      Turbo.renderStreamMessage(html);
+      // Turbo StreamのHTMLが挿入された後にDOMを見る
+      requestAnimationFrame(() => {
+        const isLastPage = this.lastPageMarkerTarget.value === "true";
+        if (isLastPage) {
+          this.containerTarget.removeEventListener("scroll", this.infiniteScroll);
+          this.scrollableIconTarget.classList.add("hidden");
+        }
+        this.loading = false;
+      });
+    });
+  }
+
+  // 新着チャット表示クリックで最下部へスクロール
+  scrollNewChat() {
+    this.containerTarget.scrollTop = this.containerTarget.scrollHeight;
+    this.newIconTarget.classList.add("hidden");
+  }
+
+  // Newアイコンを非表示にする
+  hiddenNewIcon = debounce(() => {
+    if (this.isNearBottom()) {
+      this.newIconTarget.classList.add("hidden");
+    }
+  }, 200);
 
   // flashコントローラーを利用してフラッシュメッセージをクリアする
   callFlashClear() {

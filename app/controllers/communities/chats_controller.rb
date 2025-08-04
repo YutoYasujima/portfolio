@@ -21,12 +21,12 @@ class Communities::ChatsController < ApplicationController
   # 無限スクロール用データ取得
   def load_more
     # チャット初期表示時のスナップショット取得
-    snapshot_time = Time.at(session[:machi_repo_chats_snapshot_time].to_i)
+    snapshot_time = Time.at(session[:community_chats_snapshot_time].to_i)
     cursor_created_at = Time.at(params[:previous_last_created].to_i)
     cursor_id = params[:previous_last_id].to_i
 
     # 最終ページ判定のため1件多く取得
-    raw_chats = @machi_repo.chats.includes(:user).where("created_at < ? OR (created_at = ? AND id < ?)", cursor_created_at, cursor_created_at, cursor_id).order(created_at: :desc, id: :desc).limit(CHAT_PER_PAGE + 1)
+    raw_chats = @community.chats.includes(:user).where("created_at < ? OR (created_at = ? AND id < ?)", cursor_created_at, cursor_created_at, cursor_id).order(created_at: :desc, id: :desc).limit(CHAT_PER_PAGE + 1)
 
     # 最終ページ判定
     @is_last_page = raw_chats.size <= CHAT_PER_PAGE
