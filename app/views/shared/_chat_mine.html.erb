@@ -3,11 +3,14 @@
   id="chat_<%= chat&.id %>"
   class="chat <%= chat_color_class_name %>"
   data-chat-own="mine"
+  data-chat-id="<%= chat&.id %>"
 >
   <div class="chat-else">
-    <% if read_counts_hash.present? %>
-      <div>
-        <%= format_read_count(read_counts_hash[chat.id]&.size) %>
+    <% unless read_counts_hash.nil? %>
+      <div class="read-chat-count"
+        data-read-chat-count="<%= count = read_counts_hash[chat.id]&.size || 0 %>"
+      >
+        <%= format_read_count(count) %>
       </div>
     <% end %>
     <div class="chat-time">

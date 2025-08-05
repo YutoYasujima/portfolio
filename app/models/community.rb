@@ -7,6 +7,9 @@ class Community < ApplicationRecord
   has_many :requested_memberships, -> { where(status: :requested) }, class_name: "CommunityMembership"
   # statusがrequestedのユーザーを取得する
   has_many :requested_users, through: :requested_memberships, source: :user
+  # コミュニティチャット既読数
+  has_many :community_chat_reads, dependent: :destroy
+  has_many :reading_users, through: :community_chat_reads, source: :user
 
   validates :name, presence: true, length: { maximum: 20 }, uniqueness: {
     scope: [ :prefecture_id, :municipality_id ],

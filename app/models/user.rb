@@ -21,6 +21,9 @@ class User < ApplicationRecord
   has_many :followers, through: :passive_follows, source: :follower
   has_many :community_memberships, dependent: :destroy
   has_many :communities, through: :community_memberships
+  # コミュニティチャット既読数
+  has_many :community_chat_reads, dependent: :destroy
+  has_many :read_communities, through: :community_chat_reads, source: :community
 
   attr_accessor :agreement
   validates :agreement, acceptance: { accept: "1", message: "に同意してください" }

@@ -86,6 +86,8 @@ class Communities::ChatsController < ApplicationController
 
     @other_chats_on_same_day_exist = @community.chats.where(created_at: @chat.created_at.to_date.all_day).where.not(id: @chat.id).exists?
 
+    @read_counts_hash = {}
+
     respond_to do |format|
       format.turbo_stream
     end
@@ -110,22 +112,27 @@ class Communities::ChatsController < ApplicationController
     end
   end
 
+  # チャットの既読情報更新
   def mark_as_read
     @community = Community.find(params[:community_id])
     last_read_chat_id = params[:last_read_chat_id].to_i
 
     read = CommunityChatRead.find_or_initialize_by(user: current_user, community: @community)
+    last_read_chat_id_before_update = read&.last_read_chat_id || 0
 
     # IDが進んでいる場合のみ更新
     if read.last_read_chat_id.nil? || last_read_chat_id > read.last_read_chat_id
       read.last_read_chat_id = last_read_chat_id
       read.save
 
-      # ActionCable.server.broadcast "community_chat_#{@community.id}", {
-      #   type: "read",
-      #   user_id: current_user.id,
-      #   last_read_chat_id: read.last_read_chat_id
-      # }
+      # 更新前と更新後のlast_read_chat_id間のチャットの既読数を
+      # クライアント側でインクリメントする
+      ActionCable.server.broadcast "community_chat_#{@community.id}", {
+        type: "read",
+        user_id: current_user.id,
+        last_read_chat_id_before_update: last_read_chat_id_before_update,
+        last_read_chat_id_after_update: read.last_read_chat_id
+      }
     end
 
     head :ok
