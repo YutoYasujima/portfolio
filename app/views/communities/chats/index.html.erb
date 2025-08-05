@@ -47,6 +47,12 @@
         id="chat-area"
         data-chat-target="chatArea"
       >
+        <%# 既読数管理用ID %>
+        <input type="hidden"
+          id="last-read-chat-id"
+          value="<%= @chats.first&.id || 0 %>"
+          data-chat-target="lastReadChatId"
+        >
         <%# 最終ページ判定 %>
         <input type="hidden"
           id="last-page-marker"
@@ -82,7 +88,7 @@
             <% previous_date = chat_date %>
 
             <% if current_user == chat.user %>
-              <%= render "shared/chat_mine", chat: chat, chat_color_class_name: "default", remove_button: render("communities/chats/chat_remove_button", community: @community, chat: chat) %>
+              <%= render "shared/chat_mine", chat: chat, chat_color_class_name: "default", read_counts_hash: @read_counts_hash, remove_button: render("communities/chats/chat_remove_button", community: @community, chat: chat) %>
             <% else %>
               <%= render "shared/chat_others", nickname: chat.user.profile.nickname, chat: chat %>
             <% end %>

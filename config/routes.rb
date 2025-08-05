@@ -77,6 +77,7 @@ Rails.application.routes.draw do
     resources :chats, only: %i[ index create destroy ], module: :communities do
       collection do
         get :load_more
+        patch :mark_as_read
       end
       member do
         get :render_chat

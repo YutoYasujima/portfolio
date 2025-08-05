@@ -17,6 +17,7 @@ export default class extends Controller {
     "fileField",
     "newIcon",
     "spinner",
+    "lastReadChatId",
     "lastPageMarker",
     "previousLastCreated",
     "previousLastId",
@@ -27,6 +28,7 @@ export default class extends Controller {
     controllerName: String,
     channelName: String,
     objectId: Number,
+    lastChatId: Number,
   };
 
   static outlets = [
@@ -75,6 +77,10 @@ export default class extends Controller {
     // チャネルの購読開始
     this.subscribeChannel();
 
+    // 既読情報更新
+    this.markLatestAsRead();
+
+    // イベントリスナー設定
     // 画面リサイズ時のチャット画面の高さ調整
     window.addEventListener("resize", this.resizeChatAreaHeight);
     // Newアイコンを非表示にする
@@ -92,6 +98,7 @@ export default class extends Controller {
   }
 
   disconnect() {
+    // イベントリスナ－解放
     window.removeEventListener("resize", this.resizeChatAreaHeight);
 
     this.containerTarget.removeEventListener("scroll", this.infiniteScroll);
@@ -187,6 +194,17 @@ export default class extends Controller {
     }
 
     this.subscription = null;
+  }
+
+  markLatestAsRead() {
+    fetch(`/${this.controllerNameValue}/${this.objectIdValue}/chats/mark_as_read`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+      },
+      body: JSON.stringify({ last_read_chat_id: this.lastReadChatIdTarget.value })
+    });
   }
 
   // 部分テンプレート取得によるチャット表示

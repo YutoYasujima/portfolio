@@ -17,6 +17,9 @@ class Communities::ChatsController < ApplicationController
 
     # 表示分切り出し
     @chats = raw_chats.first(CHAT_PER_PAGE)
+
+    # 既読数取得
+    set_read_counts_hash
   end
 
   # 無限スクロール用データ取得
@@ -37,6 +40,9 @@ class Communities::ChatsController < ApplicationController
 
     # 取得データ中最も古い日付を取得
     @new_prev_date = @chats.last&.created_at&.to_date
+
+    # 既読数取得
+    set_read_counts_hash
 
     respond_to do |format|
       format.turbo_stream
@@ -104,6 +110,27 @@ class Communities::ChatsController < ApplicationController
     end
   end
 
+  def mark_as_read
+    @community = Community.find(params[:community_id])
+    last_read_chat_id = params[:last_read_chat_id].to_i
+
+    read = CommunityChatRead.find_or_initialize_by(user: current_user, community: @community)
+
+    # IDが進んでいる場合のみ更新
+    if read.last_read_chat_id.nil? || last_read_chat_id > read.last_read_chat_id
+      read.last_read_chat_id = last_read_chat_id
+      read.save
+
+      # ActionCable.server.broadcast "community_chat_#{@community.id}", {
+      #   type: "read",
+      #   user_id: current_user.id,
+      #   last_read_chat_id: read.last_read_chat_id
+      # }
+    end
+
+    head :ok
+  end
+
   private
 
   # 閲覧権限判定
@@ -116,6 +143,29 @@ class Communities::ChatsController < ApplicationController
   def set_community_and_membership
     @community = Community.find(params[:community_id])
     @membership = CommunityMembership.find_by(community_id: @community.id, user_id: current_user.id)
+  end
+
+  # 既読数取得
+  def set_read_counts_hash
+    # 自分のチャットIDだけを抽出
+    # 自分以外の既読情報を取得
+    my_chat_ids = @chats.select { |chat| chat.user_id == current_user.id }.map(&:id)
+
+    # コミュニティに参加中のユーザーID取得
+    approved_users = CommunityMembership.where(community_id: @community.id, status: "approved").select(:user_id)
+
+    # 自分のチャットに対して、既読したユーザ－のIDを配列として保持
+    # 自分のチャットIDをキー、既読ユーザーIDの配列をバリューとしてハッシュを作成
+    @read_counts_hash = CommunityChatRead
+      .where(community_id: @community.id)
+      .where.not(user_id: current_user.id)
+      .where(user_id: approved_users)
+      .pluck(:user_id, :last_read_chat_id)
+      .each_with_object(Hash.new { |h, k| h[k] = [] }) do |(user_id, last_read_chat_id), hash|
+        my_chat_ids.each do |chat_id|
+          hash[chat_id] << user_id if last_read_chat_id >= chat_id
+        end
+      end
   end
 
   def chat_params

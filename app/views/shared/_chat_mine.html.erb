@@ -5,7 +5,11 @@
   data-chat-own="mine"
 >
   <div class="chat-else">
-    <div></div>
+    <% if read_counts_hash.present? %>
+      <div>
+        <%= format_read_count(read_counts_hash[chat.id]&.size) %>
+      </div>
+    <% end %>
     <div class="chat-time">
       <time><%= chat&.created_at&.strftime("%H:%M") %></time>
     </div>
