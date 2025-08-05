@@ -81,6 +81,8 @@ export default class extends Controller {
     // 既読情報更新
     this.markLatestAsRead();
 
+    this.textareaTarget.focus();
+
     // イベントリスナー設定
     // 画面リサイズ時のチャット画面の高さ調整
     window.addEventListener("resize", this.resizeChatAreaHeight);
@@ -342,6 +344,7 @@ export default class extends Controller {
       resetTarget: this.textareaTarget,
     });
 
+    this.textareaTarget.focus();
     this.textareaResizeOutlet?.resize();
   }
 

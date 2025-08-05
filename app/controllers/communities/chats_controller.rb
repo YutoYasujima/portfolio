@@ -10,13 +10,16 @@ class Communities::ChatsController < ApplicationController
     session[:community_chats_snapshot_time] = snapshot_time.to_i
 
     # 最終ページ判定のため1件多く取得
-    raw_chats = @community.chats.includes(:user).where("created_at <= ?", snapshot_time).order(created_at: :desc, id: :desc).limit(CHAT_PER_PAGE + 1)
+    raw_chats = @community.chats.includes(user: [ :profile, :community_memberships ]).where("created_at <= ?", snapshot_time).order(created_at: :desc, id: :desc).limit(CHAT_PER_PAGE + 1)
 
     # 最終ページ判定
     @is_last_page = raw_chats.size <= CHAT_PER_PAGE
 
     # 表示分切り出し
     @chats = raw_chats.first(CHAT_PER_PAGE)
+
+    # コミュニティに参加しているユーザーのID取得
+    set_approved_user_ids
 
     # 既読数取得
     set_read_counts_hash
@@ -30,7 +33,7 @@ class Communities::ChatsController < ApplicationController
     cursor_id = params[:previous_last_id].to_i
 
     # 最終ページ判定のため1件多く取得
-    raw_chats = @community.chats.includes(:user).where("created_at < ? OR (created_at = ? AND id < ?)", cursor_created_at, cursor_created_at, cursor_id).order(created_at: :desc, id: :desc).limit(CHAT_PER_PAGE + 1)
+    raw_chats = @community.chats.includes(user: [ :profile, :community_memberships ]).where("created_at < ? OR (created_at = ? AND id < ?)", cursor_created_at, cursor_created_at, cursor_id).order(created_at: :desc, id: :desc).limit(CHAT_PER_PAGE + 1)
 
     # 最終ページ判定
     @is_last_page = raw_chats.size <= CHAT_PER_PAGE
@@ -40,6 +43,9 @@ class Communities::ChatsController < ApplicationController
 
     # 取得データ中最も古い日付を取得
     @new_prev_date = @chats.last&.created_at&.to_date
+
+    # コミュニティに参加しているユーザーのID取得
+    set_approved_user_ids
 
     # 既読数取得
     set_read_counts_hash
@@ -173,6 +179,13 @@ class Communities::ChatsController < ApplicationController
           hash[chat_id] << user_id if last_read_chat_id >= chat_id
         end
       end
+  end
+
+  # コミュニティに参加しているユーザーのIDを取得する
+  def set_approved_user_ids
+    @approved_user_ids = @community.community_memberships
+      .where(status: "approved")
+      .pluck(:user_id)
   end
 
   def chat_params
