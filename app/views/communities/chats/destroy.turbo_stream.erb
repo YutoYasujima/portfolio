@@ -1,1 +1,5 @@
 <%= turbo_stream.remove @chat %>
+
+<% unless @other_chats_on_same_day_exist %>
+  <%= turbo_stream.remove "chat-date-#{@chat.created_at&.to_date}" %>
+<% end %>

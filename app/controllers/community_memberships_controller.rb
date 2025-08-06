@@ -206,6 +206,8 @@ class CommunityMembershipsController < ApplicationController
     end
 
     if @membership.update(status: :withdrawn, role: :general)
+      # チャット既読を削除
+      CommunityChatRead.where(user_id: current_user.id, community_id: community.id).destroy_all
       redirect_to community_path(community), notice: "退会しました"
     else
       redirect_to community_path(community), alert: "退会できませんでした"
@@ -231,6 +233,8 @@ class CommunityMembershipsController < ApplicationController
     user_name = user.profile.nickname
     # 強制退会させられるのは通常メンバーのみ
     if @membership.general? && @membership.update(status: :kicked, role: :general)
+      # チャット既読を削除
+      CommunityChatRead.where(user_id: user.id, community_id: community.id).destroy_all
       flash.now[:notice] = "\"#{user_name}\"さんに退会してもらいました"
     else
       flash.now[:alert] = "\"#{user_name}\"さんを退会させられませんでした"

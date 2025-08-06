@@ -24,4 +24,24 @@ module ApplicationHelper
 
     "height: #{height_px}px;"
   end
+
+  # チャットの既読数表示
+  def format_read_count(count)
+    if count == 1
+      "既読"
+    elsif count >= 2
+      "既読 #{count}"
+    else
+      ""
+    end
+  end
+
+  # コミュニティに参加しているユーザー名取得(チャット用)
+  def display_community_user_name(user, approved_user_ids)
+    if approved_user_ids.include?(user.id)
+      user.profile&.nickname || "(unknown)"
+    else
+      "(unknown)"
+    end
+  end
 end

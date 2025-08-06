@@ -17,6 +17,7 @@ export default class extends Controller {
     "fileField",
     "newIcon",
     "spinner",
+    "lastReadChatId",
     "lastPageMarker",
     "previousLastCreated",
     "previousLastId",
@@ -26,7 +27,9 @@ export default class extends Controller {
   static values = {
     controllerName: String,
     channelName: String,
+    userId: Number,
     objectId: Number,
+    lastChatId: Number,
   };
 
   static outlets = [
@@ -75,6 +78,12 @@ export default class extends Controller {
     // チャネルの購読開始
     this.subscribeChannel();
 
+    // 既読情報更新
+    this.markLatestAsRead();
+
+    this.textareaTarget.focus();
+
+    // イベントリスナー設定
     // 画面リサイズ時のチャット画面の高さ調整
     window.addEventListener("resize", this.resizeChatAreaHeight);
     // Newアイコンを非表示にする
@@ -92,6 +101,10 @@ export default class extends Controller {
   }
 
   disconnect() {
+    // チャネル購読の破棄
+    this.removeExistingSubscription();
+
+    // イベントリスナ－解放
     window.removeEventListener("resize", this.resizeChatAreaHeight);
 
     this.containerTarget.removeEventListener("scroll", this.infiniteScroll);
@@ -136,36 +149,71 @@ export default class extends Controller {
         // ブロードキャスト受信後の処理
         received: async (data) => {
           const chatId = data.chat_id;
-          if (data.type === "create") {
-            // チャット表示
-            await this.fetchChatPartial(chatId);
+          switch (data.type) {
+            case "create":
+              // チャット表示
+              await this.fetchChatPartial(chatId);
 
-            // Turbo Streamの描画が終わった後に実行
-            requestAnimationFrame(() => {
-              // 新着チャット処理
-              if (this.isNearBottom()) {
-                // bottom付近を見ていた場合、最下部へスクロール
-                this.containerTarget.scrollTop = this.containerTarget.scrollHeight;
-              } else {
-                // Newアイコンを表示
-                this.newIconTarget.classList.remove("hidden");
-              }
-            });
-          } else if (data.type === "destroy") {
-            if (Number(data.user_id) === Number(this.userIdValue)) {
-              // 自分のチャットを消すのはTurbo Streamで行っている
+              // Turbo Streamの描画が終わった後に実行
               requestAnimationFrame(() => {
-                this.selectedChatButton = null;
+                // 既読情報更新
+                this.lastReadChatIdTarget.value = chatId;
+                this.markLatestAsRead();
+                // 新着チャット処理
+                if (this.isNearBottom()) {
+                  // bottom付近を見ていた場合、最下部へスクロール
+                  this.containerTarget.scrollTop = this.containerTarget.scrollHeight;
+                } else {
+                  // Newアイコンを表示
+                  this.newIconTarget.classList.remove("hidden");
+                }
               });
-              return;
-            }
+              break;
 
-            // 誰かがチャットを削除した場合、画面からチャットを消す
-            const chat = this.chatAreaTarget.querySelector(`#${CSS.escape(`chat_${chatId}`)}`);
-            if (chat) {
-              chat.remove();
-              this.selectedChatButton = null;
-            }
+            case "destroy":
+              if (Number(data.user_id) === Number(this.userIdValue)) {
+                // 自分のチャットを消すのはTurbo Streamで行っている
+                requestAnimationFrame(() => {
+                  this.selectedChatButton = null;
+                });
+                return;
+              }
+
+              // 誰かがチャットを削除した場合、画面からチャットを消す
+              const chat = this.chatAreaTarget.querySelector(`#${CSS.escape(`chat_${chatId}`)}`);
+              if (chat) {
+                chat.remove();
+                this.selectedChatButton = null;
+              }
+              break;
+
+            case "read":
+              const last_read_chat_id_before_update = Number(data.last_read_chat_id_before_update);
+              const last_read_chat_id_after_update = Number(data.last_read_chat_id_after_update);
+              // 自分以外のユーザーのreadだった場合、自分のチャットの既読数を更新
+              if (this.userIdValue !== Number(data.user_id)) {
+                const myChats = document.querySelectorAll(`[data-chat-own="mine"]`);
+                myChats.forEach(chat => {
+                  const chatId = Number(chat.dataset.chatId);
+                  // DB更新前と更新後の間のチャットの既読数をインクリメント
+                  if (last_read_chat_id_before_update < chatId
+                    && chatId <= last_read_chat_id_after_update
+                  ) {
+                    const readChatCount = chat.querySelector(".read-chat-count");
+                    let count = Number(readChatCount.dataset.readChatCount) + 1;
+                    readChatCount.dataset.readChatCount = count;
+                    if (count == 1) {
+                      readChatCount.textContent = "既読";
+                    } else if (count >= 2) {
+                      readChatCount.textContent = `既読 ${count}`;
+                    }
+                  }
+                });
+              }
+
+              this.lastReadChatIdTarget.value = last_read_chat_id_after_update;
+              break;
+            default:
           }
         }
       }
@@ -187,6 +235,17 @@ export default class extends Controller {
     }
 
     this.subscription = null;
+  }
+
+  markLatestAsRead() {
+    fetch(`/${this.controllerNameValue}/${this.objectIdValue}/chats/mark_as_read`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+      },
+      body: JSON.stringify({ last_read_chat_id: this.lastReadChatIdTarget.value })
+    });
   }
 
   // 部分テンプレート取得によるチャット表示
@@ -285,6 +344,7 @@ export default class extends Controller {
       resetTarget: this.textareaTarget,
     });
 
+    this.textareaTarget.focus();
     this.textareaResizeOutlet?.resize();
   }
 
