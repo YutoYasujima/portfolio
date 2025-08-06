@@ -111,7 +111,8 @@ class Communities::ChatsController < ApplicationController
     ActionCable.server.broadcast "community_chat_#{@community.id}", {
       type: "destroy",
       chat_id: @chat.id,
-      user_id: current_user.id
+      user_id: current_user.id,
+      other_chats_on_same_day: @other_chats_on_same_day_exist ? nil : @chat.created_at.to_date
     }
 
     # 自身のチャットはTurbo Streamで画面から削除

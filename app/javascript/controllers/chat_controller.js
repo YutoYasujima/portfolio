@@ -185,6 +185,10 @@ export default class extends Controller {
                 chat.remove();
                 this.selectedChatButton = null;
               }
+              // 誰かがチャットを削除した場合、画面から不要な日付を消す
+              if (data.other_chats_on_same_day) {
+                document.getElementById(`chat-date-${data.other_chats_on_same_day}`).remove();
+              }
               break;
 
             case "read":
@@ -213,6 +217,7 @@ export default class extends Controller {
 
               this.lastReadChatIdTarget.value = last_read_chat_id_after_update;
               break;
+
             default:
           }
         }
