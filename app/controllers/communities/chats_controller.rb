@@ -105,6 +105,8 @@ class Communities::ChatsController < ApplicationController
 
     @chat.destroy!
 
+    @other_chats_on_same_day_exist = @community.chats.where(created_at: @chat.created_at.to_date.all_day).where.not(id: @chat.id).exists?
+
     # Action Cableで他のユーザーにも通知
     ActionCable.server.broadcast "community_chat_#{@community.id}", {
       type: "destroy",
