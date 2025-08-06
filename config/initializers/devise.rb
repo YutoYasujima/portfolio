@@ -316,4 +316,7 @@ Devise.setup do |config|
     scope: "openid,email",
     prompt: "select_account"
   }
+
+  # オートログイン期限
+  config.remember_for = 1.weeks
 end
