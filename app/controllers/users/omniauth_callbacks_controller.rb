@@ -27,6 +27,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     if @user.persisted?
       # ログイン後の遷移先はappclication_controllerのafter_sign_in_path_forメソッドで決まる
       flash[:notice] = "ログインしました"
+      # remember_token を明示的に発行
+      @user.remember_me = true
       sign_in_and_redirect @user, event: :authentication
     else
       flash[:alert] = [ "Googleログインに失敗しました" ]
