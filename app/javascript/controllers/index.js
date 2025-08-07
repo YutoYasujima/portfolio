@@ -31,6 +31,9 @@ application.register("help", HelpController)
 import InfiniteScrollController from "./infinite_scroll_controller"
 application.register("infinite-scroll", InfiniteScrollController)
 
+import LoadingController from "./loading_controller"
+application.register("loading", LoadingController)
+
 import MachiRepos__ChatController from "./machi_repos/chat_controller"
 application.register("machi-repos--chat", MachiRepos__ChatController)
 

@@ -1,4 +1,4 @@
-<%= form_with(model: machi_repo, class: "form relative") do |form| %>
+<%= form_with(model: machi_repo, class: "form relative", data: { action: "submit->loading#start" }) do |form| %>
   <!-- タイトル -->
   <div class="field">
     <%= form.label :title, class: "require" %>
