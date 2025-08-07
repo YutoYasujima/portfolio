@@ -17,10 +17,11 @@
       </li>
 
       <%# まちレポ作成アイコン %>
+      <% is_current_page = controller_name == "machi_repos" && %w[new create].include?(action_name) %>
       <li class="flex-1 text-black md:text-white">
-        <%= link_to new_machi_repo_path, class: "nav-icon #{"pointer-events-none" if current_page?(new_machi_repo_path)}" do %>
+        <%= link_to new_machi_repo_path, class: "nav-icon #{"pointer-events-none" if is_current_page}" do %>
           <div class="w-10 aspect-square">
-            <% if current_page?(new_machi_repo_path) %>
+            <% if is_current_page %>
               <%= render "shared/icons/add_home_work_full_icon" %>
             <% else %>
               <%= render "shared/icons/add_home_work_icon" %>
