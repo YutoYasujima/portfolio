@@ -93,11 +93,11 @@ jobs:
           mkdir -p public/assets
           cp -R app/assets/builds/* public/assets/
 
-      # - name: Precompile assets
-      #   env:
-      #     RAILS_ENV: test
-      #   run: |
-      #     bundle exec rails assets:precompile
+      - name: Precompile assets
+        env:
+          RAILS_ENV: test
+        run: |
+          bundle exec rails assets:precompile
 
       - name: Prepare DB and run RSpec
         env:
