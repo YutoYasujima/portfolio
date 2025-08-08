@@ -94,7 +94,7 @@ RSpec.configure do |config|
     # remote_chromeは、spec/support/capybara.rbに定義されている
     driven_by :remote_chrome
     Capybara.server_host = IPSocket.getaddress(Socket.gethostname)
-    Capybara.server_port = 4444
+    # Capybara.server_port = 4444
     Capybara.app_host = "http://#{Capybara.server_host}:#{Capybara.server_port}"
     Capybara.ignore_hidden_elements = false
   end
