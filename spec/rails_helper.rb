@@ -35,6 +35,10 @@ rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
 
+# 追記: OmniAuthをテストモードにする
+OmniAuth.config.test_mode = true
+
+
 # 追記: supportファイルを読み込む
 Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
@@ -83,15 +87,7 @@ RSpec.configure do |config|
   # 追記
   # factory bot使用
   config.include FactoryBot::Syntax::Methods
-end
 
-# 追記: OmniAuthをテストモードにする
-OmniAuth.config.test_mode = true
-
-# 追記: supportファイルを読み込む
-Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
-
-RSpec.configure do |config|
   # 追記: ImageHelperをRSpecにinclude
   config.include ImageHelper
 
