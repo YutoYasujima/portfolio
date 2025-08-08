@@ -18,7 +18,7 @@ RSpec.describe "Users", type: :system do
         expect(page).to have_current_path(new_user_registration_path, ignore_query: true), "ユーザー登録画面に遷移できていません"
       end
 
-      it "成功" do
+      it "成功", js: true do
         fill_in "ニックネーム", with: "テスト太郎"
         select "東京都", from: "user_profile_attributes_prefecture_id"
         # Stimulusで市区町村の選択肢が動的に書き換わるのを待つ
@@ -64,7 +64,7 @@ RSpec.describe "Users", type: :system do
         expect(page).to have_current_path(machi_repos_path, ignore_query: true), "まちレポ画面に遷移できていません"
       end
 
-      it "失敗(マイタウン以外、全部未入力)" do
+      it "失敗(マイタウン以外、全部未入力)", js: true do
         click_button "登録"
         expect(page).to have_selector("#flash_messages", text: "メールアドレスを入力してください")
         expect(page).to have_selector("#flash_messages", text: "パスワードを入力してください")
