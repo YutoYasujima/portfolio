@@ -88,6 +88,11 @@ jobs:
       - name: Build assets
         run: yarn install && yarn build
 
+      - name: Copy built assets to public/assets
+        run: |
+          mkdir -p public/assets
+          cp -R app/assets/builds/* public/assets/
+
       - name: Precompile assets
         env:
           RAILS_ENV: test

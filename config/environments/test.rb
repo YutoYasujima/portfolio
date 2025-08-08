@@ -70,6 +70,4 @@ Rails.application.configure do
 
   config.assets.compile = true
   config.assets.debug = false
-  # ESBuild を使っていて、Sprockets を無効にする
-  config.assets.css_compressor = nil
 end
