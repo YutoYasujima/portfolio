@@ -85,6 +85,15 @@ jobs:
           sudo apt-get install -y imagemagick libvips
           bundle install
 
+      - name: Build assets
+        run: yarn install && yarn build
+
+      - name: Precompile assets
+        env:
+          RAILS_ENV: test
+        run: |
+          bundle exec rails assets:precompile
+
       - name: Prepare DB and run RSpec
         env:
           RAILS_ENV: test
