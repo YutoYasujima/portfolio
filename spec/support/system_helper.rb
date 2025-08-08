@@ -12,7 +12,15 @@ module SystemHelper
     visit root_path
     click_link "ログインへ"
     click_button "Google でログイン"
-    expect(User.find_by(email: auth.info.email)).to be_present, "Googleログイン認証時にUserが作成されていません"
+
+    # Googleログイン → ユーザー作成を待つ（最大5秒間）
+    Timeout.timeout(5) do
+      loop do
+        break if User.find_by(email: auth.info.email).present?
+        sleep 0.1
+      end
+    end
+
     expect(page).to have_current_path(new_profile_path, ignore_query: true), "プロフィール登録画面に遷移できていません"
     expect(page).to have_content("プロフィールを登録してください"), "Flashメッセージが表示されていません"
   end

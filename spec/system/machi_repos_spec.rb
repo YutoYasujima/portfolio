@@ -198,8 +198,9 @@ RSpec.describe "MachiRepos", type: :system do
         # 確認ダイアログ表示
         expect(page).to have_selector(".modal-button.modal-ok"), "確認ダイアログのOKボタンが表示されていません"
         find(".modal-button.modal-ok").click
-        expect(MachiRepo.find_by(id: machi_repo.id)).to be_nil, "まちレポが削除されていません"
+        # 遷移完了を確認
         expect(page).to have_current_path(machi_repos_path, ignore_query: true), "まちレポ画面に遷移できていません"
+        expect(MachiRepo.find_by(id: machi_repo.id)).to be_nil, "まちレポが削除されていません"
       end
     end
 
