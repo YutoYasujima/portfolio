@@ -28,10 +28,10 @@ RSpec.describe "Users", type: :system do
         fill_in "パスワード", with: "123456"
         fill_in "パスワード（確認用）", with: "123456"
         check "user_agreement"
-        expect {
-          click_button "登録"
-        }.to change(User, :count).by(1)
-        .and change(Profile, :count).by(1)
+        click_button "登録"
+
+        # 成功フラッシュを待つ（非同期処理の完了保証）
+        expect(page).to have_selector("#flash_messages", text: "本人確認用のメールを送信しました。", wait: 10)
 
         # DBから最新ユーザー取得
         user = User.order(created_at: :desc).first
@@ -39,7 +39,6 @@ RSpec.describe "Users", type: :system do
         expect(user.profile.nickname).to eq "テスト太郎"
 
         expect(page).to have_current_path(root_path, ignore_query: true), "トップ画面に遷移できていません"
-        expect(page).to have_selector("#flash_messages", text: "本人確認用のメールを送信しました。")
 
         # 確認メール
         mail = ActionMailer::Base.deliveries.last
