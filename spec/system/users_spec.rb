@@ -22,9 +22,7 @@ RSpec.describe "Users", type: :system do
         fill_in "ニックネーム", with: "テスト太郎"
         select "東京都", from: "user_profile_attributes_prefecture_id"
         # Stimulusで市区町村の選択肢が動的に書き換わるのを待つ
-        within "#user_profile_attributes_municipality_id" do
-          expect(page).to have_content("千代田区")
-        end
+        expect(page).to have_select("user_profile_attributes_municipality_id", with_options: [ "千代田区" ])
         select "千代田区", from: "user_profile_attributes_municipality_id"
         fill_in "メールアドレス", with: "sample@example.com"
         fill_in "パスワード", with: "123456"
