@@ -18,22 +18,20 @@ RSpec.describe "Users", type: :system do
         expect(page).to have_current_path(new_user_registration_path, ignore_query: true), "ユーザー登録画面に遷移できていません"
       end
 
-      it "成功" do
+      it "成功", js: true do
         fill_in "ニックネーム", with: "テスト太郎"
         select "東京都", from: "user_profile_attributes_prefecture_id"
         # Stimulusで市区町村の選択肢が動的に書き換わるのを待つ
-        within "#user_profile_attributes_municipality_id" do
-          expect(page).to have_content("千代田区")
-        end
+        expect(page).to have_select("user_profile_attributes_municipality_id", with_options: [ "千代田区" ])
         select "千代田区", from: "user_profile_attributes_municipality_id"
         fill_in "メールアドレス", with: "sample@example.com"
         fill_in "パスワード", with: "123456"
         fill_in "パスワード（確認用）", with: "123456"
         check "user_agreement"
-        expect {
-          click_button "登録"
-        }.to change(User, :count).by(1)
-        .and change(Profile, :count).by(1)
+        click_button "登録"
+
+        # 成功フラッシュを待つ（非同期処理の完了保証）
+        expect(page).to have_selector("#flash_messages", text: "本人確認用のメールを送信しました。", wait: 10)
 
         # DBから最新ユーザー取得
         user = User.order(created_at: :desc).first
@@ -41,7 +39,6 @@ RSpec.describe "Users", type: :system do
         expect(user.profile.nickname).to eq "テスト太郎"
 
         expect(page).to have_current_path(root_path, ignore_query: true), "トップ画面に遷移できていません"
-        expect(page).to have_selector("#flash_messages", text: "本人確認用のメールを送信しました。")
 
         # 確認メール
         mail = ActionMailer::Base.deliveries.last
@@ -66,7 +63,7 @@ RSpec.describe "Users", type: :system do
         expect(page).to have_current_path(machi_repos_path, ignore_query: true), "まちレポ画面に遷移できていません"
       end
 
-      it "失敗(マイタウン以外、全部未入力)" do
+      it "失敗(マイタウン以外、全部未入力)", js: true do
         click_button "登録"
         expect(page).to have_selector("#flash_messages", text: "メールアドレスを入力してください")
         expect(page).to have_selector("#flash_messages", text: "パスワードを入力してください")

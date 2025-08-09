@@ -34,6 +34,20 @@ begin
 rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
+
+# 追記: OmniAuthをテストモードにする
+OmniAuth.config.test_mode = true
+
+
+# 追記: supportファイルを読み込む
+Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
+
+# 追記: アセットビルド（buildsが無ければyarn buildを実行）
+unless File.exist?(Rails.root.join("app/assets/builds/application.css"))
+  puts "🛠 Running 'yarn build' to generate assets for system tests..."
+  system("yarn build") || abort("❌ yarn build failed. Ensure you have yarn and esbuild set up.")
+end
+
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
@@ -73,15 +87,7 @@ RSpec.configure do |config|
   # 追記
   # factory bot使用
   config.include FactoryBot::Syntax::Methods
-end
 
-# 追記: OmniAuthをテストモードにする
-OmniAuth.config.test_mode = true
-
-# 追記: supportファイルを読み込む
-Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
-
-RSpec.configure do |config|
   # 追記: ImageHelperをRSpecにinclude
   config.include ImageHelper
 
@@ -94,7 +100,7 @@ RSpec.configure do |config|
     # remote_chromeは、spec/support/capybara.rbに定義されている
     driven_by :remote_chrome
     Capybara.server_host = IPSocket.getaddress(Socket.gethostname)
-    Capybara.server_port = 4444
+    # Capybara.server_port = 4444
     Capybara.app_host = "http://#{Capybara.server_host}:#{Capybara.server_port}"
     Capybara.ignore_hidden_elements = false
   end

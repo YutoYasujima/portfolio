@@ -41,6 +41,16 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
+      selenium:
+        image: selenium/standalone-chrome
+        ports:
+          - 4444:4444
+        options: >-
+          --health-cmd="curl --fail http://localhost:4444/wd/hub/status || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
       postgres:
         image: postgres
         env:
@@ -58,7 +68,7 @@ jobs:
 
     steps:
       - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl libjemalloc2 libvips postgresql-client
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -69,12 +79,36 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Run tests
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick libvips
+          bundle install
+
+      - name: Build assets
+        run: yarn install && yarn build
+
+      - name: Copy built assets to public/assets
+        run: |
+          mkdir -p public/assets
+          cp -R app/assets/builds/* public/assets/
+
+      - name: Precompile assets
+        env:
+          RAILS_ENV: test
+        run: |
+          bundle exec rails assets:precompile
+
+      - name: Prepare DB and run RSpec
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
+          SELENIUM_DRIVER_URL: http://localhost:4444/wd/hub
           # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test test:system
+        run: |
+          bin/rails db:create
+          bin/rails db:schema:load
+          bin/rspec
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
