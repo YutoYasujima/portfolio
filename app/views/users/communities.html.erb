@@ -1,4 +1,9 @@
-<%= render "shared/mypage_info" %>
+<%# render "shared/mypage_info" %>
+<% if current_user == @user %>
+  <%= render "shared/mypage_info" %>
+<% else %>
+  <%= render "shared/userpage_info", user: @user %>
+<% end %>
 
 <section class="mx-auto pt-4 pb-8 max-w-120 lg:max-w-175 xl:max-w-250">
   <%= render "shared/infinite_scroll_item",
