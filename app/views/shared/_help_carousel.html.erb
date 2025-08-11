@@ -1,0 +1,54 @@
+<%# 親要素にclass="relative"などのposition設定が必要 %>
+<div data-controller="help">
+  <div class="mx-auto w-75">
+    <div
+      data-action="click->help#open"
+      class="ml-auto w-8 aspect-square text-gray-500"
+    >
+      <%= render "shared/icons/help_full_icon" %>
+    </div>
+  </div>
+  <div class="hidden fixed inset-0 bg-black/70 z-10"
+    data-help-target="overlay"
+  >
+    <%# コンテンツ %>
+    <div class="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-xl py-2 w-full max-w-[900px] bg-white">
+      <%# 閉じるアイコン %>
+      <div
+        data-action="click->help#close"
+        class="mb-2 ml-auto mr-2 w-8 aspect-square text-red-500">
+        <%= render "shared/icons/close_icon" %>
+      </div>
+      <div class="border-y-2 border-gray-400 py-4 w-full max-h-[80vh] overflow-y-scroll overflow-x-hidden"
+        data-help-target="frame"
+      >
+        <div class="flex transition-all duration-300 ease-in-out"
+          data-help-target="items"
+        >
+          <% items.each.with_index do |item, index| %>
+            <div class="w-full min-w-full"
+              data-help-target="item"
+              data-carousel-item-num="<%= index %>"
+            >
+              <%= render "shared/help_item",
+                title: item[:title],
+                content: render(item[:content_partial])
+              %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <div class="flex justify-center gap-4 pt-2">
+        <% items.each.with_index do |item, index| %>
+          <div class="w-8 aspect-square text-orange-400 opacity-30"
+            data-help-target="indicator"
+            data-action="click->help#showItem"
+            data-carousel-indicator-num="<%= index %>"
+          >
+            <%= render "shared/icons/circle_full_icon" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

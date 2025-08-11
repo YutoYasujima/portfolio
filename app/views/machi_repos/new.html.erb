@@ -6,5 +6,14 @@
     <p>"まち"の情報を投稿しましょう！</p>
   </h2>
 
+  <%# ヘルプ %>
+  <div class="mb-2">
+    <%= render "shared/help_carousel",
+      items: [
+        { title: "まちレポの作成方法", content_partial: "shared/helps/how_to_make_machi_repo/content" }
+      ]
+    %>
+  </div>
+
   <%= render "form", machi_repo: @machi_repo %>
 </div>
