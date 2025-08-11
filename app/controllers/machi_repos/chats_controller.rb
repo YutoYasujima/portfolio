@@ -90,11 +90,14 @@ class MachiRepos::ChatsController < ApplicationController
 
     @chat.destroy!
 
+    @other_chats_on_same_day_exist = @machi_repo.chats.where(created_at: @chat.created_at.to_date.all_day).where.not(id: @chat.id).exists?
+
     # Action Cableで他のユーザーにも通知
     ActionCable.server.broadcast "machi_repo_chat_#{@machi_repo.id}", {
       type: "destroy",
       chat_id: @chat.id,
-      user_id: current_user.id
+      user_id: current_user.id,
+      other_chats_on_same_day: @other_chats_on_same_day_exist ? nil : @chat.created_at.to_date
     }
 
     # 自身のチャットはTurbo Streamで画面から削除

@@ -1,9 +1,20 @@
 <% content_for :title, community.name %>
 
 <div class="border-b-2 border-gray-400 text-center">
-  <h2 class="mb-6">
+  <h2 class="mb-2">
     <span class="header1"><%= community.name %></span>
   </h2>
+
+  <%# ヘルプ %>
+  <div class="mb-4">
+    <%= render "shared/help_carousel",
+      items: [
+        { title: "チャット方法", content_partial: "shared/helps/how_to_chat/content" },
+        { title: "コミュニティスカウト", content_partial: "shared/helps/how_to_scout/content" },
+        { title: "コミュニティ参加", content_partial: "shared/helps/how_to_approve/content" }
+      ]
+    %>
+  </div>
 
   <nav class="md:fixed md:top-[250px] md:left-[50px]">
     <% is_belongs_to_community = current_user.approved_in?(community) %>

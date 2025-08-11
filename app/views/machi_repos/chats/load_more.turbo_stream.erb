@@ -1,4 +1,5 @@
-<%= turbo_stream.after "chat-last-page-marker" do %>
+<%= turbo_stream.prepend "chats" do %>
+  <%# 日付表示 %>
   <% previous_date = @new_prev_date %>
   <%= render "shared/chat_date_block", date: previous_date %>
   <% @chats.reverse_each do |chat| %>
@@ -8,6 +9,7 @@
     <% end %>
     <% previous_date = chat_date %>
 
+    <%# レコード表示 %>
     <% if current_user == chat.user %>
       <%= render "shared/chat_mine", chat: chat, chat_color_class_name: "#{@machi_repo.info_level}", read_counts_hash: nil, remove_button: render("machi_repos/chats/chat_remove_button", machi_repo: @machi_repo, chat: chat) %>
     <% else %>
@@ -16,15 +18,29 @@
   <% end %>
 <% end %>
 
-<%= turbo_stream.replace "chat-last-page-marker" do %>
-  <div id="chat-last-page-marker" data-last-page="<%= @is_last_page %>" class="hidden"></div>
+<%# 最終ページ判定 %>
+<%= turbo_stream.replace "last-page-marker" do %>
+  <input type="hidden"
+    id="last-page-marker"
+    value="<%= @is_last_page %>"
+    data-chat-target="lastPageMarker"
+  >
 <% end %>
 
-<%= turbo_stream.replace "chats-previous-last-data" do %>
-  <div
-    id="chats-previous-last-data"
-    data-previous-last-created="<%= @chats.last&.created_at&.to_i %>"
-    data-previous-last-id="<%= @chats.last&.id %>"
-    class="hidden"
-  ></div>
+<%# 取得データの最後の更新日時を保持 %>
+<%= turbo_stream.replace "previous-last-created" do %>
+  <input type="hidden"
+    id="previous-last-created"
+    value="<%= @chats.last&.created_at&.to_i %>"
+    data-chat-target="previousLastCreated"
+  >
+<% end %>
+
+<%# 取得データの最後のIDを保持 %>
+<%= turbo_stream.replace "previous-last-id" do %>
+  <input type="hidden"
+    id="previous-last-id"
+    value="<%= @chats.last&.id %>"
+    data-chat-target="previousLastId"
+  >
 <% end %>
