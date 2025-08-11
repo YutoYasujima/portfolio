@@ -243,6 +243,7 @@ export default class extends Controller {
     this.subscription = null;
   }
 
+  // 既読数取得
   markLatestAsRead() {
     if (!this.showReadReceiptsValue) {
       return;
