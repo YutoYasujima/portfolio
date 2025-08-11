@@ -6,10 +6,11 @@
 
 <div class="flex flex-col"
   data-controller="chat"
-  data-chat-controller-name-value="communities"
+  data-chat-name-space-value="communities"
   data-chat-channel-name-value="CommunityChatChannel"
   data-chat-user-id-value="<%= current_user.id %>"
   data-chat-object-id-value="<%= @community.id %>"
+  data-chat-show-read-receipts-value="true"
   data-chat-textarea-resize-outlet=".textarea-resize"
 >
   <div class="transition-all duration-300 ease-in-out"
@@ -30,7 +31,7 @@
 
   <section class="relative flex-1 mx-auto w-full max-w-120 shadow-lg">
     <%# スクロール可能表示 %>
-    <div class="hidden absolute top-[8px] left-1/2 -translate-x-1/2 z-1"
+    <div class="hidden absolute top-4 left-1/2 -translate-x-1/2 z-1"
       data-chat-target="scrollableIcon"
     >
       <div class="bounce w-8 aspect-square border rounded-full bg-white">

@@ -25,11 +25,12 @@ export default class extends Controller {
   ];
 
   static values = {
-    controllerName: String,
+    nameSpace: String,
     channelName: String,
     userId: Number,
     objectId: Number,
     lastChatId: Number,
+    showReadReceipts: Boolean,
   };
 
   static outlets = [
@@ -243,7 +244,10 @@ export default class extends Controller {
   }
 
   markLatestAsRead() {
-    fetch(`/${this.controllerNameValue}/${this.objectIdValue}/chats/mark_as_read`, {
+    if (!this.showReadReceiptsValue) {
+      return;
+    }
+    fetch(`/${this.nameSpaceValue}/${this.objectIdValue}/chats/mark_as_read`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -255,7 +259,7 @@ export default class extends Controller {
 
   // 部分テンプレート取得によるチャット表示
   async fetchChatPartial(chatId) {
-    await fetch(`/${this.controllerNameValue}/${this.objectIdValue}/chats/${chatId}/render_chat`, {
+    await fetch(`/${this.nameSpaceValue}/${this.objectIdValue}/chats/${chatId}/render_chat`, {
       headers: { "Accept": "text/vnd.turbo-stream.html" }
     })
     .then(response => response.text())
@@ -305,7 +309,7 @@ export default class extends Controller {
     this.spinnerTarget.classList.remove("hidden");
 
     try {
-      const response = await fetch(`/${this.controllerNameValue}/${this.objectIdValue}/chats`,
+      const response = await fetch(`/${this.nameSpaceValue}/${this.objectIdValue}/chats`,
         {
           method: "POST",
           headers: {
@@ -444,7 +448,7 @@ export default class extends Controller {
     params.append("previous_last_created", this.previousLastCreatedTarget.value);
     params.append("previous_last_id", this.previousLastIdTarget.value);
 
-    const url = `/${this.controllerNameValue}/${this.objectIdValue}/chats/load_more?${params.toString()}`;
+    const url = `/${this.nameSpaceValue}/${this.objectIdValue}/chats/load_more?${params.toString()}`;
     // 次のページ（上方向）を非同期で取得
     fetch(url, {
       headers: {
@@ -488,7 +492,10 @@ export default class extends Controller {
 
   // 新着チャット表示クリックで最下部へスクロール
   scrollNewChat() {
-    this.containerTarget.scrollTop = this.containerTarget.scrollHeight;
+    this.containerTarget.scrollTo({
+      top: this.containerTarget.scrollHeight,
+      behavior: "smooth"
+    });
     this.newIconTarget.classList.add("hidden");
   }
 

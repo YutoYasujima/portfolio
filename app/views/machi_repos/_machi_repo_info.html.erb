@@ -1,8 +1,8 @@
 <%# info_levelに応じてbody背景色変更 %>
 <% content_for :body_class, "bg-#{machi_repo.info_level}" %>
 
-<section data-controller="toggle">
-  <div data-toggle-target="content" class="open text-center transition-all duration-300 ease-in-out overflow-hidden md:border-b-2 md:border-gray-500">
+<section class="border-b-2 border-gray-400">
+  <div class="text-center">
     <div class="mx-auto py-4 px-2 max-w-[550px]">
       <div class="flex justify-between items-center mx-auto mb-4">
         <div class="flex items-center <%= "text-#{machi_repo.info_level}" %>">
@@ -21,19 +21,21 @@
           </div>
           <span class="text-xl font-bold"><%= info_level_text %></span>
         </div>
-        <!-- ブックマーク -->
+        <%# ブックマーク %>
         <% if current_user != machi_repo.user %>
           <span class="flex-shrink-0 ml-auto w-8 aspect-square">
             <%= render "machi_repos/bookmarks/bookmark_buttons", machi_repo: machi_repo %>
           </span>
         <% end %>
       </div>
+
       <div class="mx-auto w-[90%] md:w-full">
         <h2 class="inline-block px-4 py-2 min-w-[50%] <%= "title-bg-#{machi_repo.info_level}" %> text-white text-xl font-bold rounded shadow">
           <%= machi_repo.title %>
         </h2>
       </div>
     </div>
+
     <nav class="md:fixed md:top-[250px] md:left-[50px]">
       <ul class="flex justify-center gap-12 mb-4 md:flex-col">
         <% if controller_name == "machi_repos" && action_name == "show"
@@ -67,10 +69,5 @@
         </li>
       </ul>
     </nav>
-  </div>
-  <div data-action="click->toggle#toggle" class="border-t-2 border-b-2 border-gray-500 bg-white md:hidden">
-    <div class="mx-auto w-8 aspect-square">
-      <%= render "shared/icons/eject_icon" %>
-    </div>
   </div>
 </section>
