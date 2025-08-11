@@ -3,7 +3,7 @@
 
 <section class="border-b-2 border-gray-400">
   <div class="text-center">
-    <div class="mx-auto py-4 px-2 max-w-[550px]">
+    <div class="mb-4 mx-auto pt-4 px-2 max-w-[550px]">
       <div class="flex justify-between items-center mx-auto mb-4">
         <div class="flex items-center <%= "text-#{machi_repo.info_level}" %>">
           <%# info_levelに応じてアイコン変更 %>
@@ -29,6 +29,7 @@
         <% end %>
       </div>
 
+      <%# タイトル %>
       <div class="mx-auto w-[90%] md:w-full">
         <h2 class="inline-block px-4 py-2 min-w-[50%] <%= "title-bg-#{machi_repo.info_level}" %> text-white text-xl font-bold rounded shadow">
           <%= machi_repo.title %>
@@ -36,7 +37,16 @@
       </div>
     </div>
 
-    <nav class="md:fixed md:top-[250px] md:left-[50px]">
+    <%# ヘルプ %>
+    <div class="mb-2 mx-auto w-full max-w-120">
+      <%= render "shared/help_carousel",
+        items: [
+          { title: "チャット方法", content_partial: "shared/helps/how_to_chat/content" }
+        ]
+      %>
+    </div>
+
+    <nav class="md:fixed md:top-[280px] md:left-[50px]">
       <ul class="flex justify-center gap-12 mb-4 md:flex-col">
         <% if controller_name == "machi_repos" && action_name == "show"
           current_page = "detail"
