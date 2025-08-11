@@ -1,31 +1,6 @@
-<%# 親要素にclass="relative"などのposition設定が必要 %>
-<% position = local_assigns[:position_style] || "absolute -top-3 right-2" %>
-<div
-  data-controller="help"
-  class="<%= position %>"
->
-  <div
-    data-action="click->help#open"
-    class="w-6 aspect-square text-gray-500"
-  >
-    <%= render "shared/icons/help_full_icon" %>
+<div class="px-2">
+  <div class="mb-4 text-left">
+    <h3 class="header2"><%= title %></h3>
   </div>
-  <div
-    data-help-target="content"
-    class="hidden fixed inset-0 bg-black/70 z-10"
-  >
-    <div class="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-xl py-4 w-full max-w-[900px] max-h-[80vh] overflow-y-scroll bg-white">
-      <div class="flex justify-between mb-4 border-b border-gray-400 pb-2 px-2">
-        <h3 class="header2"><%= title %></h3>
-        <div
-          data-action="click->help#close"
-          class="w-8 aspect-square text-red-500">
-          <%= render "shared/icons/close_icon" %>
-        </div>
-      </div>
-      <div class="px-2">
-        <%= content.html_safe %>
-      </div>
-    </div>
-  </div>
+  <%= content.html_safe %>
 </div>
