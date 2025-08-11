@@ -10,9 +10,6 @@ application.register("accordion", AccordionController)
 import ChatController from "./chat_controller"
 application.register("chat", ChatController)
 
-import ChatScrollController from "./chat_scroll_controller"
-application.register("chat-scroll", ChatScrollController)
-
 import DisableScrollController from "./disable_scroll_controller"
 application.register("disable-scroll", DisableScrollController)
 
@@ -33,9 +30,6 @@ application.register("infinite-scroll", InfiniteScrollController)
 
 import LoadingController from "./loading_controller"
 application.register("loading", LoadingController)
-
-import MachiRepos__ChatController from "./machi_repos/chat_controller"
-application.register("machi-repos--chat", MachiRepos__ChatController)
 
 import MachiRepos__FormController from "./machi_repos/form_controller"
 application.register("machi-repos--form", MachiRepos__FormController)
@@ -72,9 +66,6 @@ application.register("tag", TagController)
 
 import TextareaResizeController from "./textarea_resize_controller"
 application.register("textarea-resize", TextareaResizeController)
-
-import ToggleController from "./toggle_controller"
-application.register("toggle", ToggleController)
 
 import TopController from "./top_controller"
 application.register("top", TopController)
