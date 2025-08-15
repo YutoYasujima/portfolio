@@ -18,9 +18,9 @@
       <span class="header2">参加希望</span>
     </h3>
     <div id="requested-user-cards" class="flex flex-wrap justify-center gap-4">
-      <% @memberships_requested.each do |membership| %>
-        <%= render "shared/user_card", user: membership.user, option: nil, buttons: render("community_memberships/buttons/requested_buttons", membership: membership) %>
-      <% end %>
+    <% @memberships_requested.each do |membership| %>
+      <%= render "shared/user_card", user: membership.user, option: nil, buttons: render("community_memberships/buttons/requested_buttons", membership: membership) %>
+    <% end %>
     </div>
   </section>
   <!-- スカウト中 -->
@@ -29,8 +29,14 @@
       <span class="header2">スカウト中</span>
     </h3>
     <div id="inviting-user-cards" class="flex flex-wrap justify-center gap-4">
-      <% @memberships_invited.each do |membership| %>
-        <%= render "shared/user_card", user: membership.user, option: render("community_memberships/buttons/invite_cancel_button", membership: membership), buttons: nil %>
+      <% if @membership&.role == "leader" || @membership&.role == "sub" %>
+        <% @memberships_invited.each do |membership| %>
+          <%= render "shared/user_card", user: membership.user, option: render("community_memberships/buttons/invite_cancel_button", membership: membership), buttons: nil %>
+        <% end %>
+      <% else %>
+        <% @memberships_invited.each do |membership| %>
+          <%= render "shared/user_card", user: membership.user, option: nil, buttons: nil %>
+        <% end %>
       <% end %>
     </div>
   </section>
@@ -43,8 +49,14 @@
     <%= render "shared/search_form_format", defaults: @search_form, search_form: render("communities/scout_search_form", model: @search_form, community: @community) %>
     <!-- ユーザー一覧 -->
     <div id="candidate-user-cards" class="flex flex-wrap justify-center gap-4">
-      <% @scout_candidates.each do |user| %>
-        <%= render "shared/user_card", user: user, option: render("community_memberships/buttons/invite_button", community: @community, user: user), buttons: nil %>
+      <% if @membership&.role == "leader" || @membership&.role == "sub" %>
+        <% @scout_candidates.each do |user| %>
+          <%= render "shared/user_card", user: user, option: render("community_memberships/buttons/invite_button", community: @community, user: user), buttons: nil %>
+        <% end %>
+      <% else %>
+        <% @scout_candidates.each do |user| %>
+          <%= render "shared/user_card", user: user, option: nil, buttons: nil %>
+        <% end %>
       <% end %>
     </div>
   </section>

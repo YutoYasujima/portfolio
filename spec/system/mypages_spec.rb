@@ -23,7 +23,7 @@ RSpec.describe "Mypages", type: :system do
   describe "プロフィール" do
     before do
       login_as(user)
-      visit profile_path(profile)
+      click_link "nav-mypage-link"
       expect(page).to have_current_path(profile_path(profile), ignore_query: true), "マイページのプロフィール画面に遷移できていません"
       expect(page).to have_content("マイページ"), "マイページが表示されていません"
     end
