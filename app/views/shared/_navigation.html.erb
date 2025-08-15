@@ -1,10 +1,9 @@
 <% if user_signed_in? && current_user.profile&.persisted? %>
-  <nav class="fixed bottom-0 left-0 right-0 border-t-1 border-gray-400 h-[60px] bg-white md:relative md:border-none md:bg-transparent md:w-[320px] md:mr-2">
+  <nav class="fixed bottom-0 left-0 right-0 border-t-1 border-gray-400 h-[60px] bg-white z-10 md:relative md:border-none md:bg-transparent md:w-[320px] md:mr-2">
     <ul class="flex">
       <%# まちレポアイコン %>
       <li class="flex-1 text-black md:text-white">
-
-        <%= link_to machi_repos_path, class: "nav-icon #{"pointer-events-none" if current_page?(machi_repos_path)}" do %>
+        <%= link_to machi_repos_path, id: "nav-machi-repo-link", class: "nav-icon #{"pointer-events-none" if current_page?(machi_repos_path)}" do %>
           <div class="w-10 aspect-square">
             <% if current_page?(machi_repos_path) %>
               <%= render "shared/icons/home_work_full_icon" %>
@@ -19,7 +18,7 @@
       <%# まちレポ作成アイコン %>
       <% is_current_page = controller_name == "machi_repos" && %w[new create].include?(action_name) %>
       <li class="flex-1 text-black md:text-white">
-        <%= link_to new_machi_repo_path, class: "nav-icon #{"pointer-events-none" if is_current_page}" do %>
+        <%= link_to new_machi_repo_path, id: "nav-machi-repo-create-link", class: "nav-icon #{"pointer-events-none" if is_current_page}" do %>
           <div class="w-10 aspect-square">
             <% if is_current_page %>
               <%= render "shared/icons/add_home_work_full_icon" %>
@@ -46,7 +45,7 @@
 
       <%# コミュニティアイコン %>
       <li class="flex-1 text-black md:text-white">
-        <%= link_to communities_path, class: "nav-icon #{"pointer-events-none" if current_page?(communities_path)}" do %>
+        <%= link_to communities_path, id: "nav-community-link", class: "nav-icon #{"pointer-events-none" if current_page?(communities_path)}" do %>
           <div class="w-10 aspect-square">
             <% if current_page?(communities_path) %>
               <%= render "shared/icons/handshake_full_icon" %>
@@ -61,7 +60,7 @@
       <%# マイページアイコン %>
       <li class="flex-1 text-black md:text-white">
         <% profile = current_user.profile %>
-        <%= link_to profile_path(profile), class: "nav-icon #{"pointer-events-none" if current_page?(profile_path(profile))}" do %>
+        <%= link_to profile_path(profile), id: "nav-mypage-link", class: "nav-icon #{"pointer-events-none" if current_page?(profile_path(profile))}" do %>
           <div class="w-10 aspect-square">
             <% if current_page?(profile_path(profile)) %>
               <%= render "shared/icons/account_circle_full_icon" %>
